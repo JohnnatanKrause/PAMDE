@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Conservas OLÉ - APME (Analisador de Performance de Motores Elétricos)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <style>
+        body {
+            font-family: sans-serif;
+            background-image: url("img/inspeção.png");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-blend-mode: multiply;
+            color: black;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.6);
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            color: black;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-container {
+            margin-right: 20px;
+        }
+
+        .logo {
+            max-width: 100px;
+            max-height: 50px;
+            margin-bottom: 0;
+        }
+
+        form {
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .form-group label {
+            margin-right: 10px;
+            width: 150px;
+            text-align: right;
+        }
+
+        .form-group input,
+        .form-group select {
+            flex-grow: 1;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid black;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: black;
+            box-sizing: border-box;
+            max-width: 400px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px auto;
+            box-sizing: border-box;
+            border: 1px solid black;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+            box-sizing: border-box;
+        }
+
+        th {
+            background-color: #8B0000;
+            color: white;
+        }
+
+        .btn-print,
+        #btn-voltar,
+        #btn-compare {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: fit-content;
+        }
+
+        .btn-print {
+            display: none;
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        #btn-voltar {
+            margin-bottom: 20px;
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        #btn-compare {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .logo {
+            max-width: 100px;
+            max-height: 50px;
+            margin-bottom: 0;
+        }
+
+        .motor-image {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .black-text {
+            color: black;
+        }
+
+        .inputs-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .section-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .status-container {
+            margin-top: 20px;
+        }
+
+        .status-item {
+            margin-bottom: 10px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.8em;
+        }
+
+        #resultados {
+            text-align: center;
+        }
+
+        #resultados h2 {
+            display: block;
+            margin-bottom: 20px;
+        }
+
+        .top-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .top-info p {
+            margin: 0;
+        }
+
+
+        .motor-info {
+            margin-bottom: 20px;
+        }
+
+        .motor-info p {
+            margin: 5px 0;
+        }
+
+        .print-logo {
+            max-width: 50px;
+            max-height: 25px;
+            margin-right: 10px;
+        }
+
+        .alerta {
+            background-color: #ffcccc;
+            border: 1px solid #ff9999;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 style="display: flex; align-items: center;">
+            <div class="logo-container">
+                <img src="img/LogoRed.jpg" alt="Logotipo da Empresa" class="logo">
+            </div>
+            APME - Analisador de Performance de Motores Elétricos
+        </h1>
+        <p>Este formulário auxilia na comparação de dados de motores elétricos, facilitando a manutenção preventiva.</p>
+
+        <form id="motorForm1">
+            <div class="inputs-container">
+                <div class="form-group">
+                    <label for="operadorId">Identificação do Operador:</label>
+                    <input type="text" id="operadorId" name="operadorId" class="black-text" required>
+                </div>
+                <div class="form-group">
+                    <label for="setor1">Setor:</label>
+                    <select id="setor1" name="setor1" class="black-text" required>
+                        <option value="">Selecione o setor</option>
+                        <option value="Vegetais">Vegetais</option>
+                        <option value="Safra">Safra</option>
+                        <option value="Autoclaves">Autoclaves</option>
+                        <option value="Preparação">Preparação</option>
+                        <option value="Torres">Torres</option>
+                        <option value="Concentrador IMDEC">Concentrador IMDEC</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="marca1">Marca do Motor:</label>
+                    <input type="text" id="marca1" name="marca1" class="black-text" required>
+                </div>
+                <div class="form-group">
+                    <label for="tagMotor">TAG do Motor:</label>
+                    <input type="text" id="tagMotor" name="tagMotor" class="black-text" required>
+                </div>
+                <div class="form-group">
+                    <label for="modelo1">Modelo:</label>
+                    <select id="modelo1" name="modelo1" class="black-text" required></select>
+                </div>
+            </div>
+            <button type="button" onclick="goToForm2()">Próximo</button>
+        </form>
+
+        <form id="motorForm2" style="display: none;">
+
+            <div class="form-group">
+                <label for="potencia">Potência (CV):</label>
+                <input type="number" id="potencia" name="potencia" required>
+            </div>
+
+            <div>
+                <h3>Tensões (V)</h3>
+                <div class="form-group">
+                    <label for="tensaoFase1">Fase 1:</label>
+                    <input type="number" id="tensaoFase1" name="tensaoFase1" required>
+                </div>
+                <div class="form-group">
+                    <label for="tensaoFase2">Fase 2:</label>
+                    <input type="number" id="tensaoFase2" name="tensaoFase2" required>
+                </div>
+                <div class="form-group">
+                    <label for="tensaoFase3">Fase 3:</label>
+                    <input type="number" id="tensaoFase3" name="tensaoFase3" required>
+                </div>
+            </div>
+
+            <div>
+                <h3>Correntes (A)</h3>
+                <div class="form-group">
+                    <label for="correnteFase1">Fase 1:</label>
+                    <input type="number" id="correnteFase1" name="correnteFase1" required>
+                </div>
+                <div class="form-group">
+                    <label for="correnteFase2">Fase 2:</label>
+                    <input type="number" id="correnteFase2" name="correnteFase2" required>
+                </div>
+                <div class="form-group">
+                    <label for="correnteFase3">Fase 3:</label>
+                    <input type="number" id="correnteFase3" name="correnteFase3" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="temperaturaOperacao">Temperatura de Operação (°C):</label>
+                <input type="number" id="temperaturaOperacao" name="temperaturaOperacao" required>
+            </div>
+
+            <div class="form-group">
+                <label>Vibração no motor?</label>
+                <select id="vibracao" name="vibracao" required>
+                    <option value="">Selecione</option>
+                    <option value="sim">Sim</option>
+                    <option value="nao">Não</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Ruído no rolamento Dianteiro?</label>
+                <select id="ruidoDianteiro" name="ruidoDianteiro" required>
+                    <option value="">Selecione</option>
+                    <option value="sim">Sim</option>
+                    <option value="nao">Não</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Ruído no rolamento Traseiro?</label>
+                <select id="ruidoTraseiro" name="ruidoTraseiro" required>
+                    <option value="">Selecione</option>
+                    <option value="sim">Sim</option>
+                    <option value="nao">Não</option>
+                </select>
+            </div>
+
+            <button type="button" id="btn-compare" onclick="goToForm3()">Comparar</button>
+            <button id="btn-voltar" onclick="voltarCadastro()" style="display: none;">Voltar ao Cadastro
+                Anterior</button>
+        </form>
+
+        <form id="motorForm3" style="display: none;">
+            <div id="resultados"></div>
+            <button class="btn-print" onclick="printComparison()" style="display: none;">Imprimir Comparação</button>
+            <button id="btn-voltar" onclick="voltarCadastro()">Voltar ao Cadastro Anterior</button>
+            <footer>
+                © Todos os direitos reservados. Desenvolvido por Juliano Paiva Teixeira<br>
+                © PEX I Faculdade Descomplica Digital - Engenharia da Computação
+            </footer>
+        </form>
+
+    </div>
+
+    <script>
+        const motorData = [
+            {
+                modelo: "Motor Trifásico 15CV, 380 Volts, FP 0,8 1800 RPM, 60 Hz 21,5 A",
+                potencia: 15,
+                tensaoNominal: 380,
+                correnteNominal: 21.5,
+                temperaturaOperacao: 60
+            },
+            {
+                modelo: "Motor Trifásico 12,5CV, 380 Volts, FP 0,8 1800 RPM, 60 Hz 18 A",
+                potencia: 12.5,
+                tensaoNominal: 380,
+                correnteNominal: 18,
+                temperaturaOperacao: 60
+            },
+            {
+                modelo: "Motor Trifásico 10CV, 380 Volts, FP 0,8 1800 RPM, 60 Hz 14 A",
+                potencia: 10,
+                tensaoNominal: 380,
+                correnteNominal: 14,
+                temperaturaOperacao: 60
+            },
+            {
+                modelo: "Motor Trifásico 7,5CV, 380 Volts, FP 0,8 1800 RPM, 60 Hz 11 A",
+                potencia: 7.5,
+                tensaoNominal: 380,
+                correnteNominal: 11,
+                temperaturaOperacao: 60
+            },
+            {
+                modelo: "Motor Trifásico 4CV, 380 Volts, FP 0,8 1800 RPM, 60 Hz 6 A",
+                potencia: 4,
+                tensaoNominal: 380,
+                correnteNominal: 6,
+                temperaturaOperacao: 60
+            },
+            {
+                modelo: "Motor Trifásico 3CV, 380 Volts, FP 0,8 1800 RPM, 60 Hz 4 A",
+                potencia: 3,
+                tensaoNominal: 380,
+                correnteNominal: 4,
+                temperaturaOperacao: 60
+            },
+            {
+                modelo: "Motor Trifásico 4CV, 380 Volts, FP 0,8 3450 RPM, 60 Hz 6 A",
+                potencia: 4,
+                tensaoNominal: 380,
+                correnteNominal: 6,
+                temperaturaOperacao: 60
+            },
+            {
+                modelo: "Motor Trifásico 3CV, 380 Volts, FP 0,8 3450 RPM, 60 Hz 4 A",
+                potencia: 3,
+                tensaoNominal: 380,
+                correnteNominal: 4,
+                temperaturaOperacao: 60
+            }
+        ];
+
+        function populateModelSelect() {
+            const modeloSelect = document.getElementById('modelo1');
+            const uniqueModels = [...new Set(motorData.map(motor => motor.modelo))];
+            modeloSelect.innerHTML = '<option value="">Selecione o Modelo</option>';
+            uniqueModels.forEach(model => {
+                const option = document.createElement('option');
+                option.value = model;
+                option.text = model;
+                modeloSelect.appendChild(option);
+            });
+        }
+
+        window.addEventListener('load', populateModelSelect);
+
+        function goToForm2() {
+            const operadorId = document.getElementById('operadorId').value;
+            const tagMotor = document.getElementById('tagMotor').value;
+            const marca = document.getElementById('marca1').value;
+            const setor = document.getElementById('setor1').value;
+
+            if (!operadorId || !tagMotor || !marca || !setor) {
+                alert("Favor preencher todos os campos do primeiro formulário!");
+                return;
+            }
+
+            document.getElementById("motorForm1").style.display = "none";
+            document.getElementById("motorForm2").style.display = "block";
+            document.body.classList.add("form2");
+        }
+
+
+        function goToForm3() {
+            const validateForm = () => {
+                const modelo = document.getElementById('modelo1').value;
+                if (!modelo) return "Favor selecionar o modelo do motor!";
+
+                const numberInputs = ['potencia', 'temperaturaOperacao', 'correnteFase1', 'correnteFase2', 'correnteFase3', 'tensaoFase1', 'tensaoFase2', 'tensaoFase3'];
+                for (const inputId of numberInputs) {
+                    const value = parseFloat(document.getElementById(inputId).value);
+                    if (isNaN(value)) return "Por favor, preencha todos os campos numéricos corretamente!";
+                }
+                return null;
+            };
+
+            const errorMsg = validateForm();
+            if (errorMsg) {
+                alert(errorMsg);
+                return;
+            }
+
+            document.getElementById("motorForm2").style.display = "none";
+            document.getElementById("motorForm3").style.display = "block";
+            document.body.classList.remove("form2");
+            document.body.classList.add("form3");
+            compareMotors();
+        }
+
+
+        function compareMotors() {
+            const operadorId = document.getElementById('operadorId').value;
+            const tagMotor = document.getElementById('tagMotor').value;
+            const marca = document.getElementById('marca1').value.toUpperCase();
+            const modelo = document.getElementById('modelo1').value;
+            const potenciaMedido = parseFloat(document.getElementById('potencia').value);
+            const temperaturaOperacaoMedido = parseFloat(document.getElementById('temperaturaOperacao').value);
+            const correnteFase1Medido = parseFloat(document.getElementById('correnteFase1').value);
+            const correnteFase2Medido = parseFloat(document.getElementById('correnteFase2').value);
+            const correnteFase3Medido = parseFloat(document.getElementById('correnteFase3').value);
+            const tensaoFase1Medido = parseFloat(document.getElementById('tensaoFase1').value);
+            const tensaoFase2Medido = parseFloat(document.getElementById('tensaoFase2').value);
+            const tensaoFase3Medido = parseFloat(document.getElementById('tensaoFase3').value);
+            const vibracao = document.getElementById('vibracao').value.toUpperCase();
+            const ruidoDianteiro = document.getElementById('ruidoDianteiro').value.toUpperCase();
+            const ruidoTraseiro = document.getElementById('ruidoTraseiro').value.toUpperCase();
+            const setor = document.getElementById('setor1').value;
+            const dataHora = new Date().toLocaleString();
+
+
+            const match = motorData.find(motor => motor.modelo.toLowerCase() === modelo.toLowerCase());
+
+            let output = "";
+            const alertas = [];
+
+            if (match) {
+                output = geraTabelaComparacao(match, potenciaMedido, tensaoFase1Medido, tensaoFase2Medido, tensaoFase3Medido, correnteFase1Medido, correnteFase2Medido, correnteFase3Medido, temperaturaOperacaoMedido, vibracao, ruidoDianteiro, ruidoTraseiro, operadorId, tagMotor, marca, dataHora, alertas);
+            } else {
+                output = "<p>Motor não encontrado no banco de dados.</p>";
+            }
+
+            // Exibe alertas formatados
+            const alertasHTML = alertas.length > 0 ?
+                `<div class='alerta'><h3>Alertas:</h3><ul>${alertas.map(alerta => `<li>${alerta}</li>`).join('')}</ul></div>` : '';
+            output += alertasHTML;
+
+            document.getElementById("resultados").innerHTML = output;
+            document.querySelector('.btn-print').style.display = 'block';
+            document.getElementById("btn-voltar").style.display = "block";
+        }
+
+        function geraTabelaComparacao(motor, potenciaMedido, tensaoFase1Medido, tensaoFase2Medido, tensaoFase3Medido, correnteFase1Medido, correnteFase2Medido, correnteFase3Medido, temperaturaOperacaoMedido, vibracao, ruidoDianteiro, ruidoTraseiro, operadorId, tagMotor, marca, dataHora, alertas) {
+            const generateRow = (description, nominal, measured, parecer) => `<tr><td>${description}</td><td>${nominal || "*"}</td><td>${measured || "*"}</td><td>${parecer}</td></tr>`;
+
+            let output = `<table>
+                            <tr><th>Descrição</th><th>Dados Nominais</th><th>Valores Medidos</th><th>Parecer Técnico</th></tr>
+                            ${generateRow("Potência (CV)", motor.potencia, potenciaMedido, getTechnicalOpinion(motor.potencia, potenciaMedido))}
+                            ${generateRow("Tensão Fase 1 (V)", motor.tensaoNominal, tensaoFase1Medido, getTechnicalOpinion(motor.tensaoNominal, tensaoFase1Medido, 'tensao', 'Fase 1', alertas))}
+                            ${generateRow("Tensão Fase 2 (V)", motor.tensaoNominal, tensaoFase2Medido, getTechnicalOpinion(motor.tensaoNominal, tensaoFase2Medido, 'tensao', 'Fase 2', alertas))}
+                            ${generateRow("Tensão Fase 3 (V)", motor.tensaoNominal, tensaoFase3Medido, getTechnicalOpinion(motor.tensaoNominal, tensaoFase3Medido, 'tensao', 'Fase 3', alertas))}
+                            ${generateRow("Corrente Fase 1 (A)", motor.correnteNominal, correnteFase1Medido, getTechnicalOpinion(motor.correnteNominal, correnteFase1Medido, 'corrente', 'Fase 1', alertas))}
+                            ${generateRow("Corrente Fase 2 (A)", motor.correnteNominal, correnteFase2Medido, getTechnicalOpinion(motor.correnteNominal, correnteFase2Medido, 'corrente', 'Fase 2', alertas))}
+                            ${generateRow("Corrente Fase 3 (A)", motor.correnteNominal, correnteFase3Medido, getTechnicalOpinion(motor.correnteNominal, correnteFase3Medido, 'corrente', 'Fase 3', alertas))}
+                            ${generateRow("Temperatura de Operação (°C)", motor.temperaturaOperacao, temperaturaOperacaoMedido, getTemperatureOpinion(motor.temperaturaOperacao, temperaturaOperacaoMedido, alertas))}
+                            ${generateRow("Vibração", null, vibracao, getVibrationOpinion(vibracao, alertas))}
+                            ${generateRow("Ruído Dianteiro", null, ruidoDianteiro, getNoiseOpinion(ruidoDianteiro, 'Dianteiro', alertas))}
+                            ${generateRow("Ruído Traseiro", null, ruidoTraseiro, getNoiseOpinion(ruidoTraseiro, 'Traseiro', alertas))}
+                        </table>`;
+
+            return output;
+        }
+
+        const getTechnicalOpinion = (nominal, measured, type = 'other', phase = '', alertas) => {
+            if (nominal === null || measured === null) return "*";
+            const diffPercentage = Math.abs((measured - nominal) / nominal) * 100;
+            let opinion;
+            if (type === 'tensao' || type === 'corrente') {
+                const limit = 10;
+                if (diffPercentage <= limit) {
+                    opinion = "Condição Normal";
+                } else {
+                    opinion = "Condição Anormal";
+                    const prefix = (measured < nominal) ? 'Sub' : 'Sobre';
+                    alertas.push(`${prefix}${type} detectada na ${phase}`);
+                }
+            } else {
+                opinion = (nominal === measured) ? "Condição Normal" : "Condição Anormal";
+            }
+            return opinion;
+        };
+
+        const getTemperatureOpinion = (nominal, measured, alertas) => {
+            if (measured <= nominal) return "Condição Normal";
+            alertas.push("Alta temperatura de operação detectada");
+            return "Condição Anormal";
+        };
+
+        const getVibrationOpinion = (vibracao, alertas) => {
+            const opinion = (vibracao.toLowerCase() === "sim") ? "Condição Anormal" : "Condição Normal";
+            if (opinion === "Condição Anormal") alertas.push("Vibração detectada");
+            return opinion;
+        };
+
+        const getNoiseOpinion = (noise, position, alertas) => {
+            const opinion = (noise.toLowerCase() === "sim") ? "Condição Anormal" : "Condição Normal";
+            if (opinion === "Condição Anormal") alertas.push(`Ruído detectado no rolamento ${position}`);
+            return opinion;
+        };
+
+        function printComparison() {
+            const resultsDiv = document.getElementById('resultados');
+            if (resultsDiv.innerHTML.trim() === "") {
+                alert("Realize uma comparação antes de imprimir.");
+                return;
+            }
+
+            const operadorId = document.getElementById('operadorId').value;
+            const tagMotor = document.getElementById('tagMotor').value;
+            const marca = document.getElementById('marca1').value.toUpperCase();
+            const dataHora = new Date().toLocaleString();
+            const tableContent = resultsDiv.querySelector('table');
+            const alertasContainer = resultsDiv.querySelector('.alerta');
+            let alertasHTML = '';
+
+            if (alertasContainer) {
+                alertasHTML = alertasContainer.outerHTML;
+            }
+
+            if (!tableContent) {
+                alert("Erro ao gerar o relatório. Tente novamente.");
+                return;
+            }
+
+            let printContent = `
+                <h1 style="text-align: center; font-size: 1.5em; font-weight: bold;">Conservas OLÉ - Desde 1769</h1>
+                <h2 style="text-align: center; font-size: 1.2em; font-weight: bold; margin-top: 10px;">Análise de Performance de Motores</h2>
+                <div style="display: flex; justify-content: space-between;">
+                    <div>
+                        <p><b>Operador:</b> ${operadorId}</p>
+                        <p><b>Data/Hora:</b> ${dataHora}</p>
+                    </div>
+                    <div>
+                        <p><b>Marca do motor:</b> ${marca}</p>
+                        <p><b>TAG:</b> ${tagMotor}</p>
+                    </div>
+                </div>
+                ${tableContent.outerHTML}
+                ${alertasHTML}
+                `;
+
+            // Adiciona a quebra de página *apenas se* houver conteúdo na tabela
+            if (tableContent.innerHTML.trim() !== "") {
+                printContent += `<div style="page-break-before: always;"></div>`;
+            }
+
+            printContent += `
+                <footer style="position: fixed; bottom: 0; width: 100%; text-align: center; font-size: 0.8em; margin-top:0;">
+                    © Todos os direitos reservados. Desenvolvido por Juliano Paiva Teixeira<br>
+                    © PEX I - Faculdade Descomplica Digital - Engenharia da Computação
+                </footer>
+            `;
+
+
+            const printWindow = window.open('', '', 'height=400,width=600');
+            printWindow.document.write(`<html><head><title>Comparação de Motores</title><style>body{font-family:sans-serif;} table { width: 100%; border-collapse: collapse; } th, td { border: 1px solid #ddd; padding: 8px; text-align: left; } th { background-color: #f2f2f2; }</style></head><body>${printContent}</body></html>`);
+            printWindow.document.close();
+            printWindow.print();
+
+            const compareAnother = confirm("Deseja comparar outro motor?");
+            if (compareAnother) {
+                resetForms();
+            } else {
+                window.location.reload();
+            }
+        }
+
+        function resetForms() {
+            document.getElementById("motorForm1").reset();
+            document.getElementById("motorForm2").style.display = "block";
+            document.getElementById("motorForm3").style.display = "none";
+            document.getElementById("motorForm1").style.display = "block";
+            document.getElementById("resultados").innerHTML = "";
+            document.querySelector('.btn-print').style.display = 'none';
+            document.getElementById("btn-voltar").style.display = "none";
+            document.querySelector('select[name="vibracao"]').selectedIndex = 0;
+            document.querySelector('select[name="ruidoDianteiro"]').selectedIndex = 0;
+            document.querySelector('select[name="ruidoTraseiro"]').selectedIndex = 0;
+            document.getElementById('modelo1').selectedIndex = 0;
+            populateModelSelect();
+            document.body.classList.remove("form2");
+            document.body.classList.remove("form3");
+        }
+
+        function voltarCadastro() {
+            document.getElementById("motorForm1").style.display = "block";
+            document.getElementById("motorForm2").style.display = "none";
+            document.getElementById("motorForm3").style.display = "none";
+            document.getElementById("resultados").innerHTML = "";
+            document.querySelector('.btn-print').style.display = 'none';
+            document.getElementById("btn-voltar").style.display = "none";
+            document.body.classList.remove("form2");
+            document.body.classList.remove("form3");
+        }
+
+    </script>
+
+</body>
+
+</html>
