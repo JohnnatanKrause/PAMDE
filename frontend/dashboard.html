@@ -1,48 +1,43 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - PAMDE</title>
-    <link rel="stylesheet" href="login.css">
-    <!-- Você pode adicionar um ícone (favicon) aqui se desejar -->
-    <link rel="icon" type="image/png" href="/assets/img/favicon.png">
+    <title>Dashboard - PAMDE</title>
+    <!-- Se você for criar um dashboard.css específico -->
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <!-- Ou pode usar o global.css se ele tiver estilos mais gerais -->
+    <link rel="stylesheet" href="assets/css/global.css">
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
 </head>
+
 <body>
-    <div class="login-container">
-        <header class="login-header">
-            <h1>Portal Analisador de Motores e Dispositivos Elétricos</h1>
-        </header>
+    <header class="dashboard-header">
+        <div class="user-info">
+            <p id="welcomeMessage">Carregando informações do usuário...</p>
+        </div>
+        <button id="logoutButton" class="btn-logout">Sair</button>
+    </header>
 
-        <main class="login-main">
-            <div class="login-box">
-                <h2>Acesso ao Sistema</h2>
-                <form id="loginForm">
-                    <div class="input-group">
-                        <label for="usuario">Usuário:</label>
-                        <input type="text" id="usuario" name="usuario" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="cadastro">Cadastro (ID Operador):</label>
-                        <input type="text" id="cadastro" name="cadastro" required>
-                    </div>
-                    <div class="input-group">
-                        <label for="senha">Senha:</label>
-                        <input type="password" id="senha" name="senha" required>
-                    </div>
-                    <div id="loginErrorMessage" class="error-message" style="display: none;"></div>
-                    <button type="submit" class="btn-login">Entrar</button>
-                </form>
-            </div>
-        </main>
+    <main class="dashboard-main">
+        <h1>Seleção de Setor</h1>
+        <div class="setores-container">
+            <button class="setor-btn" data-setor="TESTE">TESTE (Rápido)</button>            
+            <button class="setor-btn" data-setor="VEGETAIS">VEGETAIS</button>
+            <button class="setor-btn" data-setor="SAFRA">SAFRA</button>
+            <button class="setor-btn" data-setor="AUTOCLAVES">AUTOCLAVES</button>
+            <button class="setor-btn" data-setor="PREPARACAO">PREPARAÇÃO</button>
+            <button class="setor-btn" data-setor="TORRES">TORRES</button>
+            <!-- Adicione mais setores se necessário -->
+        </div>
+    </main>
 
-        <footer class="login-footer">
-            <p>© 2025 PAMDE - Todos os direitos reservados.</p>
-            <p>© Desenvolvido por Juliano Paiva Teixeira.</p>
-            <p>© PEX II Faculdade Descomplica Digital</p>
-        </footer>
-    </div>
+    <div id="footer-placeholder"></div> <!-- NOVO PLACEHOLDER -->
 
-    <script src="login.js"></script>
+
+    <script src="js/dashboard.js"></script>
+    <script src="js/common.js"></script>
 </body>
+
 </html>

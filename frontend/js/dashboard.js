@@ -1,65 +1,56 @@
+// frontend/js/dashboard.js
 document.addEventListener('DOMContentLoaded', function() {
-    const loginForm = document.getElementById('loginForm');
-    const errorMessageDiv = document.getElementById('loginErrorMessage');
+    const welcomeMessageElement = document.getElementById('welcomeMessage');
+    const logoutButton = document.getElementById('logoutButton');
+    const setorButtons = document.querySelectorAll('.setor-btn');
 
-    // Array de usuários válidos (exemplo)
-    // Em um sistema real, isso viria de um backend seguro.
-    const validUsers = [
-        { usuario: "operador1", cadastro: "OP001", senha: "senha123" },
-        { usuario: "admin", cadastro: "ADM001", senha: "adminpass" },
-        { usuario: "juliano", cadastro: "JP007", senha: "minhasenha" }
-    ];
+    // Verificar se o usuário está logado
+    const usuarioLogado = localStorage.getItem('usuarioLogado');
+    const cadastroLogado = localStorage.getItem('cadastroLogado');
 
-    if (loginForm) {
-        loginForm.addEventListener('submit', function(event) {
-            event.preventDefault(); // Impede o envio padrão do formulário
+    if (welcomeMessageElement) {
+        if (usuarioLogado && cadastroLogado) {
+            welcomeMessageElement.textContent = `Bem-vindo, ${usuarioLogado} (Cadastro: ${cadastroLogado})`;
+        } else {
+            // Se não houver dados de login, redireciona para a página de login
+            console.warn("Dados de login não encontrados no localStorage. Redirecionando para login.");
+            window.location.href = 'index.html';
+            return; // Interrompe a execução do script
+        }
+    } else {
+        console.error("Elemento #welcomeMessage não encontrado no DOM. Redirecionando para login.");
+        window.location.href = 'index.html'; // Medida de segurança
+        return;
+    }
 
-            const usuarioInput = document.getElementById('usuario').value;
-            const cadastroInput = document.getElementById('cadastro').value;
-            const senhaInput = document.getElementById('senha').value;
-
-            console.log("Tentativa de login com:");
-            console.log("Usuário:", usuarioInput);
-            console.log("Cadastro:", cadastroInput);
-            // Não logar a senha em produção por segurança, apenas para debug aqui.
-            // console.log("Senha:", senhaInput);
-
-            let isAuthenticated = false;
-            let authenticatedUser = null;
-
-            for (const user of validUsers) {
-                if (user.usuario === usuarioInput && user.cadastro === cadastroInput && user.senha === senhaInput) {
-                    isAuthenticated = true;
-                    authenticatedUser = user;
-                    break;
-                }
-            }
-
-            if (isAuthenticated) {
-                // Login bem-sucedido
-                console.log("Login bem-sucedido para:", authenticatedUser.usuario, "Cadastro:", authenticatedUser.cadastro);
-                errorMessageDiv.style.display = 'none';
-                errorMessageDiv.textContent = '';
-
-                // Armazenar dados do usuário para a próxima página (ex: localStorage)
-                // localStorage é simples para demonstração, mas considere a segurança para dados sensíveis.
-                localStorage.setItem('usuarioLogado', authenticatedUser.usuario);
-                localStorage.setItem('cadastroLogado', authenticatedUser.cadastro);
-
-                alert(`Bem-vindo, ${authenticatedUser.usuario}!`);
-
-                // Redirecionar para a próxima página (ex: dashboard.html)
-                // Substitua 'dashboard.html' pelo nome da sua próxima página.
-                window.location.href = 'dashboard.html'; // << MUDE AQUI para sua próxima página
-
-            } else {
-                // Login falhou
-                console.log("Falha no login.");
-                errorMessageDiv.textContent = 'Usuário, cadastro ou senha inválidos. Tente novamente.';
-                errorMessageDiv.style.display = 'block';
-            }
+    // Lógica do botão de Logout
+    if (logoutButton) {
+        logoutButton.addEventListener('click', function() {
+            localStorage.removeItem('usuarioLogado');
+            localStorage.removeItem('cadastroLogado');
+            // localStorage.removeItem('authToken'); // Se você usar tokens no futuro
+            // alert("Você foi desconectado."); // Alerta opcional, removido para fluxo mais direto
+            window.location.href = 'index.html';
         });
     } else {
-        console.error("Elemento #loginForm não encontrado no DOM.");
+        console.error("Elemento #logoutButton não encontrado no DOM.");
+    }
+
+    // Lógica para os botões de setor
+    if (setorButtons && setorButtons.length > 0) {
+        setorButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const setorSelecionado = this.dataset.setor;
+                console.log("Setor selecionado pelo botão:", setorSelecionado); // Mantido para fácil debug
+
+                // Armazenar o setor selecionado para a próxima página (checklist.html)
+                sessionStorage.setItem('setorSelecionado', setorSelecionado);
+
+                // Redirecionar para a página de checklist
+                window.location.href = 'checklist.html'; // <<< LINHA DE REDIRECIONAMENTO ATIVADA
+            });
+        });
+    } else {
+        console.error("Nenhum botão .setor-btn encontrado ou NodeList vazia!");
     }
 });

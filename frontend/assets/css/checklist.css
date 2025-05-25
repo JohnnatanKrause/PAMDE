@@ -1,0 +1,238 @@
+/* frontend/assets/css/checklist.css */
+.app-header { /* Estilo similar ao dashboard-header, mas pode ser específico */
+    background-color: #34495e; /* Azul acinzentado mais escuro */
+    color: white;
+    padding: 10px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.app-header h1 {
+    font-size: 1.4em;
+    margin: 0;
+    font-weight: 400;
+}
+.app-header .user-info-checklist p {
+    font-size: 0.85em;
+    margin: 0;
+}
+#voltarDashboardBtn {
+    background-color: #7f8c8d;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+#voltarDashboardBtn:hover {
+    background-color: #95a5a6;
+}
+
+.checklist-container {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.07);
+}
+
+.navegacao-equipamento {
+    text-align: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+.navegacao-equipamento h2 {
+    color: #2c3e50;
+    margin-top: 0;
+}
+.navegacao-equipamento p {
+    font-size: 0.9em;
+    color: #555;
+}
+
+.checklist-content {
+    display: grid;
+    grid-template-columns: 1fr 2fr; /* Coluna de nominais menor, medidos maior */
+    gap: 30px;
+}
+
+.dados-nominais, .dados-medidos {
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+}
+.dados-nominais h3, .dados-medidos h3 {
+    margin-top: 0;
+    color: #3498db;
+    border-bottom: 1px solid #3498db;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+}
+
+.dados-nominais p {
+    font-size: 0.9em;
+    margin: 8px 0;
+    line-height: 1.5;
+}
+.dados-nominais p strong {
+    color: #333;
+    min-width: 120px; /* Alinhamento dos valores */
+    display: inline-block;
+}
+.dados-nominais span[data-nominal] {
+    color: #555;
+}
+
+.checklist-actions {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    text-align: center;
+}
+.checklist-actions button {
+    padding: 12px 25px;
+    margin: 0 10px;
+    font-size: 1em;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s;
+}
+#anteriorEquipamentoBtn {
+    background-color: #bdc3c7;
+    color: #2c3e50;
+}
+#anteriorEquipamentoBtn:hover:not([disabled]) {
+    background-color: #95a5a6;
+}
+#anteriorEquipamentoBtn:disabled {
+    background-color: #ecf0f1;
+    color: #bdc3c7;
+    cursor: not-allowed;
+}
+#proximoEquipamentoBtn {
+    background-color: #2ecc71;
+    color: white;
+}
+#proximoEquipamentoBtn:hover {
+    background-color: #27ae60;
+}
+#finalizarInspecaoBtn {
+    background-color: #e74c3c;
+    color: white;
+}
+#finalizarInspecaoBtn:hover {
+    background-color: #c0392b;
+}
+
+/* Estilos para formulário de inspeção (a serem adicionados) */
+#inspecaoForm .form-group {
+    margin-bottom: 15px;
+}
+#inspecaoForm label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+#inspecaoForm input[type="text"],
+#inspecaoForm input[type="number"],
+#inspecaoForm select,
+#inspecaoForm textarea {
+    width: calc(100% - 22px); /* Ajusta para padding e borda */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.95em;
+}
+#inspecaoForm textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/*Estilos para os dados de leitura da inspeção */
+.dados-medidos h4 {
+    margin-top: 20px;
+    margin-bottom: 15px;
+    color: #555;
+    font-size: 1.1em;
+    border-bottom: 1px dashed #ccc;
+    padding-bottom: 5px;
+}
+.dados-medidos h4:first-of-type {
+    margin-top: 0;
+}
+
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsivo */
+    gap: 15px 20px; /* Espaçamento vertical e horizontal */
+    margin-bottom: 20px;
+}
+
+.fases-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Colunas menores para fases */
+}
+
+#inspecaoForm .form-group {
+    margin-bottom: 0; /* Removido pois o gap do grid cuida disso */
+}
+#inspecaoForm label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+    font-size: 0.85em;
+    color: #444;
+}
+#inspecaoForm input[type="text"],
+#inspecaoForm input[type="number"],
+#inspecaoForm select,
+#inspecaoForm textarea,
+#inspecaoForm input[type="file"] {
+    width: 100%; /* Ocupa toda a célula do grid */
+    padding: 9px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9em;
+    box-sizing: border-box; /* Importante para o width 100% funcionar com padding */
+}
+#inspecaoForm input[type="file"] {
+    padding: 5px; /* Ajuste para input file */
+}
+#inspecaoForm textarea {
+    resize: vertical;
+    min-height: 70px;
+}
+#inspecaoForm select {
+    cursor: pointer;
+}
+#preview_foto {
+    border: 1px solid #ddd;
+    padding: 5px;
+    border-radius: 4px;
+}
+/* Estilos para os Checkboxs */
+.checkbox-options {
+    margin-top: 5px;
+    display: flex; /* Para alinhar os checkboxes lado a lado */
+    gap: 15px;     /* Espaço entre eles */
+}
+
+.na-checkbox-label { /* Reutilizamos esta classe, mas ajustamos se necessário */
+    display: inline-flex; /* Para alinhar o texto com o checkbox */
+    align-items: center;
+    font-size: 0.85em;
+    color: #555;
+    cursor: pointer;
+}
+
+.na-checkbox-label input[type="checkbox"] {
+    margin-right: 5px;
+    vertical-align: middle; /* Pode não ser necessário com inline-flex */
+}

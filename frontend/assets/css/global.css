@@ -1,0 +1,33 @@
+
+/* frontend/assets/css/global.css */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif; /* Ou a que você preferir globalmente */
+    min-height: 100vh; /* Garante que o corpo ocupe pelo menos toda a altura da viewport */
+
+    /* PROPRIEDADES DA IMAGEM DE FUNDO */
+
+    background-image: url('../img/plano_de_fundo.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed; /* Opcional: faz o fundo ficar fixo durante o scroll */
+    background-color: #f0f2f5; /* Cor de fundo caso a imagem não carregue ou antes dela carregar */
+}
+
+/*... Estilo do Footer ... */
+
+.main-footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 0.8em;
+    color: #777;
+    border-top: 1px solid #eee; /* Exemplo de borda superior */
+    margin-top: 30px; /* Ou ajuste conforme necessário */
+    background-color: rgba(240, 240, 240, 0.7); /* Um fundo levemente diferente, opcional */
+}
+
+.main-footer p {
+    margin: 5px 0;
+}

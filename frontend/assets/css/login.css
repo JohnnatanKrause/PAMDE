@@ -3,15 +3,10 @@ body, html {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    background-color: #f0f2f5; /* Um cinza claro para o fundo */
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    background-image: url('/assets/img/plano_de_fundo.png'); /* Adiciona a imagem de fundo */
-    background-size: cover; /* Cobre toda a área */
-    background-position: center; /* Centraliza a imagem */
-    background-repeat: no-repeat; /* Não repete a imagem */
+    min-height: 100vh;    
 }
 
 .login-container {
@@ -84,11 +79,18 @@ body, html {
     font-size: 0.9em;
 }
 
-.login-footer {
-    margin-top: 30px;
+/* ... Estilo do Footer ... */
+
+.main-footer {
+    text-align: center;
+    padding: 20px;
     font-size: 0.8em;
     color: #777;
+    border-top: 1px solid #eee; /* Exemplo de borda superior */
+    margin-top: 30px; /* Ou ajuste conforme necessário */
+    background-color: rgba(240, 240, 240, 0.7); /* Um fundo levemente diferente, opcional */
 }
+
 
 /* Responsividade básica */
 @media (max-width: 500px) {
