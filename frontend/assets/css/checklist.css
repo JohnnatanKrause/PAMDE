@@ -236,3 +236,14 @@
     margin-right: 5px;
     vertical-align: middle; /* Pode não ser necessário com inline-flex */
 }
+
+.status-tooltip {
+    display: none; /* Escondido por padrão */
+    font-size: 0.85em;
+    color: #555;
+    margin-left: 10px;
+    padding: 2px 5px;
+    background-color: #f0f0f0;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+}

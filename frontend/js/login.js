@@ -4,63 +4,50 @@ document.addEventListener('DOMContentLoaded', function() {
     const errorMessageDiv = document.getElementById('loginErrorMessage');
 
     if (loginForm) {
-        loginForm.addEventListener('submit', async function(event) { // Adicionamos 'async' aqui
-            event.preventDefault(); // Impede o envio padrão do formulário
+        loginForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
 
             const usuarioInput = document.getElementById('usuario').value;
             const cadastroInput = document.getElementById('cadastro').value;
             const senhaInput = document.getElementById('senha').value;
 
-            // Limpa mensagens de erro anteriores
             errorMessageDiv.style.display = 'none';
             errorMessageDiv.textContent = '';
 
-            console.log("Tentativa de login com:");
-            console.log("Usuário:", usuarioInput);
-            console.log("Cadastro:", cadastroInput);
-            // Não logar a senha em produção por segurança
-
             try {
-                const response = await fetch('http://127.0.0.1:5000/api/login', { // URL da nossa API
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        usuario: usuarioInput,
-                        cadastro: cadastroInput,
-                        senha: senhaInput
-                    })
-                });
+                // Carregar usuários do JSON local
+                const response = await fetch('data_source/listadelogins.json'); // Caminho para seu JSON
+                if (!response.ok) {
+                    throw new Error('Não foi possível carregar a lista de usuários.');
+                }
+                const validUsers = await response.json();
 
-                const data = await response.json(); // Pega a resposta do backend em JSON
+                let isAuthenticated = false;
+                let authenticatedUser = null;
 
-                if (response.ok) { // Status HTTP 200-299 significa sucesso
-                    // Login bem-sucedido
-                    console.log("Login bem-sucedido:", data);
-                    
-                    // Armazenar dados do usuário para a próxima página
-                    localStorage.setItem('usuarioLogado', data.usuario);
-                    localStorage.setItem('cadastroLogado', data.cadastro);
-                    // Se o backend retornasse um token, poderíamos armazená-lo aqui também:
-                    // localStorage.setItem('authToken', data.token);
+                for (const user of validUsers) {
+                    if (user.usuario === usuarioInput && user.cadastro === cadastroInput && user.senha === senhaInput) {
+                        isAuthenticated = true;
+                        authenticatedUser = user;
+                        break;
+                    }
+                }
 
-                    alert(`Bem-vindo, ${data.usuario}!`);
-
-                    // Redirecionar para a próxima página
+                if (isAuthenticated) {
+                    console.log("Login local bem-sucedido para:", authenticatedUser.usuario);
+                    localStorage.setItem('usuarioLogado', authenticatedUser.usuario);
+                    localStorage.setItem('cadastroLogado', authenticatedUser.cadastro);
+                    // Não há token ou dados complexos do backend para armazenar
                     window.location.href = 'dashboard.html';
-
                 } else {
-                    // Login falhou (erro retornado pelo backend)
-                    console.error("Falha no login:", data.error);
-                    errorMessageDiv.textContent = data.error || 'Erro desconhecido ao tentar fazer login.';
+                    console.log("Falha no login local.");
+                    errorMessageDiv.textContent = 'Usuário, cadastro ou senha inválidos.';
                     errorMessageDiv.style.display = 'block';
                 }
 
             } catch (error) {
-                // Erro na comunicação com o servidor (ex: servidor offline, problema de rede)
-                console.error("Erro ao conectar com o servidor:", error);
-                errorMessageDiv.textContent = 'Não foi possível conectar ao servidor. Tente novamente mais tarde.';
+                console.error("Erro ao processar login:", error);
+                errorMessageDiv.textContent = 'Erro ao tentar fazer login. Verifique o console.';
                 errorMessageDiv.style.display = 'block';
             }
         });

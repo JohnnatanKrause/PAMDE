@@ -1,6 +1,10 @@
 // frontend/js/checklist.js
+console.log("[DEBUG] checklist.js: ARQUIVO SENDO LIDO E PARSEADO PELO NAVEGADOR");
+
 document.addEventListener('DOMContentLoaded', function () {
-    // Seletores de Elementos do DOM
+    console.log("[DEBUG] checklist.js: DOMContentLoaded - INÍCIO");
+
+    // --- SELETORES DE ELEMENTOS DO DOM ---
     const checklistUserInfo = document.getElementById('checklistUserInfo');
     const setorAtualTitulo = document.getElementById('setorAtualTitulo');
     const equipamentoTagElement = document.getElementById('equipamentoTag');
@@ -8,8 +12,19 @@ document.addEventListener('DOMContentLoaded', function () {
     const totalEquipamentosElement = document.getElementById('totalEquipamentos');
     const nominaisContainer = document.getElementById('nominaisContainer');
     const inspecaoForm = document.getElementById('inspecaoForm');
+    const fotoEquipamentoInput = document.getElementById('foto_equipamento');
+    const previewFotoElement = document.getElementById('preview_foto');
+    const noEquipmentsMessage = document.getElementById('noEquipmentsMessage');
+    const equipamentoInfoWrapper = document.querySelector('.equipamento-info-wrapper');
 
-    // Inputs do formulário para fácil acesso e validação
+    const voltarDashboardBtn = document.getElementById('voltarDashboardBtn');
+    const proximoEquipamentoBtn = document.getElementById('proximoEquipamentoBtn');
+    const anteriorEquipamentoBtn = document.getElementById('anteriorEquipamentoBtn');
+    const finalizarInspecaoBtn = document.getElementById('finalizarInspecaoBtn');
+
+    const temperaturaMedidaInput = document.getElementById('temperatura_medida');
+    const temperaturaStatusCheckboxes = document.querySelectorAll('input.status_checkbox[name="temperatura_medida_status"]');
+
     const marcaMedidaInput = document.getElementById('marca_medida');
     const modeloMedidoInput = document.getElementById('modelo_medido');
     const potenciaMedidaInput = document.getElementById('potencia_medida');
@@ -24,117 +39,184 @@ document.addEventListener('DOMContentLoaded', function () {
     const rolamentoDMedidoInput = document.getElementById('rolamento_d_medido');
     const rolamentoTMedidoInput = document.getElementById('rolamento_t_medido');
     const vibracaoSelect = document.getElementById('vibracao');
-    const temperaturaMedidaInput = document.getElementById('temperatura_medida');
     const ruidoRolDSelect = document.getElementById('ruido_rol_d');
     const ruidoRolTSelect = document.getElementById('ruido_rol_t');
-    const fotoEquipamentoInput = document.getElementById('foto_equipamento'); // ESSENCIAL
-    const previewFotoElement = document.getElementById('preview_foto');     // ESSENCIAL
-    const observacaoTextarea = document.getElementById('observacao');
 
-    // Checkboxes de status para temperatura (exemplo)
-    const temperaturaStatusCheckboxes = document.querySelectorAll('input[name="temperatura_medida_status"]');
-
-    const loadingMessage = document.getElementById('loadingMessage');
-    const noEquipmentsMessage = document.getElementById('noEquipmentsMessage');
-    const equipamentoInfoWrapper = document.querySelector('.equipamento-info-wrapper');
-
-    const voltarDashboardBtn = document.getElementById('voltarDashboardBtn');
-    const proximoEquipamentoBtn = document.getElementById('proximoEquipamentoBtn');
-    const anteriorEquipamentoBtn = document.getElementById('anteriorEquipamentoBtn');
-    const finalizarInspecaoBtn = document.getElementById('finalizarInspecaoBtn');
-
-    // Estado da Aplicação
+    // --- ESTADO DA APLICAÇÃO ---
     let listaDeEquipamentos = [];
     let indiceEquipamentoAtual = 0;
     let dadosColetadosInspecao = [];
 
-    // --- INICIALIZAÇÃO ---
-    function initChecklist() {
-        console.log("Checklist.js - initChecklist() chamada");
-        const usuarioLogado = localStorage.getItem('usuarioLogado');
-        const cadastroLogado = localStorage.getItem('cadastroLogado');
-        if (usuarioLogado && cadastroLogado) {
-            if (checklistUserInfo) checklistUserInfo.textContent = `Usuário: ${usuarioLogado} (Cad: ${cadastroLogado})`;
-        } else {
-            window.location.href = 'index.html'; return;
+
+    // --- DEFINIÇÕES DAS FUNÇÕES ---
+
+    function parseEquipamentosFromNestedJson(jsonData, setorPrincipalChaveNoJson) {
+        const equipamentosExtraidos = [];
+        if (!jsonData || !jsonData[setorPrincipalChaveNoJson]) {
+            console.warn(`[PARSE] Chave principal do setor '${setorPrincipalChaveNoJson}' não encontrada no JSON.`);
+            return equipamentosExtraidos;
         }
-        const setorSelecionado = sessionStorage.getItem('setorSelecionado');
-        if (setorSelecionado) {
-            if (setorAtualTitulo) setorAtualTitulo.textContent = setorSelecionado.toUpperCase();
-            fetchEquipamentosDoSetor(setorSelecionado);
-        } else {
-            console.error("Nenhum setor selecionado.");
-            if (noEquipmentsMessage) noEquipmentsMessage.textContent = "Nenhum setor foi selecionado. Por favor, volte ao dashboard.";
-            if (noEquipmentsMessage) noEquipmentsMessage.style.display = 'block';
+
+        const dadosDoSetor = jsonData[setorPrincipalChaveNoJson];
+
+        // Nível 1: Iterar sobre chaves como "setor_teste_1", "setor_teste_2"
+        for (const subsetorNivel1Nome in dadosDoSetor) {
+            if (dadosDoSetor.hasOwnProperty(subsetorNivel1Nome)) {
+                const subsetorNivel1Conteudo = dadosDoSetor[subsetorNivel1Nome];
+
+                // Nível 2: Iterar sobre chaves como "equip_teste_A", "equip_teste_B"
+                for (const subsetorNivel2Nome in subsetorNivel1Conteudo) {
+                    if (subsetorNivel1Conteudo.hasOwnProperty(subsetorNivel2Nome)) {
+                        const subsetorNivel2Conteudo = subsetorNivel1Conteudo[subsetorNivel2Nome];
+
+                        // Nível 3 (Equipamentos/Motores): Iterar sobre chaves como "motor_A1", "motor_B1"
+                        for (const nomeMotor in subsetorNivel2Conteudo) {
+                            if (subsetorNivel2Conteudo.hasOwnProperty(nomeMotor)) {
+                                const dadosMotor = subsetorNivel2Conteudo[nomeMotor];
+                                equipamentosExtraidos.push({
+                                    ...dadosMotor, // Copia todas as propriedades do motor (tag_motor, potencia_CV_nominal, etc.)
+                                    // Adiciona informações de hierarquia e um ID único
+                                    id_equipamento_db: dadosMotor.tag_motor + '_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5), // ID mais robusto
+                                    setor_principal: setorPrincipalChaveNoJson.toUpperCase(), // Ex: "TESTE"
+                                    subsetor_nivel1: subsetorNivel1Nome,
+                                    subsetor_nivel2: subsetorNivel2Nome,
+                                    nome_componente: nomeMotor // O nome da chave do motor, ex: "motor_A1"
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        console.log(`[PARSE] Equipamentos extraídos do JSON:`, equipamentosExtraidos);
+        return equipamentosExtraidos;
+    }
+
+    // ESTA FUNÇÃO (fetchEquipamentosDoSetor) PRECISA SER DEFINIDA ANTES DE initChecklist
+    async function fetchEquipamentosDoSetor(setorSelecionadoInterface) { // Ex: "TESTE"
+        console.log(`[DEBUG] fetchEquipamentosDoSetor: Buscando para o setor da interface: ${setorSelecionadoInterface}`);
+        let equipamentosCarregados = [];
+
+        // 1. Determinar o nome do arquivo e a chave principal no JSON
+        //    Vamos assumir que o nome do arquivo é "equipamentos" + nome do setor em minúsculas + ".json"
+        //    E a chave principal dentro do JSON é o nome do setor em minúsculas.
+        const setorEmMinusculas = setorSelecionadoInterface.toLowerCase(); // ex: "teste"
+        const nomeArquivoJson = `data_source/equipamentos${setorEmMinusculas}.json`; // ex: "equipamentosteste.json"
+        const chavePrincipalJson = setorEmMinusculas; // ex: "teste"
+
+        console.log(`[DEBUG] Tentando carregar o arquivo: ${nomeArquivoJson} e usar a chave principal: ${chavePrincipalJson}`);
+
+        try {
+            const response = await fetch(nomeArquivoJson);
+            if (!response.ok) {
+                throw new Error(`Erro ao carregar ${nomeArquivoJson}: ${response.status} ${response.statusText}`);
+            }
+            const jsonData = await response.json();
+
+            // 2. Parsear o JSON usando a nova função
+            equipamentosCarregados = parseEquipamentosFromNestedJson(jsonData, chavePrincipalJson);
+
+        } catch (error) {
+            console.error(`[ERRO] Falha ao buscar ou processar equipamentos do arquivo ${nomeArquivoJson} para o setor ${setorSelecionadoInterface}:`, error);
+            if (noEquipmentsMessage) {
+                let msgErro = `Erro ao carregar dados para o setor "${setorSelecionadoInterface}".`;
+                if (error.message.includes("404") || error.message.toLowerCase().includes("failed to fetch")) {
+                    msgErro = `Arquivo de dados (${nomeArquivoJson}) não encontrado ou inacessível para o setor "${setorSelecionadoInterface}". Verifique se o arquivo existe no local correto.`;
+                } else if (error instanceof SyntaxError) {
+                    msgErro = `O arquivo ${nomeArquivoJson} contém um erro de sintaxe JSON. Verifique o arquivo.`;
+                }
+                noEquipmentsMessage.textContent = msgErro;
+                noEquipmentsMessage.style.display = 'block';
+            }
             if (equipamentoInfoWrapper) equipamentoInfoWrapper.style.display = 'none';
+            equipamentosCarregados = []; // Garante que a lista esteja vazia em caso de erro
         }
-        attachEventListeners();
-    }
 
-    function attachEventListeners() {
-        console.log("Checklist.js - attachEventListeners() chamada");
-        if (voltarDashboardBtn) voltarDashboardBtn.addEventListener('click', () => window.location.href = 'dashboard.html');
-        if (proximoEquipamentoBtn) proximoEquipamentoBtn.addEventListener('click', handleProximoEquipamento);
-        if (anteriorEquipamentoBtn) anteriorEquipamentoBtn.addEventListener('click', handleAnteriorEquipamento);
-        if (finalizarInspecaoBtn) finalizarInspecaoBtn.addEventListener('click', handleFinalizarInspecao);
+        // 3. Atualizar o estado da aplicação
+        listaDeEquipamentos = equipamentosCarregados;
+        indiceEquipamentoAtual = 0;
+        dadosColetadosInspecao = new Array(listaDeEquipamentos.length).fill(null);
 
-        console.log("Verificando fotoEquipamentoInput em attachEventListeners:", fotoEquipamentoInput); // DEBUG
-        if (fotoEquipamentoInput && previewFotoElement) { // Verificação se ambos existem
-            fotoEquipamentoInput.addEventListener('change', handlePreviewFoto);
+        if (listaDeEquipamentos.length > 0) {
+            if (noEquipmentsMessage) noEquipmentsMessage.style.display = 'none';
+            if (equipamentoInfoWrapper) equipamentoInfoWrapper.style.display = 'block'; // ou 'flex'
+            exibirEquipamentoAtual();
         } else {
-            if (!fotoEquipamentoInput) console.error("Elemento fotoEquipamentoInput NÃO encontrado em attachEventListeners!");
-            if (!previewFotoElement) console.error("Elemento previewFotoElement NÃO encontrado em attachEventListeners!");
+            if (equipamentoInfoWrapper) equipamentoInfoWrapper.style.display = 'none';
+            if (proximoEquipamentoBtn) proximoEquipamentoBtn.disabled = true;
+            if (anteriorEquipamentoBtn) anteriorEquipamentoBtn.disabled = true;
+            if (finalizarInspecaoBtn) finalizarInspecaoBtn.disabled = true;
+            // A mensagem de erro já foi exibida no bloco catch se necessário,
+            // ou se o parsing não retornou equipamentos.
+            if (noEquipmentsMessage && noEquipmentsMessage.style.display === 'none' && equipamentosCarregados.length === 0) {
+                noEquipmentsMessage.textContent = `Nenhum equipamento encontrado para o setor "${setorSelecionadoInterface}" no arquivo ${nomeArquivoJson}.`;
+                noEquipmentsMessage.style.display = 'block';
+            }
         }
-
-        temperaturaStatusCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', handleStatusCheckboxChange);
-        });
+        if (totalEquipamentosElement) totalEquipamentosElement.textContent = listaDeEquipamentos.length;
     }
 
-    function handleStatusCheckboxChange(event) {
+    /* function handleStatusCheckboxChange(event) {
         const changedCheckbox = event.target;
         const targetInputId = changedCheckbox.dataset.targetInput;
         const targetInput = document.getElementById(targetInputId);
         if (!targetInput) return;
+
         document.querySelectorAll(`input.status_checkbox[name="${changedCheckbox.name}"][data-target-input="${targetInputId}"]`).forEach(cb => {
             if (cb !== changedCheckbox) cb.checked = false;
         });
+
         if (changedCheckbox.checked) {
             targetInput.value = '';
             targetInput.disabled = true;
         } else {
+            const anyStatusChecked = Array.from(document.querySelectorAll(`input.status_checkbox[name="${changedCheckbox.name}"][data-target-input="${targetInputId}"]`))
+                .some(cb => cb.checked);
+            if (!anyStatusChecked) {
+                targetInput.disabled = false;
+            }
+        }
+    } */
+
+function handleStatusCheckboxChange(event) {
+    const changedCheckbox = event.target;
+    const targetInputId = changedCheckbox.dataset.targetInput;
+    const targetInput = document.getElementById(targetInputId);
+    if (!targetInput) return;
+
+    // Seleciona o span do tooltip específico para este grupo de checkboxes
+    const tooltipSpan = document.getElementById(`tooltip_${changedCheckbox.name}`); // Ex: tooltip_potencia_medida_status
+
+    // Desmarcar outros checkboxes do mesmo grupo
+    document.querySelectorAll(`input.status_checkbox[name="${changedCheckbox.name}"][data-target-input="${targetInputId}"]`).forEach(cb => {
+        if (cb !== changedCheckbox) cb.checked = false;
+    });
+
+    if (changedCheckbox.checked) {
+        if (tooltipSpan) { // Verifica se o span do tooltip existe
+            if (changedCheckbox.value === "N/A") {
+                tooltipSpan.textContent = "N/A: Não se aplica a este equipamento.";
+            } else if (changedCheckbox.value === "N/M") {
+                tooltipSpan.textContent = "N/M: Não medido (ex: falta de ferramenta).";
+            }
+            tooltipSpan.style.display = 'inline'; // Mostra o tooltip
+        }
+
+        targetInput.value = '';
+        targetInput.disabled = true;
+    } else {
+        if (tooltipSpan) {
+            tooltipSpan.style.display = 'none'; // Esconde o tooltip se o checkbox for desmarcado
+            tooltipSpan.textContent = '';
+        }
+
+        const anyStatusChecked = Array.from(document.querySelectorAll(`input.status_checkbox[name="${changedCheckbox.name}"][data-target-input="${targetInputId}"]`))
+                                    .some(cb => cb.checked);
+        if (!anyStatusChecked) {
             targetInput.disabled = false;
         }
     }
-
-    async function fetchEquipamentosDoSetor(setor) {
-        if (loadingMessage) loadingMessage.style.display = 'block';
-        if (equipamentoInfoWrapper) equipamentoInfoWrapper.style.display = 'none';
-        if (noEquipmentsMessage) noEquipmentsMessage.style.display = 'none';
-        try {
-            const response = await fetch(`http://127.0.0.1:5000/api/setores/${setor}/equipamentos`);
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ error: "Erro desconhecido." }));
-                throw new Error(`Falha: ${response.status} - ${errorData.error || response.statusText}`);
-            }
-            listaDeEquipamentos = await response.json();
-            if (loadingMessage) loadingMessage.style.display = 'none';
-            if (listaDeEquipamentos && listaDeEquipamentos.length > 0) {
-                indiceEquipamentoAtual = 0;
-                dadosColetadosInspecao = new Array(listaDeEquipamentos.length).fill(null);
-                exibirEquipamentoAtual();
-                if (equipamentoInfoWrapper) equipamentoInfoWrapper.style.display = 'block';
-            } else {
-                if (noEquipmentsMessage) noEquipmentsMessage.textContent = `Nenhum equipamento encontrado para o setor '${setor}'.`;
-                if (noEquipmentsMessage) noEquipmentsMessage.style.display = 'block';
-            }
-        } catch (error) {
-            console.error("Erro ao buscar equipamentos:", error);
-            if (loadingMessage) loadingMessage.style.display = 'none';
-            if (noEquipmentsMessage) noEquipmentsMessage.textContent = `Erro: ${error.message}. Verifique servidor/conexão.`;
-            if (noEquipmentsMessage) noEquipmentsMessage.style.display = 'block';
-        }
-    }
+}
 
     function limparFormularioInspecao() {
         if (inspecaoForm) inspecaoForm.reset();
@@ -143,47 +225,61 @@ document.addEventListener('DOMContentLoaded', function () {
             previewFotoElement.src = "#";
         }
         if (temperaturaMedidaInput) temperaturaMedidaInput.disabled = false;
+        document.querySelectorAll('input[type="text"][id], input[type="number"][id]').forEach(input => {
+            const statusCheckbox = document.querySelector(`input.status_checkbox[data-target-input="${input.id}"]`);
+            if (statusCheckbox) {
+                input.disabled = false;
+            }
+        });
+        document.querySelectorAll('input.status_checkbox').forEach(cb => cb.checked = false);
     }
 
     function preencherFormularioComDadosSalvos(dadosSalvos) {
         if (!inspecaoForm || !dadosSalvos) return;
+        limparFormularioInspecao();
+
         for (const key in dadosSalvos) {
             if (dadosSalvos.hasOwnProperty(key)) {
                 if (key === 'foto_equipamento_previewDataUrl') {
-                    console.log("[DEBUG] preencherFormulario: Encontrada chave foto_equipamento_previewDataUrl.");
-                    console.log("[DEBUG] preencherFormulario: Valor do DataURL:", dadosSalvos[key] ? String(dadosSalvos[key]).substring(0, 60) + "..." : "Nenhum DataURL");
-                    if (dadosSalvos[key] && previewFotoElement) { // Adicionada verificação para previewFotoElement
+                    if (dadosSalvos[key] && previewFotoElement) {
                         previewFotoElement.src = dadosSalvos[key];
                         previewFotoElement.style.display = 'block';
-                        console.log("[DEBUG] preencherFormulario: Preview src DEFINIDO e display setado para 'block'.");
                     } else if (previewFotoElement) {
                         previewFotoElement.style.display = 'none';
-                        console.log("[DEBUG] preencherFormulario: DataURL NULO ou previewFotoElement não encontrado, preview display setado para 'none'.");
                     }
                     continue;
                 }
+
                 if (key.endsWith('_status') && dadosSalvos[key]) {
                     const targetInputId = key.replace('_status', '');
                     const targetInput = document.getElementById(targetInputId);
-                    document.querySelectorAll(`input.status_checkbox[name="${key}"][data-target-input="${targetInputId}"]`).forEach(cb => {
-                        if (cb.value === dadosSalvos[key]) {
-                            cb.checked = true;
-                            if (targetInput) targetInput.disabled = true;
-                        } else {
-                            cb.checked = false;
+                    const statusCheckbox = document.querySelector(`input.status_checkbox[name="${key}"][value="${dadosSalvos[key]}"]`);
+
+                    if (statusCheckbox) {
+                        statusCheckbox.checked = true;
+                        if (targetInput) {
+                            targetInput.value = '';
+                            targetInput.disabled = true;
                         }
-                    });
-                    if (targetInput && dadosSalvos[key]) targetInput.value = '';
+                    }
                     continue;
                 }
+
                 const element = inspecaoForm.elements[key];
                 if (element) {
-                    if (element.type === 'file') { }
-                    else if (element.type === 'checkbox' || element.type === 'radio') {
-                        if (element.length && (element instanceof NodeList || Array.isArray(element))) {
-                            element.forEach(radio => { if (radio.value === dadosSalvos[key]) radio.checked = true; });
-                        } else { element.checked = dadosSalvos[key]; }
-                    } else if (element.name) { element.value = dadosSalvos[key]; }
+                    if (element.type === 'file') { /* No-op */ }
+                    else if (element.type === 'checkbox') { element.checked = dadosSalvos[key]; }
+                    else if (element.type === 'radio' || (element.length && element[0] && element[0].type === 'radio')) {
+                        document.querySelectorAll(`input[name="${key}"]`).forEach(radio => {
+                            if (radio.value === String(dadosSalvos[key])) radio.checked = true;
+                        });
+                    } else if (element.tagName === 'SELECT') {
+                        element.value = dadosSalvos[key];
+                    } else if (element.name && !key.endsWith('_status')) {
+                        if (!element.disabled) {
+                            element.value = dadosSalvos[key];
+                        }
+                    }
                 }
             }
         }
@@ -191,49 +287,69 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function exibirEquipamentoAtual() {
         limparFormularioInspecao();
-        if (listaDeEquipamentos.length === 0) { /* ... */ return; }
-        if (indiceEquipamentoAtual >= listaDeEquipamentos.length) { /* ... */ return; }
+
+        if (listaDeEquipamentos.length === 0) {
+            if (equipamentoInfoWrapper) equipamentoInfoWrapper.style.display = 'none';
+            if (noEquipmentsMessage) {
+                noEquipmentsMessage.textContent = "Nenhum equipamento para exibir.";
+                noEquipmentsMessage.style.display = 'block';
+            }
+            if (proximoEquipamentoBtn) proximoEquipamentoBtn.disabled = true;
+            if (anteriorEquipamentoBtn) anteriorEquipamentoBtn.disabled = true;
+            if (finalizarInspecaoBtn) finalizarInspecaoBtn.disabled = true;
+            if (equipamentoTagElement) equipamentoTagElement.textContent = "N/A";
+            if (equipamentoAtualIndexElement) equipamentoAtualIndexElement.textContent = "0";
+            return;
+        }
+
+        if (indiceEquipamentoAtual >= listaDeEquipamentos.length) {
+            if (proximoEquipamentoBtn) {
+                proximoEquipamentoBtn.textContent = "Finalizar Inspeção";
+                proximoEquipamentoBtn.disabled = true;
+            }
+            if (anteriorEquipamentoBtn) anteriorEquipamentoBtn.disabled = (listaDeEquipamentos.length === 0);
+            if (finalizarInspecaoBtn) finalizarInspecaoBtn.disabled = false;
+            if (equipamentoTagElement) equipamentoTagElement.textContent = "Fim da Lista";
+            if (equipamentoAtualIndexElement) equipamentoAtualIndexElement.textContent = indiceEquipamentoAtual;
+            return;
+        }
+
         const equipamento = listaDeEquipamentos[indiceEquipamentoAtual];
+        if (!equipamento) {
+            console.error("Equipamento não encontrado no índice:", indiceEquipamentoAtual);
+            return;
+        }
+
         if (equipamentoTagElement) equipamentoTagElement.textContent = equipamento.tag_motor || "TAG Indisponível";
         if (equipamentoAtualIndexElement) equipamentoAtualIndexElement.textContent = indiceEquipamentoAtual + 1;
-        if (totalEquipamentosElement) totalEquipamentosElement.textContent = listaDeEquipamentos.length;
+
         if (nominaisContainer) {
             const spansNominais = nominaisContainer.querySelectorAll('span[data-nominal]');
             spansNominais.forEach(span => {
                 const key = span.dataset.nominal;
-                span.textContent = equipamento[key] !== null && equipamento[key] !== undefined ? equipamento[key] : '-';
+                span.textContent = (equipamento[key] !== null && equipamento[key] !== undefined && String(equipamento[key]).trim() !== "") ? equipamento[key] : '-';
             });
         }
-        if (dadosColetadosInspecao[indiceEquipamentoAtual]) {
-            console.log("exibirEquipamentoAtual: Encontrados dados salvos para o índice", indiceEquipamentoAtual, dadosColetadosInspecao[indiceEquipamentoAtual]);
-            preencherFormularioComDadosSalvos(dadosColetadosInspecao[indiceEquipamentoAtual]);
-        }
-        if (equipamentoInfoWrapper) equipamentoInfoWrapper.style.display = 'block';
-        if (noEquipmentsMessage) noEquipmentsMessage.style.display = 'none';
-        atualizarBotoesNavegacao();
-        console.log("Exibindo equipamento:", equipamento.tag_motor);
-    }
 
-    function atualizarBotoesNavegacao() {
-        if (!anteriorEquipamentoBtn || !proximoEquipamentoBtn || !finalizarInspecaoBtn) return;
-        anteriorEquipamentoBtn.disabled = (indiceEquipamentoAtual === 0);
-        proximoEquipamentoBtn.style.display = 'inline-block';
-        finalizarInspecaoBtn.style.display = 'none';
-        if (indiceEquipamentoAtual === listaDeEquipamentos.length - 1) {
-            proximoEquipamentoBtn.textContent = "Concluir Último Equipamento";
-            finalizarInspecaoBtn.style.display = 'inline-block';
-        } else {
-            proximoEquipamentoBtn.textContent = "Próximo Equipamento";
+        if (anteriorEquipamentoBtn) anteriorEquipamentoBtn.disabled = (indiceEquipamentoAtual === 0);
+        if (proximoEquipamentoBtn) {
+            proximoEquipamentoBtn.disabled = false;
+            proximoEquipamentoBtn.textContent = (indiceEquipamentoAtual === listaDeEquipamentos.length - 1) ? "Revisar/Finalizar Último Item" : "Próximo Equipamento";
         }
-        if (indiceEquipamentoAtual >= listaDeEquipamentos.length) {
-            proximoEquipamentoBtn.style.display = 'none';
+        if (finalizarInspecaoBtn) {
+            finalizarInspecaoBtn.disabled = dadosColetadosInspecao.filter(d => d !== null).length === 0 && listaDeEquipamentos.length > 0;
+        }
+
+        const dadosSalvosParaEsteItem = dadosColetadosInspecao[indiceEquipamentoAtual];
+        if (dadosSalvosParaEsteItem) {
+            preencherFormularioComDadosSalvos(dadosSalvosParaEsteItem);
         }
     }
 
     function validarCamposObrigatorios() {
         const camposParaValidar = [
             { input: marcaMedidaInput, nome: "Marca" }, { input: modeloMedidoInput, nome: "Modelo" },
-            { input: potenciaMedidaInput, nome: "Potência Medida (kW)" }, { input: rotacaoMedidaInput, nome: "Rotação Medida (RPM)" },
+            { input: potenciaMedidaInput, nome: "Potência Medida (CV)" }, { input: rotacaoMedidaInput, nome: "Rotação Medida (RPM)" },
             { input: tensaoF1MedidaInput, nome: "Tensão F1" }, { input: tensaoF2MedidaInput, nome: "Tensão F2" },
             { input: tensaoF3MedidaInput, nome: "Tensão F3" }, { input: correnteF1MedidaInput, nome: "Corrente F1" },
             { input: correnteF2MedidaInput, nome: "Corrente F2" }, { input: correnteF3MedidaInput, nome: "Corrente F3" },
@@ -242,22 +358,28 @@ document.addEventListener('DOMContentLoaded', function () {
             { input: vibracaoSelect, nome: "Vibração Excessiva" },
             { input: ruidoRolDSelect, nome: "Ruído Rol. Dianteiro" }, { input: ruidoRolTSelect, nome: "Ruído Rol. Traseiro" },
         ];
+
         for (const campo of camposParaValidar) {
             if (!campo.input) { console.warn(`Campo para validação '${campo.nome}' não encontrado no DOM.`); continue; }
-            if (!campo.input.value.trim()) {
+            if (!campo.input.disabled && !campo.input.value.trim()) {
                 alert(`Por favor, preencha o campo '${campo.nome}'.`);
                 campo.input.focus();
                 return false;
             }
         }
-        const tempStatusMarcado = Array.from(temperaturaStatusCheckboxes).some(cb => cb.checked);
-        if (!tempStatusMarcado && (!temperaturaMedidaInput || !temperaturaMedidaInput.value.trim())) {
-            alert("Por favor, preencha o campo 'Temperatura' ou marque 'N/A' ou 'N/M'.");
-            if (temperaturaMedidaInput) temperaturaMedidaInput.focus();
-            return false;
+
+        if (temperaturaMedidaInput && !temperaturaMedidaInput.disabled) {
+            const tempStatusMarcado = Array.from(temperaturaStatusCheckboxes).some(cb => cb.checked);
+            if (!tempStatusMarcado && !temperaturaMedidaInput.value.trim()) {
+                alert("Por favor, preencha o campo 'Temperatura' ou marque 'N/A' ou 'N/M'.");
+                temperaturaMedidaInput.focus();
+                return false;
+            }
         }
+
         const dadosSalvosParaEsteItem = dadosColetadosInspecao[indiceEquipamentoAtual];
         const fotoJaSalva = dadosSalvosParaEsteItem && dadosSalvosParaEsteItem.foto_equipamento_previewDataUrl;
+
         if (!fotoJaSalva && (!fotoEquipamentoInput || !fotoEquipamentoInput.files || fotoEquipamentoInput.files.length === 0)) {
             alert("Por favor, adicione uma foto do equipamento.");
             if (fotoEquipamentoInput) fotoEquipamentoInput.focus();
@@ -267,109 +389,129 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function coletarDadosDoFormulario() {
-        if (!inspecaoForm || !listaDeEquipamentos[indiceEquipamentoAtual]) return null;
+        if (!inspecaoForm || indiceEquipamentoAtual < 0 || indiceEquipamentoAtual >= listaDeEquipamentos.length || !listaDeEquipamentos[indiceEquipamentoAtual]) return null;
+
+
         const equipamentoAtual = listaDeEquipamentos[indiceEquipamentoAtual];
         const dados = {
-            id_equipamento_db: equipamentoAtual.id, tag_motor: equipamentoAtual.tag_motor,
-            setor_principal: equipamentoAtual.setor_principal, subsetor_nivel1: equipamentoAtual.subsetor_nivel1,
-            subsetor_nivel2: equipamentoAtual.subsetor_nivel2, nome_componente: equipamentoAtual.nome_componente,
-            potencia_kw_nominal: equipamentoAtual.potencia_kw_nominal, corrente_a_nominal: equipamentoAtual.corrente_a_nominal,
+            id_equipamento_db: equipamentoAtual.id_equipamento_db || equipamentoAtual.tag_motor,
+            tag_motor: equipamentoAtual.tag_motor,
+            setor_principal: equipamentoAtual.setor_principal,
+            subsetor_nivel1: equipamentoAtual.subsetor_nivel1,
+            subsetor_nivel2: equipamentoAtual.subsetor_nivel2,
+            nome_componente: equipamentoAtual.nome_componente,
+            potencia_CV_nominal: equipamentoAtual.potencia_CV_nominal,
+            corrente_a_nominal: equipamentoAtual.corrente_a_nominal,
             tensao_v_nominal: equipamentoAtual.tensao_v_nominal,
         };
+
         const formData = new FormData(inspecaoForm);
+
         for (let [key, value] of formData.entries()) {
+            const inputElement = inspecaoForm.elements[key];
+
             if (key.endsWith('_status')) {
-                const inputName = key.replace('_status', '');
                 const checkedStatusCheckbox = document.querySelector(`input[name="${key}"]:checked`);
                 if (checkedStatusCheckbox) {
                     dados[key] = checkedStatusCheckbox.value;
+                    const inputName = key.replace('_status', '');
                     dados[inputName] = '';
                 } else {
                     dados[key] = null;
                 }
-                // O valor do input principal será pego abaixo se não houver status marcado para ele
-                // e o input não estiver desabilitado.
-                if (inspecaoForm.elements[inputName] && inspecaoForm.elements[inputName].disabled) {
-                    // Se está desabilitado, o valor já foi tratado pelo status, não pegar do formData.
-                } else if (inspecaoForm.elements[inputName]) { // Se não está desabilitado
-                    dados[inputName] = formData.get(inputName); // Pega o valor atual do input
+            } else if (key === 'foto_equipamento') {
+                if (value instanceof File && value.name) {
+                    dados[key] = value;
+                    if (previewFotoElement && previewFotoElement.src.startsWith('data:image')) {
+                        dados[`${key}_previewDataUrl`] = previewFotoElement.src;
+                    }
+                } else {
+                    const dadosAnteriores = dadosColetadosInspecao[indiceEquipamentoAtual];
+                    if (dadosAnteriores && dadosAnteriores.foto_equipamento_previewDataUrl) {
+                        dados[`${key}_previewDataUrl`] = dadosAnteriores.foto_equipamento_previewDataUrl;
+                    } else {
+                        dados[`${key}_previewDataUrl`] = null;
+                    }
                 }
-                // Não 'continue' aqui, pois queremos que os inputs normais sejam processados depois
-            } else if (key === 'foto_equipamento' && value instanceof File && value.name) {
-                dados[key] = value;
-                if (previewFotoElement) dados[`${key}_previewDataUrl`] = previewFotoElement.src;
-                console.log("coletarDados: Salvando foto_equipamento_previewDataUrl:", previewFotoElement && previewFotoElement.src ? previewFotoElement.src.substring(0, 60) + "..." : "Preview src vazio");
-            } else if (key !== 'foto_equipamento') {
-                // Apenas adiciona se não for um campo de status já tratado e não for a foto principal
-                if (!key.endsWith('_status')) {
+            } else {
+                if (inputElement && !inputElement.disabled) {
+                    dados[key] = value;
+                } else if (inputElement && inputElement.disabled && !dados.hasOwnProperty(key)) {
+                    dados[key] = '';
+                } else if (!inputElement && !dados.hasOwnProperty(key)) {
                     dados[key] = value;
                 }
-            } else if (!dadosColetadosInspecao[indiceEquipamentoAtual] || !dadosColetadosInspecao[indiceEquipamentoAtual].foto_equipamento_previewDataUrl) {
-                dados[key] = null;
             }
-        }
-        if (dadosColetadosInspecao[indiceEquipamentoAtual] && dadosColetadosInspecao[indiceEquipamentoAtual].foto_equipamento_previewDataUrl && !dados.foto_equipamento) {
-            dados.foto_equipamento_previewDataUrl = dadosColetadosInspecao[indiceEquipamentoAtual].foto_equipamento_previewDataUrl;
         }
         return dados;
     }
 
     function handleProximoEquipamento() {
-        if (!validarCamposObrigatorios()) { return; }
+        if (indiceEquipamentoAtual < 0 || indiceEquipamentoAtual >= listaDeEquipamentos.length) {
+            console.warn("Índice de equipamento atual inválido para validação/coleta.");
+            // Poderia tentar reajustar o índice ou apenas retornar
+            exibirEquipamentoAtual(); // Tenta re-sincronizar a UI
+            return;
+        }
+
+        if (!validarCamposObrigatorios()) {
+            return;
+        }
         const dadosAtuais = coletarDadosDoFormulario();
         if (dadosAtuais) {
             dadosColetadosInspecao[indiceEquipamentoAtual] = dadosAtuais;
-            console.log("Dados coletados para", dadosAtuais.tag_motor, ":", dadosAtuais);
         }
+
         if (indiceEquipamentoAtual < listaDeEquipamentos.length - 1) {
             indiceEquipamentoAtual++;
             exibirEquipamentoAtual();
         } else {
-            console.log("Chegou ao último equipamento ou passou dele.");
             indiceEquipamentoAtual = listaDeEquipamentos.length;
             exibirEquipamentoAtual();
+            alert("Você revisou todos os equipamentos. Clique em 'Finalizar Inspeção' para concluir.");
+            if (proximoEquipamentoBtn) proximoEquipamentoBtn.disabled = true;
+            if (finalizarInspecaoBtn) finalizarInspecaoBtn.focus();
         }
     }
 
     function handleAnteriorEquipamento() {
         if (indiceEquipamentoAtual > 0) {
-            const dadosFormularioAtual = coletarDadosDoFormulario();
-            if (dadosFormularioAtual && validarCamposObrigatoriosParaSalvarAoVoltar(dadosFormularioAtual)) {
-                dadosColetadosInspecao[indiceEquipamentoAtual] = dadosFormularioAtual;
-                console.log("Dados salvos (ao voltar) para", dadosFormularioAtual.tag_motor);
-            }
             indiceEquipamentoAtual--;
             exibirEquipamentoAtual();
         }
     }
 
-    function validarCamposObrigatoriosParaSalvarAoVoltar(dados) {
-        return !!(dados && dados.tag_motor); // Adicionada verificação de 'dados'
-    }
-
     function handleFinalizarInspecao() {
         if (equipamentoInfoWrapper && equipamentoInfoWrapper.style.display !== 'none' &&
             listaDeEquipamentos.length > 0 &&
-            indiceEquipamentoAtual < listaDeEquipamentos.length &&
+            indiceEquipamentoAtual >= 0 && indiceEquipamentoAtual < listaDeEquipamentos.length && // Índice válido
             listaDeEquipamentos[indiceEquipamentoAtual]) {
-            if (validarCamposObrigatorios()) {
-                const dadosUltimoForm = coletarDadosDoFormulario();
-                if (dadosUltimoForm) dadosColetadosInspecao[indiceEquipamentoAtual] = dadosUltimoForm;
-            } else {
-                alert("Preencha os campos obrigatórios do equipamento atual antes de finalizar.");
-                return;
+
+            if (!dadosColetadosInspecao[indiceEquipamentoAtual] || confirm("Salvar alterações no item atual antes de finalizar?")) {
+                if (validarCamposObrigatorios()) {
+                    const dadosUltimoForm = coletarDadosDoFormulario();
+                    if (dadosUltimoForm) {
+                        dadosColetadosInspecao[indiceEquipamentoAtual] = dadosUltimoForm;
+                    }
+                } else {
+                    alert("Preencha os campos obrigatórios do equipamento atual antes de finalizar.");
+                    return;
+                }
             }
         }
-        const inspecoesValidas = dadosColetadosInspecao.filter(d => d !== null);
+
+        const inspecoesValidas = dadosColetadosInspecao.filter(d => d !== null && typeof d === 'object');
         if (inspecoesValidas.length === 0) {
-            alert("Nenhuma inspeção foi realizada para ser finalizada."); return;
+            alert("Nenhuma inspeção foi realizada ou salva para ser finalizada.");
+            return;
         }
-        alert("Inspeção do setor finalizada! Próximo passo: enviar dados para gerar relatório.");
+
+        alert(`Inspeção do setor finalizada com ${inspecoesValidas.length} equipamento(s) inspecionado(s)!`);
         console.log("Dados finais coletados para o relatório:", inspecoesValidas);
     }
 
     function handlePreviewFoto(event) {
-        if (!previewFotoElement) return; // Proteção
+        if (!previewFotoElement) return;
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
@@ -384,6 +526,68 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // ESTA FUNÇÃO (attachEventListeners) PRECISA SER DEFINIDA ANTES DE initChecklist
+    function attachEventListeners() {
+        if (voltarDashboardBtn) {
+            voltarDashboardBtn.addEventListener('click', () => {
+                const inspecoesRealizadas = dadosColetadosInspecao.filter(d => d !== null).length > 0;
+                if (inspecoesRealizadas && !confirm("Você tem dados de inspeção não finalizados. Deseja realmente voltar e perder esses dados?")) {
+                    return;
+                }
+                window.location.href = 'dashboard.html';
+            });
+        }
+        if (proximoEquipamentoBtn) proximoEquipamentoBtn.addEventListener('click', handleProximoEquipamento);
+        if (anteriorEquipamentoBtn) anteriorEquipamentoBtn.addEventListener('click', handleAnteriorEquipamento);
+        if (finalizarInspecaoBtn) finalizarInspecaoBtn.addEventListener('click', handleFinalizarInspecao);
+        if (fotoEquipamentoInput) fotoEquipamentoInput.addEventListener('change', handlePreviewFoto);
+
+        if (temperaturaStatusCheckboxes) {
+            temperaturaStatusCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', handleStatusCheckboxChange);
+            });
+        }
+    }
+
+    // ESTA É A FUNÇÃO PRINCIPAL DE INICIALIZAÇÃO
+    // ELA CHAMA fetchEquipamentosDoSetor e attachEventListeners
+    // AMBAS DEVEM ESTAR DEFINIDAS ACIMA
+    function initChecklist() {
+        console.log("[DEBUG] checklist.js - initChecklist() chamada");
+        const usuarioLogado = localStorage.getItem('usuarioLogado');
+        const cadastroLogado = localStorage.getItem('cadastroLogado');
+
+        if (usuarioLogado && cadastroLogado) {
+            if (checklistUserInfo) checklistUserInfo.textContent = `Usuário: ${usuarioLogado} (Cad: ${cadastroLogado})`;
+        } else {
+            alert("Sessão inválida. Por favor, faça login novamente.");
+            window.location.href = 'index.html';
+            return;
+        }
+
+        const setorSelecionado = sessionStorage.getItem('setorSelecionado');
+        if (setorSelecionado) {
+            if (setorAtualTitulo) setorAtualTitulo.textContent = setorSelecionado.toUpperCase();
+            fetchEquipamentosDoSetor(setorSelecionado); // CHAMADA AQUI
+        } else {
+            console.error("Nenhum setor selecionado.");
+            if (noEquipmentsMessage) {
+                noEquipmentsMessage.textContent = "Nenhum setor foi selecionado. Por favor, volte ao dashboard e selecione um setor.";
+                noEquipmentsMessage.style.display = 'block';
+            }
+            if (equipamentoInfoWrapper) equipamentoInfoWrapper.style.display = 'none';
+            if (proximoEquipamentoBtn) proximoEquipamentoBtn.disabled = true;
+            if (anteriorEquipamentoBtn) anteriorEquipamentoBtn.disabled = true;
+            if (finalizarInspecaoBtn) finalizarInspecaoBtn.disabled = true;
+        }
+        attachEventListeners();
+    }
+
     // --- INICIAR APLICAÇÃO ---
+    // AQUI É ONDE initChecklist() É CHAMADA. TODAS AS FUNÇÕES QUE ELA USA (DIRETA OU INDIRETAMENTE)
+    // DEVEM TER SIDO DEFINIDAS ANTES DESTE PONTO.
     initChecklist();
+
+    console.log("[DEBUG] checklist.js: DOMContentLoaded - FIM");
 });
+console.log("[DEBUG] Checklist.js: ARQUIVO FINALIZADO PELO NAVEGADOR");
