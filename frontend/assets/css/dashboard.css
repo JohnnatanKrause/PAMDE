@@ -56,12 +56,22 @@ body {
 }
 
 .dashboard-main h1 {
-    color: #34495e;
+    color: #090909;
     /* Azul acinzentado */
     margin-bottom: 40px;
     font-size: 2.2em;
-    font-weight: 300;
-    /* Mais leve */
+    font-weight: bold;
+
+/* NOVAS PROPRIEDADES PARA O FUNDO */
+    background-color: rgba(199, 185, 125, 0.7); /* Fundo branco com 70% de opacidade */
+    /* Experimente outros valores:
+       rgba(0, 0, 0, 0.1) para um fundo escuro bem sutil e transparente se o texto for claro
+       rgba(230, 230, 230, 0.8) para um cinza claro com 80% de opacidade
+    */
+    padding: 15px 25px; /* Adiciona um espaço interno ao redor do texto dentro do fundo */
+    border-radius: 8px; /* Bordas arredondadas para o fundo, similar aos seus botões */
+    display: inline-block; /* Faz com que o fundo se ajuste ao conteúdo do texto + padding */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Uma sombra sutil para dar profundidade (opcional) */
 }
 
 .setores-container {

@@ -22,10 +22,10 @@ body, html {
     text-align: center;
     padding: 20px;
     font-size: 0.8em;
-    color: #777;
+    color: #f5f3f3;
     border-top: 1px solid #eee; /* Exemplo de borda superior */
     margin-top: 30px; /* Ou ajuste conforme necessário */
-    background-color: rgba(240, 240, 240, 0.7); /* Um fundo levemente diferente, opcional */
+    background-color: rgba(10, 10, 11, 0.87); /* Um fundo levemente diferente, opcional */
 }
 
 .main-footer p {
