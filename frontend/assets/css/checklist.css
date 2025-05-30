@@ -237,6 +237,7 @@
     vertical-align: middle; /* Pode não ser necessário com inline-flex */
 }
 
+
 .status-tooltip {
     display: none; /* Escondido por padrão */
     font-size: 0.85em;
@@ -246,4 +247,12 @@
     background-color: #f0f0f0;
     border-radius: 3px;
     border: 1px solid #ccc;
+    vertical-align: middle; /* Para alinhar melhor com os checkboxes */
+}
+
+.status-options { /* Container para os checkboxes e o tooltip */
+    display: flex;
+    align-items: center; /* Alinha verticalmente os itens */
+    gap: 10px; /* Espaço entre os elementos (labels, tooltip) */
+    margin-top: 5px;
 }

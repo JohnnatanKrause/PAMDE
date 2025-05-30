@@ -182,57 +182,102 @@ function handleStatusCheckboxChange(event) {
     const changedCheckbox = event.target;
     const targetInputId = changedCheckbox.dataset.targetInput;
     const targetInput = document.getElementById(targetInputId);
-    if (!targetInput) return;
+    if (!targetInput) {
+        console.warn(`[StatusCheckbox] Input alvo não encontrado para ID: ${targetInputId}`);
+        return;
+    }
 
     // Seleciona o span do tooltip específico para este grupo de checkboxes
-    const tooltipSpan = document.getElementById(`tooltip_${changedCheckbox.name}`); // Ex: tooltip_potencia_medida_status
+    // O ID do tooltip deve ser "tooltip_" + o atributo 'name' dos checkboxes de status.
+    const tooltipSpan = document.getElementById(`tooltip_${changedCheckbox.name}`);
 
-    // Desmarcar outros checkboxes do mesmo grupo
+    // Desmarcar outros checkboxes do mesmo grupo (que tenham o mesmo 'name' e 'data-target-input')
     document.querySelectorAll(`input.status_checkbox[name="${changedCheckbox.name}"][data-target-input="${targetInputId}"]`).forEach(cb => {
-        if (cb !== changedCheckbox) cb.checked = false;
+        if (cb !== changedCheckbox) {
+            cb.checked = false;
+        }
     });
 
     if (changedCheckbox.checked) {
-        if (tooltipSpan) { // Verifica se o span do tooltip existe
-            if (changedCheckbox.value === "N/A") {
+        // Mostrar tooltip informativo
+        if (tooltipSpan) {
+            if (changedCheckbox.value === "NA") { // Usando "NA" e "NM" como nos values do HTML
                 tooltipSpan.textContent = "N/A: Não se aplica a este equipamento.";
-            } else if (changedCheckbox.value === "N/M") {
-                tooltipSpan.textContent = "N/M: Não medido (ex: falta de ferramenta).";
+            } else if (changedCheckbox.value === "NM") {
+                tooltipSpan.textContent = "N/M: Não medido (ex: falta de ferramenta/condição).";
             }
-            tooltipSpan.style.display = 'inline'; // Mostra o tooltip
+            tooltipSpan.style.display = 'inline-block'; // Usar inline-block para melhor alinhamento com CSS
+        } else {
+            // Se o tooltipSpan não for encontrado, logar um aviso.
+            // Isso ajuda a identificar se o ID do span no HTML não está correto.
+            console.warn(`[Tooltip] Span de tooltip não encontrado para o grupo de status: '${changedCheckbox.name}'. Esperava um elemento com ID: 'tooltip_${changedCheckbox.name}'`);
+            // Como fallback, poderia usar alert, mas é melhor corrigir o HTML.
+            // if (changedCheckbox.value === "NA") alert("N/A: Não se aplica.");
+            // else if (changedCheckbox.value === "NM") alert("N/M: Não medido.");
         }
 
+        // Limpar e desabilitar o input associado
         targetInput.value = '';
         targetInput.disabled = true;
+        if (targetInput.tagName === 'SELECT') { // Se for um select, resetar para a primeira opção (geralmente "Selecione")
+            targetInput.selectedIndex = 0;
+        }
+
     } else {
+        // Se o checkbox foi desmarcado, esconder o tooltip
         if (tooltipSpan) {
-            tooltipSpan.style.display = 'none'; // Esconde o tooltip se o checkbox for desmarcado
+            tooltipSpan.style.display = 'none';
             tooltipSpan.textContent = '';
         }
 
-        const anyStatusChecked = Array.from(document.querySelectorAll(`input.status_checkbox[name="${changedCheckbox.name}"][data-target-input="${targetInputId}"]`))
-                                    .some(cb => cb.checked);
-        if (!anyStatusChecked) {
+        // Habilitar o input somente se NENHUM checkbox de status para este input estiver marcado
+        const anyStatusCheckedForThisInput = Array.from(
+            document.querySelectorAll(`input.status_checkbox[name="${changedCheckbox.name}"][data-target-input="${targetInputId}"]`)
+        ).some(cb => cb.checked);
+
+        if (!anyStatusCheckedForThisInput) {
             targetInput.disabled = false;
         }
     }
 }
 
-    function limparFormularioInspecao() {
-        if (inspecaoForm) inspecaoForm.reset();
-        if (previewFotoElement) {
-            previewFotoElement.style.display = 'none';
-            previewFotoElement.src = "#";
-        }
-        if (temperaturaMedidaInput) temperaturaMedidaInput.disabled = false;
-        document.querySelectorAll('input[type="text"][id], input[type="number"][id]').forEach(input => {
-            const statusCheckbox = document.querySelector(`input.status_checkbox[data-target-input="${input.id}"]`);
-            if (statusCheckbox) {
-                input.disabled = false;
-            }
-        });
-        document.querySelectorAll('input.status_checkbox').forEach(cb => cb.checked = false);
+function limparFormularioInspecao() {
+    if (inspecaoForm) {
+        inspecaoForm.reset(); // Reseta valores de todos os campos do formulário
     }
+
+    if (previewFotoElement) {
+        previewFotoElement.style.display = 'none';
+        previewFotoElement.src = "#";
+    }
+
+    // Reabilitar todos os inputs e selects que podem ter sido desabilitados por checkboxes de status
+    // e desmarcar todos os checkboxes de status.
+    // É importante fazer o reset do form ANTES para que os valores padrão sejam restaurados (se houver).
+    document.querySelectorAll('input[type="text"][id], input[type="number"][id], select[id]').forEach(inputElement => {
+        // Verifica se há checkboxes de status associados a este input
+        const hasStatusCheckboxes = document.querySelector(`.status_checkbox[data-target-input="${inputElement.id}"]`);
+        if (hasStatusCheckboxes) {
+            inputElement.disabled = false; // Habilita o input/select
+        }
+    });
+
+    // Desmarcar todos os checkboxes de status explicitamente (o form.reset() pode não desmarcar se não for o estado inicial)
+    document.querySelectorAll('input.status_checkbox').forEach(cb => {
+        cb.checked = false;
+    });
+
+    // Esconder todos os tooltips de status
+    document.querySelectorAll('.status-tooltip').forEach(tooltip => {
+        tooltip.style.display = 'none';
+        tooltip.textContent = '';
+    });
+
+    // Garantir que inputs específicos como temperatura sejam habilitados se não tiverem status marcado
+    // (já coberto pelo loop acima se 'temperaturaMedidaInput' for pego)
+    // if (temperaturaMedidaInput) temperaturaMedidaInput.disabled = false;
+}
+
 
     function preencherFormularioComDadosSalvos(dadosSalvos) {
         if (!inspecaoForm || !dadosSalvos) return;
@@ -526,29 +571,45 @@ function handleStatusCheckboxChange(event) {
         }
     }
 
-    // ESTA FUNÇÃO (attachEventListeners) PRECISA SER DEFINIDA ANTES DE initChecklist
-    function attachEventListeners() {
-        if (voltarDashboardBtn) {
-            voltarDashboardBtn.addEventListener('click', () => {
-                const inspecoesRealizadas = dadosColetadosInspecao.filter(d => d !== null).length > 0;
-                if (inspecoesRealizadas && !confirm("Você tem dados de inspeção não finalizados. Deseja realmente voltar e perder esses dados?")) {
-                    return;
-                }
-                window.location.href = 'dashboard.html';
-            });
-        }
-        if (proximoEquipamentoBtn) proximoEquipamentoBtn.addEventListener('click', handleProximoEquipamento);
-        if (anteriorEquipamentoBtn) anteriorEquipamentoBtn.addEventListener('click', handleAnteriorEquipamento);
-        if (finalizarInspecaoBtn) finalizarInspecaoBtn.addEventListener('click', handleFinalizarInspecao);
-        if (fotoEquipamentoInput) fotoEquipamentoInput.addEventListener('change', handlePreviewFoto);
-
-        if (temperaturaStatusCheckboxes) {
-            temperaturaStatusCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', handleStatusCheckboxChange);
-            });
-        }
+    // ESTA FUNÇÃO (attachEventListeners) PRECISA SER DEFINIDA ANTES DE initChecklis
+function attachEventListeners() {
+    // Listeners para os botões principais (estes permanecem como estavam)
+    if (voltarDashboardBtn) {
+        voltarDashboardBtn.addEventListener('click', () => {
+            const inspecoesRealizadas = dadosColetadosInspecao.filter(d => d !== null).length > 0;
+            if (inspecoesRealizadas && !confirm("Você tem dados de inspeção não finalizados. Deseja realmente voltar e perder esses dados?")) {
+                return;
+            }
+            window.location.href = 'dashboard.html';
+        });
+    }
+    if (proximoEquipamentoBtn) {
+        proximoEquipamentoBtn.addEventListener('click', handleProximoEquipamento);
+    }
+    if (anteriorEquipamentoBtn) {
+        anteriorEquipamentoBtn.addEventListener('click', handleAnteriorEquipamento);
+    }
+    if (finalizarInspecaoBtn) {
+        finalizarInspecaoBtn.addEventListener('click', handleFinalizarInspecao);
+    }
+    if (fotoEquipamentoInput) {
+        fotoEquipamentoInput.addEventListener('change', handlePreviewFoto);
     }
 
+    // --- CORREÇÃO APLICADA AQUI ---
+    // Anexar o event listener a TODOS os checkboxes de status
+    const todosOsStatusCheckboxes = document.querySelectorAll('input.status_checkbox'); // Seleciona todos os inputs com a classe 'status_checkbox'
+
+    if (todosOsStatusCheckboxes.length > 0) {
+        todosOsStatusCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', handleStatusCheckboxChange);
+        });
+        console.log(`[DEBUG] attachEventListeners: Listener 'change' anexado a ${todosOsStatusCheckboxes.length} checkboxes de status.`);
+    } else {
+        console.warn("[DEBUG] attachEventListeners: Nenhum checkbox com a classe 'status_checkbox' encontrado.");
+    }
+    // --- FIM DA CORREÇÃO ---
+}
     // ESTA É A FUNÇÃO PRINCIPAL DE INICIALIZAÇÃO
     // ELA CHAMA fetchEquipamentosDoSetor e attachEventListeners
     // AMBAS DEVEM ESTAR DEFINIDAS ACIMA
