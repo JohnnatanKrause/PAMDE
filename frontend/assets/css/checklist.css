@@ -256,3 +256,126 @@
     gap: 10px; /* Espaço entre os elementos (labels, tooltip) */
     margin-top: 5px;
 }
+/* frontend/assets/css/checklist.css */
+
+/* ... (seu CSS existente) ... */
+
+/* Para tablets e celulares maiores em modo paisagem (ajustado) */
+@media (max-width: 800px) { /* Aumentei um pouco o breakpoint inicial, pode ser ajustado */
+    .checklist-content {
+        grid-template-columns: 1fr; /* Muda para uma única coluna */
+        gap: 20px;
+    }
+
+    .dados-nominais, .dados-medidos {
+        padding: 15px; /* Manter ou ajustar padding interno das seções */
+    }
+
+    .app-header {
+        padding: 10px 15px; /* Reduzir padding do header */
+        flex-wrap: wrap; /* Permite que os itens do header quebrem linha se necessário */
+        gap: 8px; /* Espaço entre os itens do header quando quebram linha */
+    }
+
+    .app-header h1 {
+        font-size: 1.2em; /* Reduzir um pouco o título */
+        width: 100%; /* Título pode ocupar toda a largura se quebrar linha */
+        text-align: center; /* Centralizar título se ocupar toda a largura */
+        order: 1; /* Para garantir que o título venha primeiro se houver quebra */
+    }
+    .app-header .user-info-checklist {
+        order: 2;
+        font-size: 0.8em;
+    }
+    #voltarDashboardBtn {
+        order: 3;
+        font-size: 0.85em;
+        padding: 6px 10px;
+    }
+}
+
+/* Para celulares em modo retrato (iPhone 12 Pro tem 390px de largura) */
+@media (max-width: 480px) {
+    .checklist-container {
+        padding: 10px;
+        margin: 10px auto; /* Reduzir margens externas */
+    }
+
+    .app-header {
+        flex-direction: column; /* Itens do header um abaixo do outro */
+        align-items: stretch; /* Faz os itens esticarem para preencher a largura */
+        gap: 5px;
+    }
+    .app-header h1 {
+        font-size: 1.1em;
+    }
+    .app-header .user-info-checklist p {
+        text-align: center;
+    }
+    #voltarDashboardBtn {
+        width: auto; /* Deixa o botão com largura automática baseada no conteúdo e padding */
+        align-self: center; /* Centraliza o botão se ele não ocupar 100% */
+        margin-top: 5px;
+    }
+
+    .navegacao-equipamento h2 {
+        font-size: 1.3em; /* Ajustar tamanho da TAG do motor */
+    }
+
+    .form-grid, .fases-grid {
+        grid-template-columns: 1fr; /* Força uma única coluna para os grids internos também */
+    }
+
+    #inspecaoForm input[type="text"],
+    #inspecaoForm input[type="number"],
+    #inspecaoForm select,
+    #inspecaoForm textarea {
+        font-size: 1rem; /* Usar rem para melhor acessibilidade e consistência */
+        padding: 12px; /* Aumentar padding para facilitar toque */
+    }
+    #inspecaoForm label {
+        font-size: 0.9rem; /* Ajustar tamanho do label */
+    }
+
+    .status-options {
+        flex-wrap: wrap; /* Permite que os checkboxes N/A, N/M quebrem linha se necessário */
+        gap: 5px; /* Reduz o gap entre N/A e N/M */
+    }
+    .na-checkbox-label {
+        font-size: 0.9rem;
+    }
+    .status-tooltip {
+        font-size: 0.8rem;
+        margin-left: 5px;
+        width: 100%; /* Tooltip pode ocupar toda a largura abaixo dos checkboxes */
+        text-align: left;
+        margin-top: 3px;
+    }
+
+
+    .checklist-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .checklist-actions button {
+        width: 100%;
+        margin: 0;
+        padding: 15px; /* Botões maiores para toque */
+        font-size: 1.05em;
+    }
+
+    /* Ajuste para os dados nominais para evitar que o "strong" empurre demais */
+    .dados-nominais p strong {
+        min-width: auto; /* Remove o min-width */
+        display: block;  /* Faz o label ocupar uma linha */
+        margin-bottom: 2px;
+    }
+    .dados-nominais p span[data-nominal] {
+        padding-left: 10px; /* Adiciona um pequeno recuo ao valor */
+        display: block; /* Faz o valor ocupar uma linha abaixo do label */
+    }
+    .dados-nominais hr {
+        margin: 10px 0;
+    }
+}
