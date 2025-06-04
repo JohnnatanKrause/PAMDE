@@ -115,34 +115,67 @@ document.addEventListener('DOMContentLoaded', function () {
             equipamentosCarregados = parseEquipamentosFromNestedJson(jsonData, chavePrincipalJson);
         } catch (error) {
             console.error(`[ERRO] Falha ao buscar ou processar equipamentos do arquivo ${nomeArquivoJson} para o setor ${setorSelecionadoInterface}:`, error);
-            if (noEquipmentsMessage) {
-                let msgErro = `Erro ao carregar dados para o setor "${setorSelecionadoInterface}".`;
-                if (error.message.includes("404") || error.message.toLowerCase().includes("failed to fetch")) {
-                    msgErro = `Arquivo de dados (${nomeArquivoJson}) não encontrado ou inacessível para o setor "${setorSelecionadoInterface}". Verifique se o arquivo existe no local correto.`;
-                } else if (error instanceof SyntaxError) {
-                    msgErro = `O arquivo ${nomeArquivoJson} contém um erro de sintaxe JSON. Verifique o arquivo.`;
-                }
-                noEquipmentsMessage.textContent = msgErro;
+            let msgErro = `Erro ao carregar dados para o setor "${setorSelecionadoInterface}".`;
+            if (error.message.includes("404") || error.message.toLowerCase().includes("failed to fetch")) {
+                msgErro = `Arquivo de dados (${nomeArquivoJson}) não encontrado ou inacessível para o setor "${setorSelecionadoInterface}".\nVerifique se o arquivo existe no local correto.`;
+            } else if (error instanceof SyntaxError) {
+                msgErro = `O arquivo ${nomeArquivoJson} contém um erro de sintaxe JSON.\nVerifique o arquivo.`;
+            }
+
+            // SUBSTITUIÇÃO AQUI (MODAL)
+            if (typeof showCustomModal === "function") {
+                await showCustomModal({
+                    title: "Erro ao Carregar Dados",
+                    message: msgErro
+                    // Botão OK padrão será usado
+                });
+            } else {
+                alert(msgErro); // Fallback, caso showCustomModal não esteja disponível
+            }
+
+            if (noEquipmentsMessage) { // Ainda útil para manter a mensagem no DOM se necessário
+                noEquipmentsMessage.textContent = msgErro.replace(/\n/g, ' '); // Remove quebras de linha para textContent
                 noEquipmentsMessage.style.display = 'block';
             }
             if (equipamentoInfoWrapper) equipamentoInfoWrapper.style.display = 'none';
             equipamentosCarregados = [];
         }
-        listaDeEquipamentos = equipamentosCarregados; // Atualiza a variável global
+        listaDeEquipamentos = equipamentosCarregados;
         indiceEquipamentoAtual = 0;
         dadosColetadosInspecao = new Array(listaDeEquipamentos.length).fill(null);
+
         if (listaDeEquipamentos.length > 0) {
             if (noEquipmentsMessage) noEquipmentsMessage.style.display = 'none';
             if (equipamentoInfoWrapper) equipamentoInfoWrapper.style.display = 'block';
             exibirEquipamentoAtual();
         } else {
+            // Este bloco é para quando o fetch foi bem-sucedido, mas parseEquipamentosFromNestedJson retornou vazio,
+            // OU quando o catch acima já tratou um erro de fetch e esvaziou equipamentosCarregados.
             if (equipamentoInfoWrapper) equipamentoInfoWrapper.style.display = 'none';
             if (proximoEquipamentoBtn) proximoEquipamentoBtn.disabled = true;
             if (anteriorEquipamentoBtn) anteriorEquipamentoBtn.disabled = true;
             if (finalizarInspecaoBtn) finalizarInspecaoBtn.disabled = true;
-            if (noEquipmentsMessage && noEquipmentsMessage.style.display === 'none' && equipamentosCarregados.length === 0) {
-                noEquipmentsMessage.textContent = `Nenhum equipamento encontrado para o setor "${setorSelecionadoInterface}" no arquivo ${nomeArquivoJson}.`;
-                noEquipmentsMessage.style.display = 'block';
+
+            // Verifica se uma mensagem de erro já foi exibida pelo bloco catch
+            const erroJaExibido = noEquipmentsMessage && noEquipmentsMessage.style.display === 'block' &&
+                (noEquipmentsMessage.textContent.includes("Erro ao carregar dados") ||
+                    noEquipmentsMessage.textContent.includes("não encontrado ou inacessível") ||
+                    noEquipmentsMessage.textContent.includes("erro de sintaxe JSON"));
+
+            if (!erroJaExibido && equipamentosCarregados.length === 0) { // Só mostra "nenhum equipamento" se não houve erro de fetch/parse
+                const msgVazio = `Nenhum equipamento encontrado para o setor "${setorSelecionadoInterface}" no arquivo ${nomeArquivoJson}.`;
+                if (typeof showCustomModal === "function") {
+                    await showCustomModal({
+                        title: "Nenhum Equipamento",
+                        message: msgVazio
+                    });
+                } else {
+                    alert(msgVazio); // Fallback
+                }
+                if (noEquipmentsMessage) {
+                    noEquipmentsMessage.textContent = msgVazio;
+                    noEquipmentsMessage.style.display = 'block';
+                }
             }
         }
         if (totalEquipamentosElement) totalEquipamentosElement.textContent = listaDeEquipamentos.length;
@@ -321,8 +354,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 if (indiceEquipamentoAtual === listaDeEquipamentos.length - 1 || algumDadoColetado) {
                     finalizarInspecaoBtn.style.display = 'inline-block';
-                    finalizarInspecaoBtn.disabled = !algumDadoColetado && !(indiceEquipamentoAtual === listaDeEquipamentos.length -1 && ultimoItemSalvo);
-                     if (indiceEquipamentoAtual === listaDeEquipamentos.length -1 && !dadosColetadosInspecao[indiceEquipamentoAtual]){
+                    finalizarInspecaoBtn.disabled = !algumDadoColetado && !(indiceEquipamentoAtual === listaDeEquipamentos.length - 1 && ultimoItemSalvo);
+                    if (indiceEquipamentoAtual === listaDeEquipamentos.length - 1 && !dadosColetadosInspecao[indiceEquipamentoAtual]) {
                         finalizarInspecaoBtn.disabled = false;
                     }
                 } else {
@@ -335,13 +368,13 @@ document.addEventListener('DOMContentLoaded', function () {
             if (dadosSalvosParaEsteItem) {
                 preencherFormularioComDadosSalvos(dadosSalvosParaEsteItem);
             }
-            
+
             const btnGerarPDFDuranteInspecao = document.getElementById('btnGerarRelatorioPDF');
             if (btnGerarPDFDuranteInspecao) {
                 btnGerarPDFDuranteInspecao.style.display = 'none';
             }
 
-        } else { 
+        } else {
             console.log("%c[DEBUG] exibirEquipamentoAtual: ENTRANDO NO BLOCO ELSE (inspeção concluída)", "background-color: yellow; color: black; font-weight: bold;");
             if (equipamentoInfoWrapper) {
                 console.log("[DEBUG] exibirEquipamentoAtual (ELSE): Escondendo equipamentoInfoWrapper.");
@@ -350,7 +383,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (noEquipmentsMessage) {
                 noEquipmentsMessage.textContent = "Inspeção do setor concluída. Clique em 'Gerar Relatório PDF' para criar o documento.";
                 noEquipmentsMessage.style.display = 'block';
-                noEquipmentsMessage.style.color = 'inherit'; 
+                noEquipmentsMessage.style.color = 'inherit';
                 console.log("[DEBUG] exibirEquipamentoAtual (ELSE): Mensagem de conclusão exibida.");
             } else {
                 console.warn("[DEBUG] exibirEquipamentoAtual (ELSE): Elemento noEquipmentsMessage NÃO encontrado.");
@@ -391,7 +424,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (btnGerarPDF.parentNode) {
                     console.log("[DEBUG] ... ParentNode do botão PDF é:", btnGerarPDF.parentNode.tagName, "com classe:", btnGerarPDF.parentNode.className || "Nenhuma");
                 } else {
-                     console.warn("[DEBUG] ... Botão PDF não tem ParentNode (estranho).");
+                    console.warn("[DEBUG] ... Botão PDF não tem ParentNode (estranho).");
                 }
             } else {
                 console.error("[CRÍTICO] exibirEquipamentoAtual (ELSE): Botão btnGerarRelatorioPDF NÃO ENCONTRADO NO DOM!");
@@ -404,7 +437,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function validarCamposObrigatorios() {
+    async function validarCamposObrigatorios() { // TORNADA ASYNC
         const camposParaValidar = [
             { input: marcaMedidaInput, nome: "Marca (Placa)" }, { input: modeloMedidoInput, nome: "Modelo (Placa)" },
             { input: document.getElementById('potencia_placa_cv'), nome: "Potência de Placa (CV)" }, { input: rotacaoMedidaInput, nome: "Rotação Medida (RPM)" },
@@ -416,21 +449,49 @@ document.addEventListener('DOMContentLoaded', function () {
         ];
         for (const campo of camposParaValidar) {
             if (!campo.input) { console.warn(`[Validação] Input para '${campo.nome}' não encontrado no DOM. Pulando validação.`); continue; }
-            if (!campo.input.disabled && campo.input.value.trim() === "") { alert(`Por favor, preencha o campo '${campo.nome}' ou marque 'N/A' ou 'N/M' (se aplicável).`); campo.input.focus(); return false; }
+            if (!campo.input.disabled && campo.input.value.trim() === "") {
+                // SUBSTITUIÇÃO DO ALERT
+                await showCustomModal({
+                    title: 'Campo Obrigatório',
+                    message: `Por favor, preencha o campo '${campo.nome}' ou marque 'N/A' ou 'N/M' (se aplicável).`
+                });
+                campo.input.focus(); return false;
+            }
         }
         if (temperaturaMedidaInput && !temperaturaMedidaInput.disabled) {
             const tempStatusMarcado = Array.from(temperaturaStatusCheckboxes).some(cb => cb.checked);
-            if (!tempStatusMarcado && temperaturaMedidaInput.value.trim() === "") { alert("Por favor, preencha o campo 'Temperatura (°C)' ou marque 'N/A' ou 'N/M'."); temperaturaMedidaInput.focus(); return false; }
+            if (!tempStatusMarcado && temperaturaMedidaInput.value.trim() === "") {
+                // SUBSTITUIÇÃO DO ALERT
+                await showCustomModal({
+                    title: 'Campo Obrigatório',
+                    message: "Por favor, preencha o campo 'Temperatura (°C)' ou marque 'N/A' ou 'N/M'."
+                });
+                temperaturaMedidaInput.focus(); return false;
+            }
         }
         const potenciaMedidaInput = document.getElementById('potencia_medida');
         const potenciaMedidaStatusCheckboxes = document.querySelectorAll('input.status_checkbox[name="potencia_medida_status"]');
         if (potenciaMedidaInput && !potenciaMedidaInput.disabled) {
             const potenciaStatusMarcado = Array.from(potenciaMedidaStatusCheckboxes).some(cb => cb.checked);
-            if (!potenciaStatusMarcado && potenciaMedidaInput.value.trim() === "") { alert("Por favor, preencha o campo 'Potência Medida (CV)' ou marque 'N/A' ou 'N/M'."); potenciaMedidaInput.focus(); return false; }
+            if (!potenciaStatusMarcado && potenciaMedidaInput.value.trim() === "") {
+                // SUBSTITUIÇÃO DO ALERT
+                await showCustomModal({
+                    title: 'Campo Obrigatório',
+                    message: "Por favor, preencha o campo 'Potência Medida (CV)' ou marque 'N/A' ou 'N/M'."
+                });
+                potenciaMedidaInput.focus(); return false;
+            }
         }
-        const dadosSalvosParaEsteItem = dadosColetadosInspecao[indiceEquipamentoAtual];
+        const dadosSalvosParaEsteItem = dadosColetadosInspecao[indiceEquipamentoAtual]; // Garante que indiceEquipamentoAtual é válido aqui
         const fotoJaSalva = dadosSalvosParaEsteItem && dadosSalvosParaEsteItem.foto_equipamento_previewDataUrl;
-        if (!fotoJaSalva && (!fotoEquipamentoInput || !fotoEquipamentoInput.files || fotoEquipamentoInput.files.length === 0)) { alert("Por favor, adicione uma foto do equipamento."); if (fotoEquipamentoInput) fotoEquipamentoInput.focus(); return false; }
+        if (!fotoJaSalva && (!fotoEquipamentoInput || !fotoEquipamentoInput.files || fotoEquipamentoInput.files.length === 0)) {
+            // SUBSTITUIÇÃO DO ALERT
+            await showCustomModal({
+                title: 'Foto Obrigatória',
+                message: "Por favor, adicione uma foto do equipamento."
+            });
+            if (fotoEquipamentoInput) fotoEquipamentoInput.focus(); return false;
+        }
         return true;
     }
 
@@ -456,60 +517,157 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (value instanceof File && value.name) { if (previewFotoElement && previewFotoElement.src.startsWith('data:image')) { dados[`${key}_previewDataUrl`] = previewFotoElement.src; } } else { const dadosAnteriores = dadosColetadosInspecao[indiceEquipamentoAtual]; if (dadosAnteriores && dadosAnteriores.foto_equipamento_previewDataUrl) { dados[`${key}_previewDataUrl`] = dadosAnteriores.foto_equipamento_previewDataUrl; } else { dados[`${key}_previewDataUrl`] = null; } }
             } else { if (inputElement && !inputElement.disabled) { dados[key] = value; } else if (inputElement && inputElement.disabled && !dados.hasOwnProperty(key)) { dados[key] = ''; } else if (!inputElement && !dados.hasOwnProperty(key)) { dados[key] = value; } }
         }
-        for (const element of inspecaoForm.elements) { if (element.name && !dados.hasOwnProperty(element.name) && !element.name.endsWith('_status')) { if (element.type === 'file') {} else if (element.disabled) { dados[element.name] = ''; } else { dados[element.name] = element.value; } } }
+        for (const element of inspecaoForm.elements) { if (element.name && !dados.hasOwnProperty(element.name) && !element.name.endsWith('_status')) { if (element.type === 'file') { } else if (element.disabled) { dados[element.name] = ''; } else { dados[element.name] = element.value; } } }
         return dados;
     }
 
-    function handleProximoEquipamento() {
-        if (indiceEquipamentoAtual < 0 || indiceEquipamentoAtual >= listaDeEquipamentos.length) { console.warn("Índice de equipamento atual inválido para validação/coleta."); exibirEquipamentoAtual(); return; }
-        if (!validarCamposObrigatorios()) { return; }
+    async function handleProximoEquipamento() { // TORNADA ASYNC
+        if (indiceEquipamentoAtual < 0 || indiceEquipamentoAtual >= listaDeEquipamentos.length) {
+            console.warn("Índice de equipamento atual inválido para validação/coleta.");
+            exibirEquipamentoAtual();
+            return;
+        }
+
+        const camposValidos = await validarCamposObrigatorios(); // ADICIONADO AWAIT
+        if (!camposValidos) {
+            return;
+        }
+
         const dadosAtuaisColetados = coletarDadosDoFormulario();
         if (dadosAtuaisColetados && listaDeEquipamentos[indiceEquipamentoAtual]) {
             const equipamentoAtualNominal = listaDeEquipamentos[indiceEquipamentoAtual];
             const pareceresDoEquipamento = gerarPareceresEquipamento(equipamentoAtualNominal, dadosAtuaisColetados);
-            dadosAtuaisColetados.pareceres = pareceresDoEquipamento; dadosColetadosInspecao[indiceEquipamentoAtual] = dadosAtuaisColetados;
+            dadosAtuaisColetados.pareceres = pareceresDoEquipamento;
+            dadosColetadosInspecao[indiceEquipamentoAtual] = dadosAtuaisColetados;
         }
-        if (indiceEquipamentoAtual < listaDeEquipamentos.length - 1) { indiceEquipamentoAtual++; exibirEquipamentoAtual(); } else {
+
+        if (indiceEquipamentoAtual < listaDeEquipamentos.length - 1) {
+            indiceEquipamentoAtual++;
+            exibirEquipamentoAtual();
+        } else {
             console.log("[DEBUG] handleProximoEquipamento: Chegou ao último item. Preparando para finalizar.");
-            indiceEquipamentoAtual = listaDeEquipamentos.length - 1; 
+            indiceEquipamentoAtual = listaDeEquipamentos.length - 1;
             if (equipamentoTagElement) equipamentoTagElement.textContent = (listaDeEquipamentos[indiceEquipamentoAtual].tag_motor || "TAG Indisponível") + " (Último Item - Revise e Finalize)";
             if (equipamentoAtualIndexElement) equipamentoAtualIndexElement.textContent = indiceEquipamentoAtual + 1;
-            if (proximoEquipamentoBtn) { proximoEquipamentoBtn.textContent = "Próximo Equipamento"; proximoEquipamentoBtn.disabled = true; }
-            if (anteriorEquipamentoBtn) { anteriorEquipamentoBtn.disabled = (listaDeEquipamentos.length <= 1); }
-            if (finalizarInspecaoBtn) { finalizarInspecaoBtn.style.display = 'inline-block'; finalizarInspecaoBtn.disabled = false; finalizarInspecaoBtn.focus(); }
-            alert("Você preencheu o último equipamento. Revise os dados se necessário e clique em 'Finalizar Inspeção do Setor'.");
+            if (proximoEquipamentoBtn) {
+                proximoEquipamentoBtn.textContent = "Próximo Equipamento";
+                proximoEquipamentoBtn.disabled = true;
+            }
+            if (anteriorEquipamentoBtn) {
+                anteriorEquipamentoBtn.disabled = (listaDeEquipamentos.length <= 1);
+            }
+            if (finalizarInspecaoBtn) {
+                finalizarInspecaoBtn.style.display = 'inline-block';
+                finalizarInspecaoBtn.disabled = false;
+                finalizarInspecaoBtn.focus();
+            }
+            // SUBSTITUIÇÃO DO ALERT
+            await showCustomModal({
+                title: "Último Equipamento",
+                message: "Você preencheu o último equipamento.\nRevise os dados se necessário e clique em 'Finalizar Inspeção do Setor'."
+                // Botão OK padrão será usado
+            });
         }
     }
 
     function handleAnteriorEquipamento() { if (indiceEquipamentoAtual > 0) { indiceEquipamentoAtual--; exibirEquipamentoAtual(); } }
 
-    function handleFinalizarInspecao() {
+    async function handleFinalizarInspecao() { // TORNADA ASYNC
         console.log("%c[DEBUG] handleFinalizarInspecao: INÍCIO DA FUNÇÃO", "color: blue; font-weight: bold;");
         const estaEmItemValidoParaSalvar = listaDeEquipamentos.length > 0 && indiceEquipamentoAtual >= 0 && indiceEquipamentoAtual < listaDeEquipamentos.length && listaDeEquipamentos[indiceEquipamentoAtual];
+
         if (estaEmItemValidoParaSalvar) {
             console.log(`[DEBUG] handleFinalizarInspecao: Verificando formulário do item atual no índice ${indiceEquipamentoAtual}.`);
             let formModificado = false;
-            if (inspecaoForm && inspecaoForm.elements) { for (let i = 0; i < inspecaoForm.elements.length; i++) { const element = inspecaoForm.elements[i]; if (element.name && !element.name.endsWith('_status')) { if ((element.type === 'text' || element.type === 'number' || element.type === 'textarea') && element.value.trim() !== "") { formModificado = true; break; } if (element.tagName === 'SELECT' && element.value !== "" && element.selectedIndex !== 0) { formModificado = true; break; } if (element.type === 'file' && element.files && element.files.length > 0) { formModificado = true; break; } } } }
+            if (inspecaoForm && inspecaoForm.elements) {
+                for (let i = 0; i < inspecaoForm.elements.length; i++) {
+                    const element = inspecaoForm.elements[i];
+                    if (element.name && !element.name.endsWith('_status')) {
+                        if (((element.type === 'text' || element.type === 'number' || element.type === 'textarea') && element.value.trim() !== "") ||
+                            (element.tagName === 'SELECT' && element.value !== "" && element.selectedIndex !== 0) ||
+                            (element.type === 'file' && element.files && element.files.length > 0)
+                        ) {
+                            formModificado = true; break;
+                        }
+                    }
+                }
+            }
             console.log("[DEBUG] handleFinalizarInspecao: Formulário considerado modificado?", formModificado);
+
             const itemAtualFoiSalvo = dadosColetadosInspecao[indiceEquipamentoAtual] && Object.keys(dadosColetadosInspecao[indiceEquipamentoAtual]).length > 0;
-            if ((!itemAtualFoiSalvo && formModificado) || (itemAtualFoiSalvo && formModificado && confirm("O item atual exibido possui dados que parecem ter sido modificados. Deseja salvá-los/sobrescrevê-los antes de finalizar a inspeção do setor?"))) {
-                if (validarCamposObrigatorios()) {
-                    const dadosFormAtual = coletarDadosDoFormulario();
-                    if (dadosFormAtual) { const equipamentoNominalAtual = listaDeEquipamentos[indiceEquipamentoAtual]; const pareceresDoEquipamento = gerarPareceresEquipamento(equipamentoNominalAtual, dadosFormAtual); dadosFormAtual.pareceres = pareceresDoEquipamento; dadosColetadosInspecao[indiceEquipamentoAtual] = dadosFormAtual; console.log(`%c[DEBUG] handleFinalizarInspecao: Dados do item ${indiceEquipamentoAtual} (formulário atual) salvos/atualizados.`, "color: orange;"); }
-                } else { alert("Preencha os campos obrigatórios do equipamento atual antes de finalizar o setor."); console.log("%c[DEBUG] handleFinalizarInspecao: Validação falhou para o item atual. Finalização do setor interrompida.", "color: red;"); return; }
-            } else if (itemAtualFoiSalvo && formModificado) { console.log(`%c[DEBUG] handleFinalizarInspecao: Mantendo dados previamente salvos para item ${indiceEquipamentoAtual} (usuário não quis sobrescrever).`, "color: orange;"); } 
-            else if (itemAtualFoiSalvo && !formModificado) { console.log(`%c[DEBUG] handleFinalizarInspecao: Mantendo dados previamente salvos para item ${indiceEquipamentoAtual} (formulário não modificado).`, "color: orange;"); } 
-            else { console.log(`%c[DEBUG] handleFinalizarInspecao: Item atual ${indiceEquipamentoAtual} não precisou ser salvo (novo e não modificado).`, "color: orange;"); }
-        } else { console.log(`[DEBUG] handleFinalizarInspecao: Não está em um item válido para salvar/atualizar formulário (índice: ${indiceEquipamentoAtual}, total: ${listaDeEquipamentos.length}).`); }
+            let proceedWithSave = true; // Assume que vamos salvar por padrão
+
+            // Se o item não foi salvo E o formulário está modificado, OU
+            // se o item JÁ FOI salvo E o formulário está modificado (neste caso, perguntar antes de sobrescrever)
+            if ((!itemAtualFoiSalvo && formModificado) || (itemAtualFoiSalvo && formModificado)) {
+                if (itemAtualFoiSalvo && formModificado) { // Só pergunta se já foi salvo E está modificado
+                    // SUBSTITUIÇÃO DO CONFIRM
+                    const userConfirmedOverwrite = await showCustomModal({
+                        title: "Sobrescrever Dados?",
+                        message: "O item atual exibido possui dados que parecem ter sido modificados.\nDeseja salvá-los/sobrescrevê-los antes de finalizar a inspeção do setor?",
+                        buttons: [
+                            { text: 'Sim, Salvar', value: true, class: 'modal-btn-confirm' },
+                            { text: 'Não Salvar Alterações', value: false, class: 'modal-btn-cancel' }
+                        ]
+                    });
+                    if (userConfirmedOverwrite !== true) { // Se não for true (clicou Não ou fechou o modal)
+                        proceedWithSave = false;
+                    }
+                }
+
+                if (proceedWithSave) {
+                    const camposValidos = await validarCamposObrigatorios(); // ADICIONADO AWAIT
+                    if (camposValidos) {
+                        const dadosFormAtual = coletarDadosDoFormulario();
+                        if (dadosFormAtual) {
+                            const equipamentoNominalAtual = listaDeEquipamentos[indiceEquipamentoAtual];
+                            const pareceresDoEquipamento = gerarPareceresEquipamento(equipamentoNominalAtual, dadosFormAtual);
+                            dadosFormAtual.pareceres = pareceresDoEquipamento;
+                            dadosColetadosInspecao[indiceEquipamentoAtual] = dadosFormAtual;
+                            console.log(`%c[DEBUG] handleFinalizarInspecao: Dados do item ${indiceEquipamentoAtual} (formulário atual) salvos/atualizados.`, "color: orange;");
+                        }
+                    } else {
+                        // O modal de validação já foi exibido por validarCamposObrigatorios()
+                        console.log("%c[DEBUG] handleFinalizarInspecao: Validação falhou para o item atual. Finalização do setor interrompida.", "color: red;");
+                        return;
+                    }
+                } else {
+                    console.log(`%c[DEBUG] handleFinalizarInspecao: Mantendo dados previamente salvos para item ${indiceEquipamentoAtual} (usuário não quis sobrescrever).`, "color: orange;");
+                }
+            } else if (itemAtualFoiSalvo && !formModificado) {
+                console.log(`%c[DEBUG] handleFinalizarInspecao: Mantendo dados previamente salvos para item ${indiceEquipamentoAtual} (formulário não modificado).`, "color: orange;");
+            } else {
+                console.log(`%c[DEBUG] handleFinalizarInspecao: Item atual ${indiceEquipamentoAtual} não precisou ser salvo (novo e não modificado).`, "color: orange;");
+            }
+        } else {
+            console.log(`[DEBUG] handleFinalizarInspecao: Não está em um item válido para salvar/atualizar formulário (índice: ${indiceEquipamentoAtual}, total: ${listaDeEquipamentos.length}).`);
+        }
+
         const inspecoesValidasParaRelatorio = dadosColetadosInspecao.filter(dado => dado && typeof dado === 'object' && Object.keys(dado).length > 0 && dado.tag_motor);
+
         if (inspecoesValidasParaRelatorio.length === 0) {
             console.log("%c[DEBUG] handleFinalizarInspecao: Nenhuma inspeção válida encontrada. PDF não será gerado.", "color: red; font-weight: bold;");
-            alert("Nenhuma inspeção foi realizada ou salva com dados válidos para ser finalizada. Por favor, inspecione ao menos um equipamento.");
-            const btnFinalizarAtual = document.getElementById('finalizarInspecaoBtn'); if (btnFinalizarAtual) { btnFinalizarAtual.disabled = false; btnFinalizarAtual.style.display = 'inline-block'; }
-            console.log("%c[DEBUG] handleFinalizarInspecao: FIM DA FUNÇÃO (sem inspeções válidas)", "color: blue; font-weight: bold;"); return;
+            // SUBSTITUIÇÃO DO ALERT
+            await showCustomModal({
+                title: "Nenhuma Inspeção Válida",
+                message: "Nenhuma inspeção foi realizada ou salva com dados válidos para ser finalizada.\nPor favor, inspecione ao menos um equipamento."
+            });
+            const btnFinalizarAtual = document.getElementById('finalizarInspecaoBtn');
+            if (btnFinalizarAtual) {
+                btnFinalizarAtual.disabled = false;
+                btnFinalizarAtual.style.display = 'inline-block';
+            }
+            console.log("%c[DEBUG] handleFinalizarInspecao: FIM DA FUNÇÃO (sem inspeções válidas)", "color: blue; font-weight: bold;");
+            return;
         }
+
         console.log(`%c[DEBUG] handleFinalizarInspecao: Inspeção será finalizada com ${inspecoesValidasParaRelatorio.length} equipamento(s).`, "color: green;");
-        alert(`Inspeção do setor finalizada com ${inspecoesValidasParaRelatorio.length} equipamento(s) inspecionado(s)! \nClique em 'Gerar Relatório PDF' para criar o documento.`);
+        // SUBSTITUIÇÃO DO ALERT
+        await showCustomModal({
+            title: "Inspeção Finalizada",
+            message: `Inspeção do setor finalizada com ${inspecoesValidasParaRelatorio.length} equipamento(s) inspecionado(s)!\nClique em 'Gerar Relatório PDF' para criar o documento.`
+        });
+
         console.log("%c[DEBUG] handleFinalizarInspecao: Dados finais COLETADOS COM PARECERES para o relatório:", "color: green;", JSON.parse(JSON.stringify(inspecoesValidasParaRelatorio)));
         indiceEquipamentoAtual = listaDeEquipamentos.length;
         console.log(`%c[DEBUG] handleFinalizarInspecao: Índice atualizado para ${indiceEquipamentoAtual}. Chamando exibirEquipamentoAtual() para UI finalizada.`, "color: #FF8C00; font-weight: bold;");
@@ -535,81 +693,136 @@ document.addEventListener('DOMContentLoaded', function () {
         const rotNominal = toNumber(equipamentoNominal.rotacao_rpm_nominal), rotMedida = toNumber(dadosColetados.rotacao_medida), rotStatus = dadosColetados.rotacao_medida_status; if (rotStatus === 'NA') pareceres.rotacao = "Não Aplicável"; else if (rotStatus === 'NM') pareceres.rotacao = "Não Medido"; else if (rotNominal === null || rotMedida === null) pareceres.rotacao = "Dados insuficientes"; else { const limiteInferiorRot = rotNominal * 0.95, limiteSuperiorRot = rotNominal * 1.05; if (rotMedida < limiteInferiorRot) pareceres.rotacao = `Alerta - Rotação Baixa (${rotMedida} RPM)`; else if (rotMedida > limiteSuperiorRot) pareceres.rotacao = `Alerta - Rotação Alta (${rotMedida} RPM)`; else pareceres.rotacao = `Conforme (${rotMedida} RPM)`; }
         const rolDNominal = equipamentoNominal.rolamento_d_nominal, rolTNominal = equipamentoNominal.rolamento_t_nominal; const rolDMedido = dadosColetados.rolamento_d_medido, rolTMedido = dadosColetados.rolamento_t_medido; const rolDStatus = dadosColetados.rolamento_d_medido_status, rolTStatus = dadosColetados.rolamento_t_medido_status; if (rolDStatus === 'NA') pareceres.rolamento_dianteiro = "Não Aplicável"; else if (rolDStatus === 'NM') pareceres.rolamento_dianteiro = "Não Medido"; else if (!rolDMedido || rolDMedido.trim() === "") pareceres.rolamento_dianteiro = "Não Informado (Placa)"; else if (!rolDNominal || String(rolDNominal).toUpperCase() === 'S/INF' || rolDNominal.trim() === "") pareceres.rolamento_dianteiro = `Placa: ${rolDMedido} (Nominal N/D)`; else if (String(rolDMedido).toUpperCase() === String(rolDNominal).toUpperCase()) pareceres.rolamento_dianteiro = "Conforme"; else pareceres.rolamento_dianteiro = `Alerta - Divergência (Med: ${rolDMedido}, Nom: ${rolDNominal})`; if (rolTStatus === 'NA') pareceres.rolamento_traseiro = "Não Aplicável"; else if (rolTStatus === 'NM') pareceres.rolamento_traseiro = "Não Medido"; else if (!rolTMedido || rolTMedido.trim() === "") pareceres.rolamento_traseiro = "Não Informado (Placa)"; else if (!rolTNominal || String(rolTNominal).toUpperCase() === 'S/INF' || rolTNominal.trim() === "") pareceres.rolamento_traseiro = `Placa: ${rolTMedido} (Nominal N/D)`; else if (String(rolTMedido).toUpperCase() === String(rolTNominal).toUpperCase()) pareceres.rolamento_traseiro = "Conforme"; else pareceres.rolamento_traseiro = `Alerta - Divergência (Med: ${rolTMedido}, Nom: ${rolTNominal})`;
         const vibracaoStatus = dadosColetados.vibracao_status; if (vibracaoStatus === 'NA') pareceres.vibracao = "Não Aplicável"; else if (vibracaoStatus === 'NM') pareceres.vibracao = "Não Verificado"; else if (dadosColetados.vibracao === 'sim') pareceres.vibracao = "Alerta - Vibração Excessiva"; else if (dadosColetados.vibracao === 'nao') pareceres.vibracao = "Normal"; else pareceres.vibracao = "Não Informado"; const ruidoDStatus = dadosColetados.ruido_rol_d_status; if (ruidoDStatus === 'NA') pareceres.ruido_rol_dianteiro = "Não Aplicável"; else if (ruidoDStatus === 'NM') pareceres.ruido_rol_dianteiro = "Não Verificado"; else if (dadosColetados.ruido_rol_d === 'sim') pareceres.ruido_rol_dianteiro = "Alerta - Ruído Anormal"; else if (dadosColetados.ruido_rol_d === 'nao') pareceres.ruido_rol_dianteiro = "Normal"; else pareceres.ruido_rol_dianteiro = "Não Informado"; const ruidoTStatus = dadosColetados.ruido_rol_t_status; if (ruidoTStatus === 'NA') pareceres.ruido_rol_traseiro = "Não Aplicável"; else if (ruidoTStatus === 'NM') pareceres.ruido_rol_traseiro = "Não Verificado"; else if (dadosColetados.ruido_rol_t === 'sim') pareceres.ruido_rol_traseiro = "Alerta - Ruído Anormal"; else if (dadosColetados.ruido_rol_t === 'nao') pareceres.ruido_rol_traseiro = "Normal"; else pareceres.ruido_rol_traseiro = "Não Informado";
-        pareceres.necessita_atualizacao_json = false; const camposNominaisParaChecar = [ { nominalKey: 'marca_nominal', placaKey: 'marca_medida' }, { nominalKey: 'modelo_nominal', placaKey: 'modelo_medido' }, { nominalKey: 'potencia_cv_nominal', placaKey: 'potencia_placa_cv' }, { nominalKey: 'rolamento_d_nominal', placaKey: 'rolamento_d_medido' }, { nominalKey: 'rolamento_t_nominal', placaKey: 'rolamento_t_medido' } ]; let listaAtualizacoes = [];
+        pareceres.necessita_atualizacao_json = false; const camposNominaisParaChecar = [{ nominalKey: 'marca_nominal', placaKey: 'marca_medida' }, { nominalKey: 'modelo_nominal', placaKey: 'modelo_medido' }, { nominalKey: 'potencia_cv_nominal', placaKey: 'potencia_placa_cv' }, { nominalKey: 'rolamento_d_nominal', placaKey: 'rolamento_d_medido' }, { nominalKey: 'rolamento_t_nominal', placaKey: 'rolamento_t_medido' }]; let listaAtualizacoes = [];
         camposNominaisParaChecar.forEach(campo => { const valorNominal = equipamentoNominal[campo.nominalKey], valorPlaca = dadosColetados[campo.placaKey]; if ((!valorNominal || String(valorNominal).toUpperCase() === 'S/INF' || String(valorNominal).trim() === "") && (valorPlaca && String(valorPlaca).trim() !== "")) { pareceres.necessita_atualizacao_json = true; listaAtualizacoes.push(`Campo '${campo.nominalKey}': Nominal ausente/S.INF, Placa/Medido: '${valorPlaca}'`); } }); if (pareceres.necessita_atualizacao_json) pareceres.detalhes_atualizacao_json = listaAtualizacoes;
         return pareceres;
     }
 
-    async function gerarRelatorioPDFHandler() {
+    async function gerarRelatorioPDFHandler() { // Já era async, o que é bom
         console.log("%c[PDF_DEBUG] gerarRelatorioPDFHandler: INÍCIO", "color: purple; font-weight: bold;");
         const inspecoesParaRelatorio = dadosColetadosInspecao.filter(dado => dado && typeof dado === 'object' && Object.keys(dado).length > 0);
+
         if (!inspecoesParaRelatorio || inspecoesParaRelatorio.length === 0) {
-            alert("Nenhum dado de inspeção válido para gerar o relatório.");
+            // SUBSTITUIÇÃO DO ALERT
+            await showCustomModal({
+                title: 'Sem Dados para Relatório',
+                message: 'Nenhum dado de inspeção válido para gerar o relatório.'
+            });
             const btnPDFInit = document.getElementById('btnGerarRelatorioPDF');
-            if (btnPDFInit) { btnPDFInit.disabled = false; btnPDFInit.textContent = "Gerar Relatório PDF"; }
+            if (btnPDFInit) {
+                btnPDFInit.disabled = false;
+                btnPDFInit.textContent = "Gerar Relatório PDF";
+            }
             console.log("%c[PDF_DEBUG] gerarRelatorioPDFHandler: FIM (sem dados)", "color: purple; font-weight: bold;");
             return;
         }
+
         console.log("[PDF_DEBUG] Iniciando geração de PDF com os seguintes dados:", JSON.parse(JSON.stringify(inspecoesParaRelatorio)));
         const btnPDF = document.getElementById('btnGerarRelatorioPDF');
-        if (!btnPDF) { console.error("[PDF_DEBUG] Botão 'btnGerarRelatorioPDF' não encontrado no DOM."); return; }
-        btnPDF.disabled = true; btnPDF.textContent = "Gerando...";
+        if (!btnPDF) {
+            console.error("[PDF_DEBUG] Botão 'btnGerarRelatorioPDF' não encontrado no DOM.");
+            // Opcional: mostrar modal de erro aqui também
+            // await showCustomModal({ title: 'Erro Interno', message: 'Botão de gerar PDF não encontrado.' });
+            return;
+        }
+
+        btnPDF.disabled = true;
+        btnPDF.textContent = "Gerando...";
+
         try {
-            await criarPDF(inspecoesParaRelatorio);
-            if (confirm("Relatório PDF gerado com sucesso!\nDeseja realizar a inspeção de outro setor?")) {
-                dadosColetadosInspecao = []; indiceEquipamentoAtual = 0;
+            await criarPDF(inspecoesParaRelatorio); // criarPDF é async e pode lançar erros
+
+            // SUBSTITUIÇÃO DO CONFIRM
+            const userChoice = await showCustomModal({
+                title: 'Sucesso!',
+                message: "Relatório PDF gerado com sucesso!\nDeseja realizar a inspeção de outro setor?",
+                buttons: [
+                    { text: 'Sim, Novo Setor', value: 'yes', class: 'modal-btn-confirm' },
+                    { text: 'Não, Sair', value: 'no', class: 'modal-btn-cancel' }
+                ]
+            });
+
+            if (userChoice === 'yes') {
+                dadosColetadosInspecao = [];
+                indiceEquipamentoAtual = 0;
                 if (typeof limparFormularioInspecao === "function") limparFormularioInspecao();
-                const btnProximo = document.getElementById('btnProximoEquipamento'), btnAnterior = document.getElementById('btnAnteriorEquipamento'), btnFinalizar = document.getElementById('btnFinalizarInspecao');
-                if (btnProximo) btnProximo.disabled = true; if (btnAnterior) btnAnterior.disabled = true;
-                if (btnFinalizar) { btnFinalizar.disabled = true; btnFinalizar.style.display = 'none';}
-                btnPDF.style.display = 'none'; btnPDF.disabled = false; btnPDF.textContent = "Gerar Relatório PDF";
-                if(noEquipmentsMessage) noEquipmentsMessage.style.display = 'none';
-                if(equipamentoInfoWrapper) equipamentoInfoWrapper.style.display = 'block';
+
+                const btnProximo = document.getElementById('btnProximoEquipamento');
+                const btnAnterior = document.getElementById('btnAnteriorEquipamento');
+                const btnFinalizar = document.getElementById('btnFinalizarInspecao');
+                if (btnProximo) btnProximo.disabled = true; // Desabilitar até carregar novos equipamentos
+                if (btnAnterior) btnAnterior.disabled = true;
+                if (btnFinalizar) { btnFinalizar.disabled = true; btnFinalizar.style.display = 'none'; }
+
+                // btnPDF já foi pego acima
+                btnPDF.style.display = 'none';
+                btnPDF.disabled = false;
+                btnPDF.textContent = "Gerar Relatório PDF";
+
+                if (noEquipmentsMessage) noEquipmentsMessage.style.display = 'none';
+                if (equipamentoInfoWrapper) equipamentoInfoWrapper.style.display = 'block'; // Mostrar de novo para próxima inspeção
+
                 window.location.href = 'dashboard.html';
-            } else {
-                localStorage.removeItem('usuarioLogado'); localStorage.removeItem('cadastroLogado'); sessionStorage.removeItem('setorSelecionado');
+            } else if (userChoice === 'no') {
+                localStorage.removeItem('usuarioLogado');
+                localStorage.removeItem('cadastroLogado');
+                sessionStorage.clear(); // Limpa sessionStorage também
                 window.location.href = '../index.html';
+            } else { // Usuário fechou o modal (Esc, overlay - valor será 'dismiss_esc' ou 'dismiss_overlay')
+                if (btnPDF) {
+                    btnPDF.disabled = false;
+                    btnPDF.textContent = "Gerar Relatório PDF";
+                }
+                console.log("Modal de confirmação pós-PDF fechado sem escolha explícita: ", userChoice);
             }
+
         } catch (error) {
-            console.error("[PDF_DEBUG] Erro ao gerar PDF:", error); 
-            alert("Ocorreu um erro ao gerar o relatório PDF. Verifique o console para detalhes.");
-            if(btnPDF) { btnPDF.disabled = false; btnPDF.textContent = "Gerar Relatório PDF"; }
+            console.error("[PDF_DEBUG] Erro ao gerar PDF:", error);
+            // SUBSTITUIÇÃO DO ALERT
+            await showCustomModal({
+                title: 'Erro no PDF',
+                message: 'Ocorreu um erro ao gerar o relatório PDF.\nVerifique o console para detalhes.'
+            });
+            if (btnPDF) { // Verificar se btnPDF ainda existe no escopo
+                btnPDF.disabled = false;
+                btnPDF.textContent = "Gerar Relatório PDF";
+            }
         }
         console.log("%c[PDF_DEBUG] gerarRelatorioPDFHandler: FIM", "color: purple; font-weight: bold;");
     }
 
     async function criarPDF(dadosDaInspecao) {
         console.log("%c[PDF_DEBUG] criarPDF: INÍCIO com dados:", "color: purple; font-weight: bold;", JSON.parse(JSON.stringify(dadosDaInspecao)));
-        const { jsPDF } = window.jspdf; 
+        const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        
+
         const nomeUsuario = localStorage.getItem('usuarioLogado') || 'N/A (Nome não encontrado)';
         const cadastroUsuario = localStorage.getItem('cadastroLogado') || 'N/A (Cadastro não encontrado)'; // Pega o cadastro
-        
+
         const dataHora = new Date().toLocaleString('pt-BR');
         const setorInspecionado = sessionStorage.getItem('setorSelecionado') ? sessionStorage.getItem('setorSelecionado').toUpperCase() : 'N/A';
-        
-        let posY = 10; 
+
+        let posY = 10;
         const margemEsquerda = 15;
         const margemDireita = doc.internal.pageSize.getWidth() - 15;
         const larguraConteudo = margemDireita - margemEsquerda;
-        
+
         const logoOleBase64 = sessionStorage.getItem('logoOleBase64');
         const logoPandeBase64 = sessionStorage.getItem('logoPandeBase64');
 
         if (logoOleBase64) { try { doc.addImage(logoOleBase64, 'PNG', margemEsquerda, posY, 30, 10); } catch (e) { console.error("[PDF_DEBUG] Erro ao adicionar logo Olé:", e); doc.setFontSize(8).text('Olé Conservas (erro logo)', margemEsquerda, posY + 7); } } else doc.setFontSize(8).text('Olé Conservas', margemEsquerda, posY + 7);
         if (logoPandeBase64) { try { doc.addImage(logoPandeBase64, 'PNG', margemDireita - 30, posY, 30, 10); } catch (e) { console.error("[PDF_DEBUG] Erro ao adicionar logo PAMDE:", e); doc.setFontSize(8).text('PAMDE (erro logo)', margemDireita - 15, posY + 7, { align: 'right' }); } } else doc.setFontSize(8).text('PAMDE', margemDireita - 15, posY + 7, { align: 'right' });
-        
-        posY += 15; 
-        doc.setFontSize(16).setFont(undefined, 'bold'); 
-        doc.text(`Relatório de Inspeção - Setor: ${setorInspecionado}`, doc.internal.pageSize.getWidth() / 2, posY, { align: 'center' }); 
-        posY += 8; 
+
+        posY += 15;
+        doc.setFontSize(16).setFont(undefined, 'bold');
+        doc.text(`Relatório de Inspeção - Setor: ${setorInspecionado}`, doc.internal.pageSize.getWidth() / 2, posY, { align: 'center' });
+        posY += 8;
         doc.setFont(undefined, 'normal');
-        doc.setFontSize(10); 
+        doc.setFontSize(10);
         doc.text(`Inspetor: ${nomeUsuario} (Cad: ${cadastroUsuario})`, margemEsquerda, posY); // MODIFICADO AQUI
-        doc.text(`Data e Hora: ${dataHora}`, margemDireita, posY, { align: 'right' }); 
-        posY += 6; 
-        doc.setLineWidth(0.2).line(margemEsquerda, posY, margemDireita, posY); 
+        doc.text(`Data e Hora: ${dataHora}`, margemDireita, posY, { align: 'right' });
+        posY += 6;
+        doc.setLineWidth(0.2).line(margemEsquerda, posY, margemDireita, posY);
         posY += 4;
 
         function addPageIfNeeded(alturaEstimadaProximoConteudo = 20) {
@@ -629,34 +842,34 @@ document.addEventListener('DOMContentLoaded', function () {
         };
 
         for (const [index, equipamento] of dadosDaInspecao.entries()) {
-            addPageIfNeeded(60); 
+            addPageIfNeeded(60);
             doc.setFontSize(12).setFont(undefined, 'bold'); doc.text(`Equipamento: ${equipamento.tag_motor || 'N/A'} (${equipamento.nome_componente || 'N/A'})`, margemEsquerda, posY); posY += 6;
             doc.setFont(undefined, 'normal').setFontSize(9); doc.text(`Local: ${equipamento.setor_principal || ''} > ${equipamento.subsetor_nivel1 || ''} > ${equipamento.subsetor_nivel2 || ''}`, margemEsquerda, posY); posY += 7;
-            
-            addPageIfNeeded(30); 
-            const nominaisBody = [ ["Potência Nominal (CV/kW):", `${equipamento.potencia_CV_nominal || 'S/INF'} / ${equipamento.potencia_kw_nominal || 'S/INF'}`], ["Tensão Nominal (V):", equipamento.tensao_v_nominal || 'S/INF'], ["Corrente Nominal (A):", equipamento.corrente_a_nominal || 'S/INF'], ["Rotação Nominal (RPM):", equipamento.rotacao_rpm_nominal || 'S/INF'], ["Rol. Dianteiro Nominal:", equipamento.rolamento_d_nominal || 'S/INF'], ["Rol. Traseiro Nominal:", equipamento.rolamento_t_nominal || 'S/INF'], ["Carcaça Nominal:", equipamento.carcaca_nominal || 'S/INF'], ["IP Nominal:", equipamento.ip_nominal || 'S/INF'] ];
+
+            addPageIfNeeded(30);
+            const nominaisBody = [["Potência Nominal (CV/kW):", `${equipamento.potencia_CV_nominal || 'S/INF'} / ${equipamento.potencia_kw_nominal || 'S/INF'}`], ["Tensão Nominal (V):", equipamento.tensao_v_nominal || 'S/INF'], ["Corrente Nominal (A):", equipamento.corrente_a_nominal || 'S/INF'], ["Rotação Nominal (RPM):", equipamento.rotacao_rpm_nominal || 'S/INF'], ["Rol. Dianteiro Nominal:", equipamento.rolamento_d_nominal || 'S/INF'], ["Rol. Traseiro Nominal:", equipamento.rolamento_t_nominal || 'S/INF'], ["Carcaça Nominal:", equipamento.carcaca_nominal || 'S/INF'], ["IP Nominal:", equipamento.ip_nominal || 'S/INF']];
             doc.autoTable({ ...tableOptionsComumBase, startY: posY, head: [['Dados Nominais', 'Valor']], body: nominaisBody, columnStyles: { 0: { fontStyle: 'bold', cellWidth: 45 }, 1: { cellWidth: larguraConteudo - 45 } } });
             posY = doc.autoTable.previous.finalY + 4;
 
             addPageIfNeeded(50);
-            const medidosPlacaBody = [ ["Marca (Placa/Medido):", formatarMedicaoComStatus(equipamento.marca_medida, equipamento.marca_medida_status)], ["Modelo (Placa/Medido):", formatarMedicaoComStatus(equipamento.modelo_medido, equipamento.modelo_medido_status)], ["Potência (Placa CV/kW):", `${formatarMedicaoComStatus(equipamento.potencia_placa_cv, equipamento.potencia_placa_cv_status)} / ${formatarMedicaoComStatus(equipamento.potencia_placa_kw, equipamento.potencia_placa_kw_status)}`], ["Rol. Diant. (Placa):", formatarMedicaoComStatus(equipamento.rolamento_d_placa || equipamento.rolamento_d_medido, equipamento.rolamento_d_medido_status)], ["Rol. Tras. (Placa):", formatarMedicaoComStatus(equipamento.rolamento_t_placa || equipamento.rolamento_t_medido, equipamento.rolamento_t_medido_status)], ["Carcaça (Placa):", formatarMedicaoComStatus(equipamento.carcaca_placa, equipamento.carcaca_placa_status)], ["IP (Placa):", formatarMedicaoComStatus(equipamento.ip_placa, equipamento.ip_placa_status)], ["Potência Medida (CV):", formatarMedicaoComStatus(equipamento.potencia_medida, equipamento.potencia_medida_status)], ["Tensão Medida (F1/F2/F3) V:", `${formatarMedicaoComStatus(equipamento.tensao_f1_medida, equipamento.tensao_f1_medida_status)} / ${formatarMedicaoComStatus(equipamento.tensao_f2_medida, equipamento.tensao_f2_medida_status)} / ${formatarMedicaoComStatus(equipamento.tensao_f3_medida, equipamento.tensao_f3_medida_status)}`], ["Corrente Medida (F1/F2/F3) A:", `${formatarMedicaoComStatus(equipamento.corrente_f1_medida, equipamento.corrente_f1_medida_status)} / ${formatarMedicaoComStatus(equipamento.corrente_f2_medida, equipamento.corrente_f2_medida_status)} / ${formatarMedicaoComStatus(equipamento.corrente_f3_medida, equipamento.corrente_f3_medida_status)}`], ["Temperatura Medida (°C):", formatarMedicaoComStatus(equipamento.temperatura_medida, equipamento.temperatura_medida_status)], ["Rotação Medida (RPM):", formatarMedicaoComStatus(equipamento.rotacao_medida, equipamento.rotacao_medida_status)], ["Regulagem Disjuntor (A):", formatarMedicaoComStatus(equipamento.regulagem_corrente_medida, equipamento.regulagem_corrente_medida_status)], ];
+            const medidosPlacaBody = [["Marca (Placa/Medido):", formatarMedicaoComStatus(equipamento.marca_medida, equipamento.marca_medida_status)], ["Modelo (Placa/Medido):", formatarMedicaoComStatus(equipamento.modelo_medido, equipamento.modelo_medido_status)], ["Potência (Placa CV/kW):", `${formatarMedicaoComStatus(equipamento.potencia_placa_cv, equipamento.potencia_placa_cv_status)} / ${formatarMedicaoComStatus(equipamento.potencia_placa_kw, equipamento.potencia_placa_kw_status)}`], ["Rol. Diant. (Placa):", formatarMedicaoComStatus(equipamento.rolamento_d_placa || equipamento.rolamento_d_medido, equipamento.rolamento_d_medido_status)], ["Rol. Tras. (Placa):", formatarMedicaoComStatus(equipamento.rolamento_t_placa || equipamento.rolamento_t_medido, equipamento.rolamento_t_medido_status)], ["Carcaça (Placa):", formatarMedicaoComStatus(equipamento.carcaca_placa, equipamento.carcaca_placa_status)], ["IP (Placa):", formatarMedicaoComStatus(equipamento.ip_placa, equipamento.ip_placa_status)], ["Potência Medida (CV):", formatarMedicaoComStatus(equipamento.potencia_medida, equipamento.potencia_medida_status)], ["Tensão Medida (F1/F2/F3) V:", `${formatarMedicaoComStatus(equipamento.tensao_f1_medida, equipamento.tensao_f1_medida_status)} / ${formatarMedicaoComStatus(equipamento.tensao_f2_medida, equipamento.tensao_f2_medida_status)} / ${formatarMedicaoComStatus(equipamento.tensao_f3_medida, equipamento.tensao_f3_medida_status)}`], ["Corrente Medida (F1/F2/F3) A:", `${formatarMedicaoComStatus(equipamento.corrente_f1_medida, equipamento.corrente_f1_medida_status)} / ${formatarMedicaoComStatus(equipamento.corrente_f2_medida, equipamento.corrente_f2_medida_status)} / ${formatarMedicaoComStatus(equipamento.corrente_f3_medida, equipamento.corrente_f3_medida_status)}`], ["Temperatura Medida (°C):", formatarMedicaoComStatus(equipamento.temperatura_medida, equipamento.temperatura_medida_status)], ["Rotação Medida (RPM):", formatarMedicaoComStatus(equipamento.rotacao_medida, equipamento.rotacao_medida_status)], ["Regulagem Disjuntor (A):", formatarMedicaoComStatus(equipamento.regulagem_corrente_medida, equipamento.regulagem_corrente_medida_status)],];
             doc.autoTable({ ...tableOptionsComumBase, startY: posY, head: [['Dados Medidos / Placa', 'Valor']], body: medidosPlacaBody, columnStyles: { 0: { fontStyle: 'bold', cellWidth: 45 }, 1: { cellWidth: larguraConteudo - 45 } } });
             posY = doc.autoTable.previous.finalY + 4;
 
-            addPageIfNeeded(40); 
+            addPageIfNeeded(40);
             const pareceresArray = []; if (equipamento.pareceres) { const chavesExcluirParecer = ['necessita_atualizacao_json', 'detalhes_atualizacao_json', 'potencia_placa', 'rolamento_dianteiro', 'rolamento_traseiro']; for (const [chave, valor] of Object.entries(equipamento.pareceres)) { if (!chavesExcluirParecer.includes(chave)) { pareceresArray.push([`${formatarChaveParecer(chave)}:`, valor]); } } if (equipamento.pareceres.potencia_placa) pareceresArray.push(["Potência (Placa vs Nominal):", equipamento.pareceres.potencia_placa]); if (equipamento.pareceres.rolamento_dianteiro) pareceresArray.push(["Rolamento Dianteiro (Placa vs Nominal):", equipamento.pareceres.rolamento_dianteiro]); if (equipamento.pareceres.rolamento_traseiro) pareceresArray.push(["Rolamento Traseiro (Placa vs Nominal):", equipamento.pareceres.rolamento_traseiro]); }
             if (pareceresArray.length > 0) { doc.autoTable({ ...tableOptionsComumBase, startY: posY, head: [['Análise Técnica / Pareceres', 'Resultado']], body: pareceresArray, columnStyles: { 0: { fontStyle: 'bold', cellWidth: 60 }, 1: { cellWidth: larguraConteudo - 60 } } }); posY = doc.autoTable.previous.finalY + 4; }
 
-            addPageIfNeeded(60); 
+            addPageIfNeeded(60);
             if (equipamento.foto_equipamento_previewDataUrl) { doc.setFontSize(9).setFont(undefined, 'bold'); doc.text("Foto do Equipamento:", margemEsquerda, posY); posY += 4; try { const larguraFoto = 70, alturaMaxFoto = 50; doc.addImage(equipamento.foto_equipamento_previewDataUrl, 'JPEG', margemEsquerda, posY, larguraFoto, alturaMaxFoto, undefined, 'FAST'); posY += alturaMaxFoto + 4; } catch (e) { console.warn("[PDF_DEBUG] Erro ao adicionar imagem ao PDF:", e); doc.setFont(undefined, 'normal').setTextColor(255, 0, 0); doc.text("Erro ao carregar imagem.", margemEsquerda, posY); posY += 5; doc.setTextColor(0); } }
-            
-            addPageIfNeeded(20); 
+
+            addPageIfNeeded(20);
             if (equipamento.observacao) { doc.setFontSize(9).setFont(undefined, 'bold'); doc.text("Observações:", margemEsquerda, posY); posY += 4; doc.setFont(undefined, 'normal').setFontSize(8); const obsLines = doc.splitTextToSize(equipamento.observacao, larguraConteudo); doc.text(obsLines, margemEsquerda, posY); posY += (obsLines.length * 3.5) + 4; }
 
             if (index < dadosDaInspecao.length - 1) { addPageIfNeeded(5); doc.setLineWidth(0.1).line(margemEsquerda, posY, margemDireita, posY); posY += 4; }
-        } 
+        }
 
-        addPageIfNeeded(30); 
+        addPageIfNeeded(30);
         const itensParaAtualizar = dadosDaInspecao.filter(eq => eq.pareceres && eq.pareceres.necessita_atualizacao_json && eq.pareceres.detalhes_atualizacao_json);
         if (itensParaAtualizar.length > 0) {
             doc.setFontSize(11).setFont(undefined, 'bold'); doc.text("Itens para Atualização no Cadastro (JSON):", margemEsquerda, posY); posY += 6; const atualizacoesBody = [];
@@ -666,12 +879,12 @@ document.addEventListener('DOMContentLoaded', function () {
         } else { doc.setFontSize(9).setFont(undefined, 'italic'); doc.text("Nenhum item identificado para atualização no cadastro.", margemEsquerda, posY); posY += 6; }
 
         // --- INÍCIO DO RESUMO DA INSPEÇÃO ---
-        addPageIfNeeded(25); 
+        addPageIfNeeded(25);
         doc.setFontSize(11).setFont(undefined, 'bold');
         doc.text("Resumo da Inspeção do Setor", margemEsquerda, posY);
         posY += 7;
         doc.setFontSize(9).setFont(undefined, 'normal');
-        const totalNoSetor = listaDeEquipamentos.length; 
+        const totalNoSetor = listaDeEquipamentos.length;
         const totalInspecionados = dadosDaInspecao.length;
         doc.text(`Total de equipamentos cadastrados no setor: ${totalNoSetor}`, margemEsquerda, posY);
         posY += 5;
@@ -724,27 +937,106 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function attachEventListeners() {
-        if (voltarDashboardBtn) { voltarDashboardBtn.addEventListener('click', () => { const inspecoesRealizadas = dadosColetadosInspecao.filter(d => d !== null).length > 0; if (inspecoesRealizadas && !confirm("Você tem dados de inspeção não finalizados. Deseja realmente voltar e perder esses dados?")) return; window.location.href = 'dashboard.html'; }); }
+        if (voltarDashboardBtn) {
+            voltarDashboardBtn.addEventListener('click', async () => { // TORNADO ASYNC
+                const inspecoesRealizadas = dadosColetadosInspecao.filter(d => d !== null).length > 0;
+                let irParaDashboard = true; // Assume que vai, a menos que o usuário cancele
+
+                if (inspecoesRealizadas) {
+                    // SUBSTITUIÇÃO DO CONFIRM
+                    const userConfirmed = await showCustomModal({
+                        title: "Dados Não Salvos",
+                        message: "Você tem dados de inspeção não finalizados.\nDeseja realmente voltar e perder esses dados?",
+                        buttons: [
+                            { text: 'Sim, Voltar (Perder Dados)', value: true, class: 'modal-btn-cancel' }, // Vermelho para ação destrutiva
+                            { text: 'Não, Ficar', value: false, class: 'modal-btn-confirm' }    // Verde/Azul para ação segura
+                        ]
+                    });
+                    if (userConfirmed !== true) { // Se não for true (clicou "Não" ou fechou o modal com Esc/overlay)
+                        irParaDashboard = false;
+                    }
+                }
+
+                if (irParaDashboard) {
+                    window.location.href = 'dashboard.html';
+                }
+            });
+        }
         if (proximoEquipamentoBtn) proximoEquipamentoBtn.addEventListener('click', handleProximoEquipamento);
         if (anteriorEquipamentoBtn) anteriorEquipamentoBtn.addEventListener('click', handleAnteriorEquipamento);
-        if (finalizarInspecaoBtn) { finalizarInspecaoBtn.addEventListener('click', handleFinalizarInspecao); } else { console.warn("[DEBUG] Botão finalizarInspecaoBtn NÃO encontrado para anexar listener."); }
-        const btnGerarPDF = document.getElementById('btnGerarRelatorioPDF'); if (btnGerarPDF) { btnGerarPDF.addEventListener('click', gerarRelatorioPDFHandler); } else { console.warn("[DEBUG] Botão btnGerarRelatorioPDF NÃO encontrado para anexar listener."); }
+        if (finalizarInspecaoBtn) {
+            finalizarInspecaoBtn.addEventListener('click', handleFinalizarInspecao);
+        } else {
+            console.warn("[DEBUG] Botão finalizarInspecaoBtn NÃO encontrado para anexar listener.");
+        }
+        const btnGerarPDF = document.getElementById('btnGerarRelatorioPDF');
+        if (btnGerarPDF) {
+            btnGerarPDF.addEventListener('click', gerarRelatorioPDFHandler);
+        } else {
+            console.warn("[DEBUG] Botão btnGerarRelatorioPDF NÃO encontrado para anexar listener.");
+        }
         if (fotoEquipamentoInput) fotoEquipamentoInput.addEventListener('change', handlePreviewFoto);
-        const todosOsStatusCheckboxes = document.querySelectorAll('input.status_checkbox'); if (todosOsStatusCheckboxes.length > 0) { todosOsStatusCheckboxes.forEach(checkbox => checkbox.addEventListener('change', handleStatusCheckboxChange)); } else { console.warn("[DEBUG] Nenhum checkbox com a classe 'status_checkbox' encontrado."); }
+        const todosOsStatusCheckboxes = document.querySelectorAll('input.status_checkbox');
+        if (todosOsStatusCheckboxes.length > 0) {
+            todosOsStatusCheckboxes.forEach(checkbox => checkbox.addEventListener('change', handleStatusCheckboxChange));
+        } else {
+            console.warn("[DEBUG] Nenhum checkbox com a classe 'status_checkbox' encontrado.");
+        }
     }
 
-    function initChecklist() {
+    async function initChecklist() { // TORNADA ASYNC
         console.log("[DEBUG] checklist.js - initChecklist() chamada");
-        carregarLogosBase64();
-        const usuarioLogado = localStorage.getItem('usuarioLogado'), cadastroLogado = localStorage.getItem('cadastroLogado');
-        if (usuarioLogado && cadastroLogado) { if (checklistUserInfo) checklistUserInfo.textContent = `Usuário: ${usuarioLogado} (Cad: ${cadastroLogado})`; } else { alert("Sessão inválida. Por favor, faça login novamente."); window.location.href = 'index.html'; return; }
-        const setorSelecionado = sessionStorage.getItem('setorSelecionado');
-        if (setorSelecionado) { if (setorAtualTitulo) setorAtualTitulo.textContent = setorSelecionado.toUpperCase(); fetchEquipamentosDoSetor(setorSelecionado); } else {
-            console.error("Nenhum setor selecionado.");
-            if (noEquipmentsMessage) { noEquipmentsMessage.textContent = "Nenhum setor foi selecionado. Por favor, volte ao dashboard e selecione um setor."; noEquipmentsMessage.style.display = 'block'; }
-            if (equipamentoInfoWrapper) equipamentoInfoWrapper.style.display = 'none'; if (proximoEquipamentoBtn) proximoEquipamentoBtn.disabled = true; if (anteriorEquipamentoBtn) anteriorEquipamentoBtn.disabled = true; if (finalizarInspecaoBtn) finalizarInspecaoBtn.disabled = true;
+        await carregarLogosBase64(); // ADICIONADO AWAIT (carregarLogosBase64 é async)
+
+        const usuarioLogado = localStorage.getItem('usuarioLogado');
+        const cadastroLogado = localStorage.getItem('cadastroLogado');
+
+        if (usuarioLogado && cadastroLogado) {
+            if (checklistUserInfo) checklistUserInfo.textContent = `Usuário: ${usuarioLogado} (Cad: ${cadastroLogado})`;
+        } else {
+            // SUBSTITUIÇÃO DO ALERT
+            if (typeof showCustomModal === "function") {
+                await showCustomModal({
+                    title: "Sessão Inválida",
+                    message: "Sua sessão é inválida ou expirou.\nPor favor, faça login novamente."
+                    // Botão OK padrão será usado, e o await garante que o modal seja fechado antes do redirect
+                });
+            } else {
+                alert("Sessão inválida. Por favor, faça login novamente."); // Fallback
+            }
+            window.location.href = 'index.html';
+            return;
         }
-        attachEventListeners();
+
+        const setorSelecionado = sessionStorage.getItem('setorSelecionado');
+        if (setorSelecionado) {
+            if (setorAtualTitulo) setorAtualTitulo.textContent = setorSelecionado.toUpperCase();
+            await fetchEquipamentosDoSetor(setorSelecionado); // ADICIONADO AWAIT (fetchEquipamentosDoSetor é async)
+        } else {
+            console.error("Nenhum setor selecionado.");
+            const msg = "Nenhum setor foi selecionado.\nPor favor, volte ao dashboard e selecione um setor.";
+
+            if (typeof showCustomModal === "function") {
+                await showCustomModal({
+                    title: "Setor Não Selecionado",
+                    message: msg
+                });
+            } else {
+                alert(msg.replace(/\n/g, ' ')); // Fallback
+            }
+
+            if (noEquipmentsMessage) {
+                noEquipmentsMessage.textContent = msg.replace(/\n/g, ' '); // Atualiza no DOM também
+                noEquipmentsMessage.style.display = 'block';
+            }
+            if (equipamentoInfoWrapper) equipamentoInfoWrapper.style.display = 'none';
+            if (proximoEquipamentoBtn) proximoEquipamentoBtn.disabled = true;
+            if (anteriorEquipamentoBtn) anteriorEquipamentoBtn.disabled = true;
+            if (finalizarInspecaoBtn) finalizarInspecaoBtn.disabled = true;
+            // Considerar redirecionar para o dashboard aqui também após o modal, se apropriado.
+            // Ex: window.location.href = 'dashboard.html';
+        }
+        attachEventListeners(); // Não precisa ser async se attachEventListeners em si não retorna promessa que precisa ser esperada aqui
         console.log("[DEBUG] initChecklist() finalizada.");
     }
 

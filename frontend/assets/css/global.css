@@ -31,3 +31,105 @@ body, html {
 .main-footer p {
     margin: 5px 0;
 }
+
+
+.modal-overlay {
+    position: fixed; /* Cobre toda a tela */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Fundo semi-transparente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Para ficar acima de outros conteúdos */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0s linear 0.3s; /* Transição suave */
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 25px 30px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 450px; /* Largura máxima do modal */
+    text-align: center;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.modal-overlay.active .modal-content {
+    transform: scale(1);
+}
+
+.modal-title {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.6em;
+    color: #333;
+}
+
+.modal-message {
+    margin-bottom: 25px;
+    font-size: 1.1em;
+    color: #555;
+    line-height: 1.6;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: center; /* Centraliza botões se houver mais de um */
+    gap: 15px; /* Espaço entre os botões */
+}
+
+.modal-actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    min-width: 100px;
+}
+
+.modal-actions button:hover {
+    opacity: 0.9;
+}
+.modal-actions button:active {
+    transform: translateY(1px);
+}
+
+/* Estilos específicos para botões (podem usar classes existentes ou novas) */
+.modal-btn-confirm { /* Para botões de confirmação/positivos */
+    background-color: #2ecc71; /* Verde (similar ao .btn-confirm) */
+    color: white;
+}
+.modal-btn-confirm:hover {
+    background-color: #27ae60;
+}
+
+.modal-btn-cancel { /* Para botões de cancelamento/negativos */
+    background-color: #e74c3c; /* Vermelho (similar ao .btn-finish) */
+    color: white;
+}
+.modal-btn-cancel:hover {
+    background-color: #c0392b;
+}
+
+.modal-btn-neutral { /* Para botões OK simples */
+    background-color: #3498db; /* Azul */
+    color: white;
+}
+.modal-btn-neutral:hover {
+    background-color: #2980b9;
+}
+
