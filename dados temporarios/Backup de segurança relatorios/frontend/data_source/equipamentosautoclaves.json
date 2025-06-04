@@ -1,0 +1,414 @@
+{
+    "autoclaves": {
+        "autoclave 1": {
+            "despalhadeira_1_autoclave_1": {
+                "rosca": [
+                    {"tag_motor": "M101_AC1", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 4.90, "rotacao_rpm_nominal": 1710, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M102_AC1", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 4.90, "rotacao_rpm_nominal": 1710, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M103_AC1", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 4.90, "rotacao_rpm_nominal": 1710, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M104_AC1", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 4.90, "rotacao_rpm_nominal": 1710, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M105_AC1", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 4.90, "rotacao_rpm_nominal": 1710, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M106_AC1", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 4.90, "rotacao_rpm_nominal": 1710, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M107_AC1", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 4.90, "rotacao_rpm_nominal": 1710, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M108_AC1", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 4.90, "rotacao_rpm_nominal": 1710, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"}
+                ],
+                "osciladorLE": {
+                    "tag_motor": "M109_AC1",
+                    "potencia_kw_nominal": 0.37,
+                    "potencia_cv_nominal": 0.50,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 1.11,
+                    "rotacao_rpm_nominal": 1730,
+                    "marca_nominal": "S/INF",
+                    "modelo_nominal": "S/INF",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                },
+                "osciladorLD": {
+                    "tag_motor": "M110_AC1",
+                    "potencia_kw_nominal": 0.37,
+                    "potencia_cv_nominal": 0.50,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 1.11,
+                    "rotacao_rpm_nominal": 1730,
+                    "marca_nominal": "S/INF",
+                    "modelo_nominal": "S/INF",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                },
+                "vibrador": {
+                    "tag_motor": "M111_AC1",
+                    "potencia_kw_nominal": 2.2,
+                    "potencia_cv_nominal": 3,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 4.78,
+                    "rotacao_rpm_nominal": 1745,
+                    "marca_nominal": "S/INF",
+                    "modelo_nominal": "S/INF",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                },
+                "esteirasLonaLE": {
+                    "tag_motor": "M112_AC1",
+                    "potencia_kw_nominal": 1.5,
+                    "potencia_cv_nominal": 2,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 3.46,
+                    "rotacao_rpm_nominal": 1750,
+                    "marca_nominal": "S/INF",
+                    "modelo_nominal": "S/INF",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                },
+                "esteirasLonaLD": {
+                    "tag_motor": "M113_AC1",
+                    "potencia_kw_nominal": 1.5,
+                    "potencia_cv_nominal": 2,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 3.46,
+                    "rotacao_rpm_nominal": 1750,
+                    "marca_nominal": "S/INF",
+                    "modelo_nominal": "S/INF",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                }
+            },
+            "despalhadeira_2_autoclave_1": {
+                "rosca": [
+                    {"tag_motor": "M201_AC1", "potencia_kw_nominal": 5.6, "potencia_cv_nominal": 7.5, "tensao_v_nominal": 380, "corrente_a_nominal": 10.7, "rotacao_rpm_nominal": 1755, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M202_AC1", "potencia_kw_nominal": 5.6, "potencia_cv_nominal": 7.5, "tensao_v_nominal": 380, "corrente_a_nominal": 10.7, "rotacao_rpm_nominal": 1755, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"}
+                ],
+                "osciladorLE": [
+                    {"tag_motor": "M203_AC1", "potencia_kw_nominal": 0.75, "potencia_cv_nominal": 1.0, "tensao_v_nominal": 380, "corrente_a_nominal": 1.50, "rotacao_rpm_nominal": 1725, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M204_AC1", "potencia_kw_nominal": 0.75, "potencia_cv_nominal": 1.0, "tensao_v_nominal": 380, "corrente_a_nominal": 1.50, "rotacao_rpm_nominal": 1725, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"}
+                ],
+                "vibrador": {
+                    "tag_motor": "M205_AC1",
+                    "potencia_kw_nominal": 2.2,
+                    "potencia_cv_nominal": 3.0,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 1.50,
+                    "rotacao_rpm_nominal": 1725,
+                    "marca_nominal": "S/INF",
+                    "modelo_nominal": "S/INF",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                },
+                "esteirasLE": {
+                    "tag_motor": "M206_AC1",
+                    "potencia_kw_nominal": 1.5,
+                    "potencia_cv_nominal": 2.0,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 3.36,
+                    "rotacao_rpm_nominal": 1750,
+                    "marca_nominal": "S/INF",
+                    "modelo_nominal": "S/INF",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                },
+                "esteirasLD": {
+                    "tag_motor": "M207_AC1",
+                    "potencia_kw_nominal": 1.5,
+                    "potencia_cv_nominal": 2.0,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 3.36,
+                    "rotacao_rpm_nominal": 1750,
+                    "marca_nominal": "S/INF",
+                    "modelo_nominal": "S/INF",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                }
+            },
+            "despalhadeira_3_autoclave_1": {
+                "rosca": [
+                    {"tag_motor": "M301_AC1", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 5.10, "rotacao_rpm_nominal": 1756, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M302_AC1", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 5.10, "rotacao_rpm_nominal": 1756, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M303_AC1", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 5.10, "rotacao_rpm_nominal": 1756, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M304_AC1", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 5.10, "rotacao_rpm_nominal": 1756, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M305_AC1", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 5.10, "rotacao_rpm_nominal": 1756, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M306_AC1", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 5.10, "rotacao_rpm_nominal": 1756, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M307_AC1", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 5.10, "rotacao_rpm_nominal": 1756, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M308_AC1", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 5.10, "rotacao_rpm_nominal": 1756, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"}
+                ],
+                "osciladorLE": {
+                    "tag_motor": "M309_AC1",
+                    "potencia_kw_nominal": 0.37,
+                    "potencia_cv_nominal": 0.50,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 1.11,
+                    "rotacao_rpm_nominal": 1730,
+                    "marca_nominal": "S/INF",
+                    "modelo_nominal": "S/INF",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                },
+                "osciladorLD": {
+                    "tag_motor": "M310_AC1",
+                    "potencia_kw_nominal": 0.37,
+                    "potencia_cv_nominal": 0.50,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 1.11,
+                    "rotacao_rpm_nominal": 1730,
+                    "marca_nominal": "S/INF",
+                    "modelo_nominal": "S/INF",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                },
+                "vibrador": {
+                    "tag_motor": "M311_AC1",
+                    "potencia_kw_nominal": 2.2,
+                    "potencia_cv_nominal": 3.0,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 4.78,
+                    "rotacao_rpm_nominal": 1745,
+                    "marca_nominal": "S/INF",
+                    "modelo_nominal": "S/INF",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                },
+                "esteirasLE": {
+                    "tag_motor": "M312_AC1",
+                    "potencia_kw_nominal": 0.75,
+                    "potencia_cv_nominal": 1.0,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 1.67,
+                    "rotacao_rpm_nominal": 1715,
+                    "marca_nominal": "S/INF",
+                    "modelo_nominal": "S/INF",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                },
+                "esteirasLD": {
+                    "tag_motor": "M313_AC1",
+                    "potencia_kw_nominal": 0.75,
+                    "potencia_cv_nominal": 1.0,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 1.67,
+                    "rotacao_rpm_nominal": 1715,
+                    "marca_nominal": "S/INF",
+                    "modelo_nominal": "S/INF",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                }
+            }
+        },
+        "autoclave 2": {
+            "despalhadeira_1_autoclave_2": {
+                "rosca": [
+                    {"tag_motor": "M101_AC2", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 4.90, "rotacao_rpm_nominal": 1710, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M102_AC2", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 4.90, "rotacao_rpm_nominal": 1710, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M103_AC2", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 4.90, "rotacao_rpm_nominal": 1710, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M104_AC2", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 4.90, "rotacao_rpm_nominal": 1710, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M105_AC2", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 4.90, "rotacao_rpm_nominal": 1710, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M106_AC2", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 4.90, "rotacao_rpm_nominal": 1710, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M107_AC2", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 4.90, "rotacao_rpm_nominal": 1710, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M108_AC2", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 4.90, "rotacao_rpm_nominal": 1710, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"}
+                ],
+                "osciladorLE": {
+                    "tag_motor": "M109_AC2",
+                    "potencia_kw_nominal": 0.37,
+                    "potencia_cv_nominal": 0.50,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 1.11,
+                    "rotacao_rpm_nominal": 1730,
+                    "marca_nominal": "S/INF",
+                    "modelo_nominal": "S/INF",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                },
+                "osciladorLD": {
+                    "tag_motor": "M110_AC2",
+                    "potencia_kw_nominal": 0.37,
+                    "potencia_cv_nominal": 0.50,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 1.11,
+                    "rotacao_rpm_nominal": 1730,
+                    "marca_nominal": "S/INF",
+                    "modelo_nominal": "S/INF",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                },
+                "vibrador": {
+                    "tag_motor": "M111_AC2",
+                    "potencia_kw_nominal": 2.2,
+                    "potencia_cv_nominal": 3,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 4.78,
+                    "rotacao_rpm_nominal": 1745,
+                    "marca_nominal": "S/INF",
+                    "modelo_nominal": "S/INF",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                },
+                "esteirasLonaLE": {
+                    "tag_motor": "M112_AC2",
+                    "potencia_kw_nominal": 1.5,
+                    "potencia_cv_nominal": 2,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 3.46,
+                    "rotacao_rpm_nominal": 1750,
+                    "marca_nominal": "S/INF",
+                    "modelo_nominal": "S/INF",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                },
+                "esteirasLonaLD": {
+                    "tag_motor": "M113_AC2",
+                    "potencia_kw_nominal": 1.5,
+                    "potencia_cv_nominal": 2,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 3.46,
+                    "rotacao_rpm_nominal": 1750,
+                    "marca_nominal": "S/INF",
+                    "modelo_nominal": "S/INF",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                }
+            },
+            "despalhadeira_2_autoclave_2": {
+                "rosca": [
+                    {"tag_motor": "M201_AC2", "potencia_kw_nominal": 5.6, "potencia_cv_nominal": 7.5, "tensao_v_nominal": 380, "corrente_a_nominal": 10.7, "rotacao_rpm_nominal": 1755, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M202_AC2", "potencia_kw_nominal": 5.6, "potencia_cv_nominal": 7.5, "tensao_v_nominal": 380, "corrente_a_nominal": 10.7, "rotacao_rpm_nominal": 1755, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"}
+                ],
+                "osciladorLE": [
+                     {"tag_motor": "M203_AC2", "potencia_kw_nominal": 0.75, "potencia_cv_nominal": 1.0, "tensao_v_nominal": 380, "corrente_a_nominal": 1.50, "rotacao_rpm_nominal": 1725, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                     {"tag_motor": "M204_AC2", "potencia_kw_nominal": 0.75, "potencia_cv_nominal": 1.0, "tensao_v_nominal": 380, "corrente_a_nominal": 1.50, "rotacao_rpm_nominal": 1725, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"}
+                ],
+                "vibrador": {
+                    "tag_motor": "M205_AC2",
+                    "potencia_kw_nominal": 2.2,
+                    "potencia_cv_nominal": 3.0,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 1.50,
+                    "rotacao_rpm_nominal": 1725,
+                    "marca_nominal": "S/INF",
+                    "modelo_nominal": "S/INF",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                },
+                "esteirasLE": {
+                    "tag_motor": "M206_AC2",
+                    "potencia_kw_nominal": 1.5,
+                    "potencia_cv_nominal": 2.0,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 3.36,
+                    "rotacao_rpm_nominal": 1750,
+                    "marca_nominal": "S/INF",
+                    "modelo_nominal": "S/INF",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                },
+                "esteirasLD": {
+                    "tag_motor": "M207_AC2",
+                    "potencia_kw_nominal": 1.5,
+                    "potencia_cv_nominal": 2.0,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 3.36,
+                    "rotacao_rpm_nominal": 1750,
+                    "marca_nominal": "S/INF",
+                    "modelo_nominal": "S/INF",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                }
+            },
+            "despalhadeira_3_autoclave_2": {
+                "rosca": [
+                    {"tag_motor": "M301_AC2", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 5.10, "rotacao_rpm_nominal": 1756, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M302_AC2", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 5.10, "rotacao_rpm_nominal": 1756, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M303_AC2", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 5.10, "rotacao_rpm_nominal": 1756, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M304_AC2", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 5.10, "rotacao_rpm_nominal": 1756, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M305_AC2", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 5.10, "rotacao_rpm_nominal": 1756, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M306_AC2", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 5.10, "rotacao_rpm_nominal": 1756, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M307_AC2", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 5.10, "rotacao_rpm_nominal": 1756, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"},
+                    {"tag_motor": "M308_AC2", "potencia_kw_nominal": 2.2, "potencia_cv_nominal": 3, "tensao_v_nominal": 380, "corrente_a_nominal": 5.10, "rotacao_rpm_nominal": 1756, "marca_nominal": "S/INF", "modelo_nominal": "S/INF", "rolamento_d_nominal": "S/INF", "rolamento_t_nominal": "S/INF", "regulagem_corrente_nominal": "S/INF"}
+                ],
+                "osciladorLE": {
+                    "tag_motor": "M309_AC2",
+                    "potencia_kw_nominal": 0.37,
+                    "potencia_cv_nominal": 0.50,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 1.11,
+                    "rotacao_rpm_nominal": 1730,
+                    "marca_nominal": "S/INF",
+                    "modelo_nominal": "S/INF",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                },
+                "osciladorLD": {
+                    "tag_motor": "M310_AC2",
+                    "potencia_kw_nominal": 0.37,
+                    "potencia_cv_nominal": 0.50,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 1.11,
+                    "rotacao_rpm_nominal": 1730,
+                    "marca_nominal": "S/INF",
+                    "modelo_nominal": "S/INF",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                },
+                "vibrador": {
+                    "tag_motor": "M311_AC2",
+                    "potencia_kw_nominal": 2.2,
+                    "potencia_cv_nominal": 3.0,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 4.78,
+                    "rotacao_rpm_nominal": 1745,
+                    "marca_nominal": "S/INF",
+                    "modelo_nominal": "S/INF",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                },
+                "esteirasLE": {
+                    "tag_motor": "M312_AC2",
+                    "potencia_kw_nominal": 0.75,
+                    "potencia_cv_nominal": 1.0,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 1.67,
+                    "rotacao_rpm_nominal": 1715,
+                    "marca_nominal": "S/INF",
+                    "modelo_nominal": "S/INF",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                },
+                "esteirasLD": {
+                    "tag_motor": "M313_AC2",
+                    "potencia_kw_nominal": 0.75,
+                    "potencia_cv_nominal": 1.0,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 1.67,
+                    "rotacao_rpm_nominal": 1715,
+                    "marca_nominal": "S/INF",
+                    "modelo_nominal": "S/INF",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                }
+            }
+        }
+    }
+}

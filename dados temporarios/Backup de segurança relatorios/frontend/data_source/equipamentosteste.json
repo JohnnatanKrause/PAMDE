@@ -1,0 +1,48 @@
+{
+    "teste": {
+        "setor_teste_1": {
+            "equip_teste_A": {
+                "motor_A1": {
+                    "tag_motor": "MTESTE_01",
+                    "potencia_kw_nominal": 1.1,
+                    "tensao_v_nominal": 380,
+                    "corrente_a_nominal": 2.5,
+                    "rotacao_rpm_nominal": 1700,
+                    "marca_nominal": "WEG",
+                    "modelo_nominal": "W21",
+                    "rolamento_d_nominal": "6203",
+                    "rolamento_t_nominal": "6202",
+                    "regulagem_corrente_nominal": "2.8A"
+                },
+                "motor_A2": {
+                    "tag_motor": "MTESTE_02",
+                    "potencia_kw_nominal": 0.75,
+                    "tensao_v_nominal": 220,
+                    "corrente_a_nominal": 3.0,
+                    "rotacao_rpm_nominal": 3400,
+                    "marca_nominal": "Nova",
+                    "modelo_nominal": "N20",
+                    "rolamento_d_nominal": "S/INF",
+                    "rolamento_t_nominal": "S/INF",
+                    "regulagem_corrente_nominal": "S/INF"
+                }
+            }
+        },
+        "setor_teste_2": {
+            "equip_teste_B": {
+                "motor_B1": {
+                    "tag_motor": "MTESTE_03",
+                    "potencia_kw_nominal": 2.2,
+                    "tensao_v_nominal": 440,
+                    "corrente_a_nominal": 4.0,
+                    "rotacao_rpm_nominal": 1750,
+                    "marca_nominal": "WEG",
+                    "modelo_nominal": "W22",
+                    "rolamento_d_nominal": "6304",
+                    "rolamento_t_nominal": "6304",
+                    "regulagem_corrente_nominal": "S/INF"
+                }
+            }
+        }
+    }
+}

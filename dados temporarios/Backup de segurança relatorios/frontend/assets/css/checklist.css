@@ -1,6 +1,5 @@
 /* frontend/assets/css/checklist.css */
-
-.app-header {
+.app-header { /* Estilo similar ao dashboard-header, mas pode ser específico */
     background-color: #34495e; /* Azul acinzentado mais escuro */
     color: white;
     padding: 10px 25px;
@@ -123,23 +122,15 @@
 #proximoEquipamentoBtn:hover {
     background-color: #27ae60;
 }
-
-/* Estilo para o botão Finalizar Inspeção */
-#finalizarInspecaoBtn.btn-finish { /* Adicionando a classe para consistência */
+#finalizarInspecaoBtn {
     background-color: #e74c3c;
     color: white;
 }
-#finalizarInspecaoBtn.btn-finish:hover {
+#finalizarInspecaoBtn:hover {
     background-color: #c0392b;
 }
-#finalizarInspecaoBtn:disabled { /* Garante que o estilo de desabilitado seja aplicado */
-    background-color: #ecf0f1;
-    color: #bdc3c7;
-    cursor: not-allowed;
-}
 
-
-/* Estilos para formulário de inspeção */
+/* Estilos para formulário de inspeção (a serem adicionados) */
 #inspecaoForm .form-group {
     margin-bottom: 15px;
 }
@@ -153,19 +144,18 @@
 #inspecaoForm input[type="number"],
 #inspecaoForm select,
 #inspecaoForm textarea {
-    width: calc(100% - 22px); /* Ajusta para padding e borda se não usar box-sizing */
+    width: calc(100% - 22px); /* Ajusta para padding e borda */
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 0.95em;
-    box-sizing: border-box; /* Adicionado para consistência, melhor usar em todos */
 }
 #inspecaoForm textarea {
     resize: vertical;
     min-height: 80px;
 }
 
-/* Estilos para os dados de leitura da inspeção */
+/*Estilos para os dados de leitura da inspeção */
 .dados-medidos h4 {
     margin-top: 20px;
     margin-bottom: 15px;
@@ -177,6 +167,7 @@
 .dados-medidos h4:first-of-type {
     margin-top: 0;
 }
+
 
 .form-grid {
     display: grid;
@@ -225,19 +216,16 @@
     border: 1px solid #ddd;
     padding: 5px;
     border-radius: 4px;
-    display: block; /* Para garantir que o margin-top funcione como esperado */
-    margin-top: 10px;
 }
-
 /* Estilos para os Checkboxs */
-.checkbox-options { /* Obsoleto se .status-options está sendo usado consistentemente */
+.checkbox-options {
     margin-top: 5px;
-    display: flex;
-    gap: 15px;
+    display: flex; /* Para alinhar os checkboxes lado a lado */
+    gap: 15px;     /* Espaço entre eles */
 }
 
-.na-checkbox-label {
-    display: inline-flex;
+.na-checkbox-label { /* Reutilizamos esta classe, mas ajustamos se necessário */
+    display: inline-flex; /* Para alinhar o texto com o checkbox */
     align-items: center;
     font-size: 0.85em;
     color: #555;
@@ -246,10 +234,12 @@
 
 .na-checkbox-label input[type="checkbox"] {
     margin-right: 5px;
+    vertical-align: middle; /* Pode não ser necessário com inline-flex */
 }
 
+
 .status-tooltip {
-    display: none;
+    display: none; /* Escondido por padrão */
     font-size: 0.85em;
     color: #555;
     margin-left: 10px;
@@ -257,99 +247,63 @@
     background-color: #f0f0f0;
     border-radius: 3px;
     border: 1px solid #ccc;
-    vertical-align: middle;
+    vertical-align: middle; /* Para alinhar melhor com os checkboxes */
 }
 
-.status-options {
+.status-options { /* Container para os checkboxes e o tooltip */
     display: flex;
-    align-items: center;
-    gap: 10px;
+    align-items: center; /* Alinha verticalmente os itens */
+    gap: 10px; /* Espaço entre os elementos (labels, tooltip) */
     margin-top: 5px;
 }
+/* frontend/assets/css/checklist.css */
 
-/* Estilo para o botão Gerar PDF e sua seção */
-.global-actions {
-    display: block; /* Garante que a seção ocupe espaço e seja visível quando o JS mudar */
-    width: 90%;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-    padding: 15px; /* Já está no HTML inline, mas bom ter aqui */
-    margin-top: 25px;
-    margin-bottom: 25px;
-    /* A borda de debug está inline no HTML, pode ser removida depois */
-}
+/* ... (seu CSS existente) ... */
 
-.btn-confirm { /* Classe genérica para botões de confirmação/positivos */
-    background-color: #2ecc71; /* Verde */
-    color: white;
-    padding: 12px 25px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.3s ease;
-}
-.btn-confirm:hover:not([disabled]) {
-    background-color: #27ae60;
-}
-.btn-confirm:disabled {
-    background-color: #95e0b4; /* Verde mais claro para desabilitado */
-    cursor: not-allowed;
-}
-
-#btnGerarRelatorioPDF.btn-confirm { /* Estilo específico para o botão de PDF se necessário */
-    padding: 12px 25px;
-    font-size: 1.1em;
-    /* Outros estilos se precisar diferenciar mais */
-}
-
-
-/* --- Media Queries para Responsividade --- */
-
-/* Para tablets e celulares maiores em modo paisagem */
-@media (max-width: 800px) {
+/* Para tablets e celulares maiores em modo paisagem (ajustado) */
+@media (max-width: 800px) { /* Aumentei um pouco o breakpoint inicial, pode ser ajustado */
     .checklist-content {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* Muda para uma única coluna */
         gap: 20px;
     }
 
-    .app-header {
-        padding: 10px 15px;
-        flex-wrap: wrap;
-        gap: 8px;
+    .dados-nominais, .dados-medidos {
+        padding: 15px; /* Manter ou ajustar padding interno das seções */
     }
+
+    .app-header {
+        padding: 10px 15px; /* Reduzir padding do header */
+        flex-wrap: wrap; /* Permite que os itens do header quebrem linha se necessário */
+        gap: 8px; /* Espaço entre os itens do header quando quebram linha */
+    }
+
     .app-header h1 {
-        font-size: 1.2em;
-        width: 100%;
-        text-align: center;
-        order: 1;
+        font-size: 1.2em; /* Reduzir um pouco o título */
+        width: 100%; /* Título pode ocupar toda a largura se quebrar linha */
+        text-align: center; /* Centralizar título se ocupar toda a largura */
+        order: 1; /* Para garantir que o título venha primeiro se houver quebra */
     }
     .app-header .user-info-checklist {
         order: 2;
         font-size: 0.8em;
-        text-align: center; /* Para centralizar se estiver sozinho na linha */
-        width: 100%;      /* Para centralizar se estiver sozinho na linha */
     }
     #voltarDashboardBtn {
         order: 3;
         font-size: 0.85em;
         padding: 6px 10px;
-        margin: 5px auto 0; /* Para centralizar se estiver sozinho na linha */
     }
 }
 
-/* Para celulares em modo retrato */
+/* Para celulares em modo retrato (iPhone 12 Pro tem 390px de largura) */
 @media (max-width: 480px) {
     .checklist-container {
         padding: 10px;
-        margin: 10px auto;
+        margin: 10px auto; /* Reduzir margens externas */
     }
 
     .app-header {
-        flex-direction: column;
-        align-items: stretch;
+        flex-direction: column; /* Itens do header um abaixo do outro */
+        align-items: stretch; /* Faz os itens esticarem para preencher a largura */
         gap: 5px;
     }
     .app-header h1 {
@@ -359,33 +313,33 @@
         text-align: center;
     }
     #voltarDashboardBtn {
-        width: auto;
-        align-self: center;
+        width: auto; /* Deixa o botão com largura automática baseada no conteúdo e padding */
+        align-self: center; /* Centraliza o botão se ele não ocupar 100% */
         margin-top: 5px;
     }
 
     .navegacao-equipamento h2 {
-        font-size: 1.3em;
+        font-size: 1.3em; /* Ajustar tamanho da TAG do motor */
     }
 
     .form-grid, .fases-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr; /* Força uma única coluna para os grids internos também */
     }
 
     #inspecaoForm input[type="text"],
     #inspecaoForm input[type="number"],
     #inspecaoForm select,
     #inspecaoForm textarea {
-        font-size: 1rem;
-        padding: 12px;
+        font-size: 1rem; /* Usar rem para melhor acessibilidade e consistência */
+        padding: 12px; /* Aumentar padding para facilitar toque */
     }
     #inspecaoForm label {
-        font-size: 0.9rem;
+        font-size: 0.9rem; /* Ajustar tamanho do label */
     }
 
     .status-options {
-        flex-wrap: wrap;
-        gap: 5px;
+        flex-wrap: wrap; /* Permite que os checkboxes N/A, N/M quebrem linha se necessário */
+        gap: 5px; /* Reduz o gap entre N/A e N/M */
     }
     .na-checkbox-label {
         font-size: 0.9rem;
@@ -393,10 +347,11 @@
     .status-tooltip {
         font-size: 0.8rem;
         margin-left: 5px;
-        width: 100%;
+        width: 100%; /* Tooltip pode ocupar toda a largura abaixo dos checkboxes */
         text-align: left;
         margin-top: 3px;
     }
+
 
     .checklist-actions {
         display: flex;
@@ -406,18 +361,19 @@
     .checklist-actions button {
         width: 100%;
         margin: 0;
-        padding: 15px;
+        padding: 15px; /* Botões maiores para toque */
         font-size: 1.05em;
     }
 
+    /* Ajuste para os dados nominais para evitar que o "strong" empurre demais */
     .dados-nominais p strong {
-        min-width: auto;
-        display: block;
+        min-width: auto; /* Remove o min-width */
+        display: block;  /* Faz o label ocupar uma linha */
         margin-bottom: 2px;
     }
     .dados-nominais p span[data-nominal] {
-        padding-left: 10px;
-        display: block;
+        padding-left: 10px; /* Adiciona um pequeno recuo ao valor */
+        display: block; /* Faz o valor ocupar uma linha abaixo do label */
     }
     .dados-nominais hr {
         margin: 10px 0;

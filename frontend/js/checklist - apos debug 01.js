@@ -320,18 +320,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     ultimoItemSalvo = true;
                 }
 
-                // Mostrar botão Finalizar se estiver no último item, OU se algum dado já foi coletado.
-                if (indiceEquipamentoAtual === listaDeEquipamentos.length - 1 || algumDadoColetado) {
+                if (algumDadoColetado || ultimoItemSalvo || (indiceEquipamentoAtual === listaDeEquipamentos.length - 1)) {
                     finalizarInspecaoBtn.style.display = 'inline-block';
-                     // Habilitar se houver dados coletados OU se o último item atual já tiver sido salvo E estamos nele
-                    finalizarInspecaoBtn.disabled = !algumDadoColetado && !(indiceEquipamentoAtual === listaDeEquipamentos.length -1 && ultimoItemSalvo);
-                     if (indiceEquipamentoAtual === listaDeEquipamentos.length -1 && !dadosColetadosInspecao[indiceEquipamentoAtual]){
-                        // Caso especial: último item, ainda não salvo, mas formulário pode estar preenchido.
-                        // A validação de campos obrigatórios antes de finalizar vai pegar isso.
-                        // O botão Finalizar deve estar habilitado para permitir essa tentativa de salvar.
-                        finalizarInspecaoBtn.disabled = false;
-                    }
-
+                    finalizarInspecaoBtn.disabled = !algumDadoColetado && !ultimoItemSalvo; // Desabilita se não há nada salvo E não é o último salvo
                 } else {
                     finalizarInspecaoBtn.style.display = 'none';
                     finalizarInspecaoBtn.disabled = true;
@@ -345,10 +336,10 @@ document.addEventListener('DOMContentLoaded', function () {
             
             const btnGerarPDFDuranteInspecao = document.getElementById('btnGerarRelatorioPDF');
             if (btnGerarPDFDuranteInspecao) {
-                // console.log("[DEBUG] exibirEquipamentoAtual: Escondendo botão PDF (durante inspeção).");
+                console.log("[DEBUG] exibirEquipamentoAtual: Escondendo botão PDF (durante inspeção).");
                 btnGerarPDFDuranteInspecao.style.display = 'none';
             }
-            // console.log(`[DEBUG] exibirEquipamentoAtual: FIM (exibindo equipamento ${indiceEquipamentoAtual + 1}).`);
+            console.log(`[DEBUG] exibirEquipamentoAtual: FIM (exibindo equipamento ${indiceEquipamentoAtual + 1}).`);
 
         } else { // else: indiceEquipamentoAtual >= listaDeEquipamentos.length -> inspeção concluída
             console.log("%c[DEBUG] exibirEquipamentoAtual: ENTRANDO NO BLOCO ELSE (inspeção concluída)", "background-color: yellow; color: black; font-weight: bold;");
@@ -361,7 +352,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (noEquipmentsMessage) {
                 noEquipmentsMessage.textContent = "Inspeção do setor concluída. Clique em 'Gerar Relatório PDF' para criar o documento.";
                 noEquipmentsMessage.style.display = 'block';
-                noEquipmentsMessage.style.color = 'inherit'; 
+                noEquipmentsMessage.style.color = 'inherit'; // Resetar cor caso tenha sido alterada para erro
                 console.log("[DEBUG] exibirEquipamentoAtual (ELSE): Mensagem de conclusão exibida.");
             } else {
                 console.warn("[DEBUG] exibirEquipamentoAtual (ELSE): Elemento noEquipmentsMessage NÃO encontrado.");
@@ -493,13 +484,6 @@ document.addEventListener('DOMContentLoaded', function () {
             potencia_CV_nominal: equipamentoAtual.potencia_CV_nominal,
             corrente_a_nominal: equipamentoAtual.corrente_a_nominal,
             tensao_v_nominal: equipamentoAtual.tensao_v_nominal,
-            // Adicionar outros campos nominais que você quer no relatório, se não já estiverem sendo adicionados em criarPDF
-            potencia_kw_nominal: equipamentoAtual.potencia_kw_nominal,
-            rotacao_rpm_nominal: equipamentoAtual.rotacao_rpm_nominal,
-            rolamento_d_nominal: equipamentoAtual.rolamento_d_nominal,
-            rolamento_t_nominal: equipamentoAtual.rolamento_t_nominal,
-            carcaca_nominal: equipamentoAtual.carcaca_nominal,
-            ip_nominal: equipamentoAtual.ip_nominal,
         };
         const formData = new FormData(inspecaoForm);
         for (let [key, value] of formData.entries()) {
@@ -509,17 +493,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (checkedStatusCheckbox) {
                     dados[key] = checkedStatusCheckbox.value;
                     const inputName = key.replace('_status', '');
-                    dados[inputName] = ''; 
+                    dados[inputName] = '';
                 } else {
                     dados[key] = null;
                 }
             } else if (key === 'foto_equipamento') {
                 if (value instanceof File && value.name) {
-                    dados[key] = value; 
+                    dados[key] = value; // O objeto File em si (não usado diretamente no PDF, mas poderia ser para upload)
                     if (previewFotoElement && previewFotoElement.src.startsWith('data:image')) {
-                        dados[`${key}_previewDataUrl`] = previewFotoElement.src; 
+                        dados[`${key}_previewDataUrl`] = previewFotoElement.src; // Data URL para PDF
                     }
-                } else { 
+                } else { // Se não há novo arquivo, mas há preview salvo
                     const dadosAnteriores = dadosColetadosInspecao[indiceEquipamentoAtual];
                     if (dadosAnteriores && dadosAnteriores.foto_equipamento_previewDataUrl) {
                         dados[`${key}_previewDataUrl`] = dadosAnteriores.foto_equipamento_previewDataUrl;
@@ -531,21 +515,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (inputElement && !inputElement.disabled) {
                     dados[key] = value;
                 } else if (inputElement && inputElement.disabled && !dados.hasOwnProperty(key)) {
-                    dados[key] = ''; 
-                } else if (!inputElement && !dados.hasOwnProperty(key)) { 
+                    // Se o campo está desabilitado (ex: por N/A, N/M), seu valor não está no FormData.
+                    // Mas queremos registrar que ele foi explicitamente marcado, então o valor deve ser vazio ou o status.
+                    // O valor já é pego pelo _status, então aqui podemos deixar vazio ou não adicionar se o _status já fez isso.
+                    // Para consistência, se estava desabilitado e não foi pego pelo _status, garantir que esteja na coleta.
+                    dados[key] = ''; // Garante que a chave existe com valor vazio se desabilitado.
+                } else if (!inputElement && !dados.hasOwnProperty(key)) { // Campo do form não encontrado, mas pode ser do FormData
                     dados[key] = value;
-                }
-            }
-        }
-        // Garantir que todos os campos do formulário estejam nos dados, mesmo que vazios e não desabilitados
-        for (const element of inspecaoForm.elements) {
-            if (element.name && !dados.hasOwnProperty(element.name) && !element.name.endsWith('_status')) {
-                if (element.type === 'file') {
-                    // Já tratado acima
-                } else if (element.disabled) {
-                     dados[element.name] = ''; // Ou o valor que o status implica
-                } else {
-                    dados[element.name] = element.value;
                 }
             }
         }
@@ -553,7 +529,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function handleProximoEquipamento() {
-        // console.log(`[DEBUG] handleProximoEquipamento: Índice ANTES ${indiceEquipamentoAtual}`);
+        console.log(`[DEBUG] handleProximoEquipamento: Índice ANTES ${indiceEquipamentoAtual}`);
         if (indiceEquipamentoAtual < 0 || indiceEquipamentoAtual >= listaDeEquipamentos.length) {
             console.warn("Índice de equipamento atual inválido para validação/coleta.");
             exibirEquipamentoAtual();
@@ -568,17 +544,17 @@ document.addEventListener('DOMContentLoaded', function () {
             const pareceresDoEquipamento = gerarPareceresEquipamento(equipamentoAtualNominal, dadosAtuaisColetados);
             dadosAtuaisColetados.pareceres = pareceresDoEquipamento;
             dadosColetadosInspecao[indiceEquipamentoAtual] = dadosAtuaisColetados;
-            // console.log(`[DEBUG] Dados salvos para eq. ${indiceEquipamentoAtual}:`, JSON.parse(JSON.stringify(dadosColetadosInspecao[indiceEquipamentoAtual])));
+            console.log(`[DEBUG] Dados salvos para eq. ${indiceEquipamentoAtual}:`, JSON.parse(JSON.stringify(dadosColetadosInspecao[indiceEquipamentoAtual]))); // Log sem o File
         }
 
         if (indiceEquipamentoAtual < listaDeEquipamentos.length - 1) {
             indiceEquipamentoAtual++;
-            // console.log(`[DEBUG] handleProximoEquipamento: Avançando para índice ${indiceEquipamentoAtual}`);
+            console.log(`[DEBUG] handleProximoEquipamento: Avançando para índice ${indiceEquipamentoAtual}`);
             exibirEquipamentoAtual();
         } else {
             console.log("[DEBUG] handleProximoEquipamento: Chegou ao último item. Preparando para finalizar.");
             indiceEquipamentoAtual = listaDeEquipamentos.length - 1; 
-            if (equipamentoTagElement) equipamentoTagElement.textContent = (listaDeEquipamentos[indiceEquipamentoAtual].tag_motor || "TAG Indisponível") + " (Último Item - Revise e Finalize)";
+            if (equipamentoTagElement) equipamentoTagElement.textContent = listaDeEquipamentos[indiceEquipamentoAtual].tag_motor + " (Último Item - Revise e Finalize)";
             if (equipamentoAtualIndexElement) equipamentoAtualIndexElement.textContent = indiceEquipamentoAtual + 1;
             if (proximoEquipamentoBtn) {
                 proximoEquipamentoBtn.textContent = "Próximo Equipamento"; 
@@ -624,12 +600,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             console.log("[DEBUG] handleFinalizarInspecao: Formulário considerado modificado?", formModificado);
 
-            // Se o item atual não foi salvo E o formulário está modificado
-            // OU se o item atual JÁ FOI SALVO, o formulário está modificado E o usuário confirma sobrescrever
-            const itemAtualFoiSalvo = dadosColetadosInspecao[indiceEquipamentoAtual] && Object.keys(dadosColetadosInspecao[indiceEquipamentoAtual]).length > 0;
-
-            if ((!itemAtualFoiSalvo && formModificado) ||
-                (itemAtualFoiSalvo && formModificado &&
+            if ((!dadosColetadosInspecao[indiceEquipamentoAtual] && formModificado) ||
+                (dadosColetadosInspecao[indiceEquipamentoAtual] && Object.keys(dadosColetadosInspecao[indiceEquipamentoAtual]).length > 0 && formModificado &&
                     confirm("O item atual exibido possui dados que parecem ter sido modificados. Deseja salvá-los/sobrescrevê-los antes de finalizar a inspeção do setor?"))
             ) {
                 if (validarCamposObrigatorios()) {
@@ -646,13 +618,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     console.log("%c[DEBUG] handleFinalizarInspecao: Validação falhou para o item atual. Finalização do setor interrompida.", "color: red;");
                     return;
                 }
-            } else if (itemAtualFoiSalvo && formModificado) { // Usuário escolheu NÃO sobrescrever
-                 console.log(`%c[DEBUG] handleFinalizarInspecao: Mantendo dados previamente salvos para item ${indiceEquipamentoAtual} (usuário não quis sobrescrever).`, "color: orange;");
-            } else if (itemAtualFoiSalvo && !formModificado) {
-                 console.log(`%c[DEBUG] handleFinalizarInspecao: Mantendo dados previamente salvos para item ${indiceEquipamentoAtual} (formulário não modificado).`, "color: orange;");
-            }
-             else { // !itemAtualFoiSalvo && !formModificado
-                console.log(`%c[DEBUG] handleFinalizarInspecao: Item atual ${indiceEquipamentoAtual} não precisou ser salvo (novo e não modificado).`, "color: orange;");
+            } else if (dadosColetadosInspecao[indiceEquipamentoAtual] && Object.keys(dadosColetadosInspecao[indiceEquipamentoAtual]).length > 0) {
+                console.log(`%c[DEBUG] handleFinalizarInspecao: Mantendo dados previamente salvos para item ${indiceEquipamentoAtual}.`, "color: orange;");
+            } else {
+                console.log(`%c[DEBUG] handleFinalizarInspecao: Item atual ${indiceEquipamentoAtual} não precisou ser salvo.`, "color: orange;");
             }
         } else {
             console.log(`[DEBUG] handleFinalizarInspecao: Não está em um item válido para salvar/atualizar formulário (índice: ${indiceEquipamentoAtual}, total: ${listaDeEquipamentos.length}).`);
@@ -681,7 +650,7 @@ document.addEventListener('DOMContentLoaded', function () {
         indiceEquipamentoAtual = listaDeEquipamentos.length;
         console.log(`%c[DEBUG] handleFinalizarInspecao: Índice atualizado para ${indiceEquipamentoAtual}. Chamando exibirEquipamentoAtual() para UI finalizada.`, "color: #FF8C00; font-weight: bold;");
         
-        exibirEquipamentoAtual(); 
+        exibirEquipamentoAtual(); // CHAMADA CRÍTICA AQUI
 
         console.log("%c[DEBUG] handleFinalizarInspecao: FIM DA FUNÇÃO (APÓS chamada a exibirEquipamentoAtual)", "color: blue; font-weight: bold;");
     }
@@ -827,6 +796,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
         if (pareceres.necessita_atualizacao_json) pareceres.detalhes_atualizacao_json = listaAtualizacoes;
+        //console.log("Pareceres Gerados:", pareceres);
         return pareceres;
     }
 
@@ -837,7 +807,6 @@ document.addEventListener('DOMContentLoaded', function () {
             alert("Nenhum dado de inspeção válido para gerar o relatório.");
             const btnPDFInit = document.getElementById('btnGerarRelatorioPDF');
             if (btnPDFInit) { btnPDFInit.disabled = false; btnPDFInit.textContent = "Gerar Relatório PDF"; }
-            console.log("%c[PDF_DEBUG] gerarRelatorioPDFHandler: FIM (sem dados)", "color: purple; font-weight: bold;");
             return;
         }
         console.log("[PDF_DEBUG] Iniciando geração de PDF com os seguintes dados:", JSON.parse(JSON.stringify(inspecoesParaRelatorio)));
@@ -846,251 +815,69 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!btnPDF) { console.error("[PDF_DEBUG] Botão 'btnGerarRelatorioPDF' não encontrado no DOM."); return; }
         btnPDF.disabled = true; btnPDF.textContent = "Gerando...";
         try {
-            await criarPDF(inspecoesParaRelatorio); // Await é importante aqui
+            await criarPDF(inspecoesParaRelatorio);
             if (confirm("Relatório PDF gerado com sucesso!\nDeseja realizar a inspeção de outro setor?")) {
                 dadosColetadosInspecao = []; indiceEquipamentoAtual = 0;
                 if (typeof limparFormularioInspecao === "function") limparFormularioInspecao();
-                // Resetar botões e UI para novo ciclo
-                const btnProximo = document.getElementById('proximoEquipamentoBtn');
-                const btnAnterior = document.getElementById('btnAnteriorEquipamento');
-                const btnFinalizar = document.getElementById('finalizarInspecaoBtn');
-                if (btnProximo) btnProximo.disabled = true; // Desabilitar até carregar novos equipamentos
-                if (btnAnterior) btnAnterior.disabled = true;
-                if (btnFinalizar) { btnFinalizar.disabled = true; btnFinalizar.style.display = 'none';}
-
+                const btnProximo = document.getElementById('btnProximoEquipamento'), btnAnterior = document.getElementById('btnAnteriorEquipamento'), btnFinalizar = document.getElementById('btnFinalizarInspecao');
+                if (btnProximo) btnProximo.disabled = false; if (btnAnterior) btnAnterior.disabled = false; if (btnFinalizar) btnFinalizar.disabled = false;
                 btnPDF.style.display = 'none'; btnPDF.disabled = false; btnPDF.textContent = "Gerar Relatório PDF";
-                if(noEquipmentsMessage) noEquipmentsMessage.style.display = 'none';
-                if(equipamentoInfoWrapper) equipamentoInfoWrapper.style.display = 'block'; // Mostrar de novo para próxima inspeção
-
                 window.location.href = 'dashboard.html';
             } else {
                 localStorage.removeItem('usuarioLogado'); localStorage.removeItem('cadastroLogado'); sessionStorage.removeItem('setorSelecionado');
                 window.location.href = '../index.html';
             }
         } catch (error) {
-            console.error("[PDF_DEBUG] Erro ao gerar PDF:", error); 
+            console.error("[PDF_DEBUG] Erro ao gerar PDF:", error);
             alert("Ocorreu um erro ao gerar o relatório PDF. Verifique o console para detalhes.");
-            if(btnPDF) { // Verificar se btnPDF ainda existe no escopo
-                btnPDF.disabled = false; 
-                btnPDF.textContent = "Gerar Relatório PDF";
-            }
+            btnPDF.disabled = false; btnPDF.textContent = "Gerar Relatório PDF";
         }
         console.log("%c[PDF_DEBUG] gerarRelatorioPDFHandler: FIM", "color: purple; font-weight: bold;");
     }
 
     async function criarPDF(dadosDaInspecao) {
         console.log("%c[PDF_DEBUG] criarPDF: INÍCIO com dados:", "color: purple; font-weight: bold;", JSON.parse(JSON.stringify(dadosDaInspecao)));
-        const { jsPDF } = window.jspdf; 
-        const doc = new jsPDF();
+        const { jsPDF } = window.jspdf; const doc = new jsPDF();
         const nomeUsuario = localStorage.getItem('usuarioLogado') || 'N/A';
         const dataHora = new Date().toLocaleString('pt-BR');
         const setorInspecionado = sessionStorage.getItem('setorSelecionado') ? sessionStorage.getItem('setorSelecionado').toUpperCase() : 'N/A';
-        
-        let posY = 10; 
-        const margemEsquerda = 15;
-        const margemDireita = doc.internal.pageSize.getWidth() - 15;
-        const larguraConteudo = margemDireita - margemEsquerda;
-        
-        const logoOleBase64 = sessionStorage.getItem('logoOleBase64');
-        const logoPandeBase64 = sessionStorage.getItem('logoPandeBase64');
-
-        if (logoOleBase64) { try { doc.addImage(logoOleBase64, 'PNG', margemEsquerda, posY, 30, 10); } catch (e) { console.error("[PDF_DEBUG] Erro ao adicionar logo Olé:", e); doc.setFontSize(8).text('Olé Conservas (erro logo)', margemEsquerda, posY + 7); } } else doc.setFontSize(8).text('Olé Conservas', margemEsquerda, posY + 7);
-        if (logoPandeBase64) { try { doc.addImage(logoPandeBase64, 'PNG', margemDireita - 30, posY, 30, 10); } catch (e) { console.error("[PDF_DEBUG] Erro ao adicionar logo PAMDE:", e); doc.setFontSize(8).text('PAMDE (erro logo)', margemDireita - 15, posY + 7, { align: 'right' }); } } else doc.setFontSize(8).text('PAMDE', margemDireita - 15, posY + 7, { align: 'right' });
-        
-        posY += 15; 
-        doc.setFontSize(16).setFont(undefined, 'bold'); 
-        doc.text(`Relatório de Inspeção - Setor: ${setorInspecionado}`, doc.internal.pageSize.getWidth() / 2, posY, { align: 'center' }); 
-        posY += 8; 
-        doc.setFont(undefined, 'normal');
-        doc.setFontSize(10); 
-        doc.text(`Inspetor: ${nomeUsuario}`, margemEsquerda, posY); 
-        doc.text(`Data e Hora: ${dataHora}`, margemDireita, posY, { align: 'right' }); 
-        posY += 6; 
-        doc.setLineWidth(0.2).line(margemEsquerda, posY, margemDireita, posY); 
-        posY += 4;
-
+        let posY = 10; const margemEsquerda = 15, margemDireita = doc.internal.pageSize.getWidth() - 15, larguraConteudo = margemDireita - margemEsquerda;
+        const logoOleBase64 = sessionStorage.getItem('logoOleBase64'), logoPandeBase64 = sessionStorage.getItem('logoPandeBase64');
+        if (logoOleBase64) { try { doc.addImage(logoOleBase64, 'PNG', margemEsquerda, posY, 30, 10); } catch (e) { console.error("Erro ao adicionar logo Olé:", e); doc.setFontSize(8).text('Olé Conservas (erro logo)', margemEsquerda, posY + 7); } } else doc.setFontSize(8).text('Olé Conservas', margemEsquerda, posY + 7);
+        if (logoPandeBase64) { try { doc.addImage(logoPandeBase64, 'PNG', margemDireita - 30, posY, 30, 10); } catch (e) { console.error("Erro ao adicionar logo PAMDE:", e); doc.setFontSize(8).text('PAMDE (erro logo)', margemDireita - 15, posY + 7, { align: 'right' }); } } else doc.setFontSize(8).text('PAMDE', margemDireita - 15, posY + 7, { align: 'right' });
+        posY += 15; doc.setFontSize(16).setFont(undefined, 'bold'); doc.text(`Relatório de Inspeção - Setor: ${setorInspecionado}`, doc.internal.pageSize.getWidth() / 2, posY, { align: 'center' }); posY += 8; doc.setFont(undefined, 'normal');
+        doc.setFontSize(10); doc.text(`Inspetor: ${nomeUsuario}`, margemEsquerda, posY); doc.text(`Data e Hora: ${dataHora}`, margemDireita, posY, { align: 'right' }); posY += 6; doc.setLineWidth(0.2).line(margemEsquerda, posY, margemDireita, posY); posY += 4;
         function addPageIfNeeded(alturaEstimadaProximoConteudo = 20) {
-            if (posY + alturaEstimadaProximoConteudo > doc.internal.pageSize.getHeight() - 15) { // 15mm de margem inferior
-                doc.addPage();
-                posY = 15; // Margem superior na nova página
-                doc.setFontSize(8).setTextColor(100);
-                doc.text(`Relatório de Inspeção - Setor: ${setorInspecionado} (Pág. ${doc.internal.getNumberOfPages()})`, doc.internal.pageSize.getWidth() / 2, 10, { align: 'center' });
-                doc.setTextColor(0); // Resetar cor
+            if (posY + alturaEstimadaProximoConteudo > doc.internal.pageSize.getHeight() - 15) {
+                doc.addPage(); posY = 15;
+                doc.setFontSize(8).setTextColor(100); doc.text(`Relatório de Inspeção - Setor: ${setorInspecionado} (Pág. ${doc.internal.getNumberOfPages()})`, doc.internal.pageSize.getWidth() / 2, 10, { align: 'center' }); doc.setTextColor(0);
             }
         }
-
-        const tableOptionsComumBase = {
-            theme: 'striped',
-            styles: { fontSize: 7, cellPadding: 1, overflow: 'linebreak' },
-            headStyles: { fillColor: [52, 73, 94], textColor: 255, fontStyle: 'bold', halign: 'center', fontSize: 8 },
-            margin: { left: margemEsquerda, right: margemEsquerda },
-            didDrawPage: function (data) {
-                posY = data.cursor.y; // Atualiza posY globalmente
-                 // Verifica se uma nova página FOI ADICIONADA pelo autoTable
-                if (data.pageNumber > doc.internal.pages.length -1 && data.cursor.y < data.settings.startY) {
-                     // Esta condição é uma tentativa de pegar a quebra de página do autoTable.
-                     // Pode precisar de ajuste. O ideal é que o addPageIfNeeded seja robusto o suficiente.
-                     // console.log (`[PDF_DEBUG] autoTable criou página. Nova posY: ${posY}, Página atual: ${data.pageNumber}`);
-                }
-            }
-        };
-
         for (const [index, equipamento] of dadosDaInspecao.entries()) {
-            addPageIfNeeded(60); 
-
-            doc.setFontSize(12).setFont(undefined, 'bold');
-            doc.text(`Equipamento: ${equipamento.tag_motor || 'N/A'} (${equipamento.nome_componente || 'N/A'})`, margemEsquerda, posY);
-            posY += 6;
-            doc.setFont(undefined, 'normal').setFontSize(9);
-            doc.text(`Local: ${equipamento.setor_principal || ''} > ${equipamento.subsetor_nivel1 || ''} > ${equipamento.subsetor_nivel2 || ''}`, margemEsquerda, posY);
-            posY += 7;
-            
-            addPageIfNeeded(30); 
-            const nominaisBody = [
-                ["Potência Nominal (CV/kW):", `${equipamento.potencia_CV_nominal || 'S/INF'} / ${equipamento.potencia_kw_nominal || 'S/INF'}`],
-                ["Tensão Nominal (V):", equipamento.tensao_v_nominal || 'S/INF'],
-                ["Corrente Nominal (A):", equipamento.corrente_a_nominal || 'S/INF'],
-                ["Rotação Nominal (RPM):", equipamento.rotacao_rpm_nominal || 'S/INF'],
-                ["Rol. Dianteiro Nominal:", equipamento.rolamento_d_nominal || 'S/INF'],
-                ["Rol. Traseiro Nominal:", equipamento.rolamento_t_nominal || 'S/INF'],
-                ["Carcaça Nominal:", equipamento.carcaca_nominal || 'S/INF'],
-                ["IP Nominal:", equipamento.ip_nominal || 'S/INF']
-            ];
-            doc.autoTable({ 
-                ...tableOptionsComumBase, 
-                startY: posY,
-                head: [['Dados Nominais', 'Valor']], 
-                body: nominaisBody,
-                columnStyles: { 0: { fontStyle: 'bold', cellWidth: 45 }, 1: { cellWidth: larguraConteudo - 45 } }
-            });
-            posY = doc.autoTable.previous.finalY + 4;
-
-            addPageIfNeeded(50);
-            const medidosPlacaBody = [
-                ["Marca (Placa/Medido):", formatarMedicaoComStatus(equipamento.marca_medida, equipamento.marca_medida_status)],
-                ["Modelo (Placa/Medido):", formatarMedicaoComStatus(equipamento.modelo_medido, equipamento.modelo_medido_status)],
-                ["Potência (Placa CV/kW):", `${formatarMedicaoComStatus(equipamento.potencia_placa_cv, equipamento.potencia_placa_cv_status)} / ${formatarMedicaoComStatus(equipamento.potencia_placa_kw, equipamento.potencia_placa_kw_status)}`],
-                ["Rol. Diant. (Placa):", formatarMedicaoComStatus(equipamento.rolamento_d_placa || equipamento.rolamento_d_medido, equipamento.rolamento_d_medido_status)],
-                ["Rol. Tras. (Placa):", formatarMedicaoComStatus(equipamento.rolamento_t_placa || equipamento.rolamento_t_medido, equipamento.rolamento_t_medido_status)],
-                ["Carcaça (Placa):", formatarMedicaoComStatus(equipamento.carcaca_placa, equipamento.carcaca_placa_status)],
-                ["IP (Placa):", formatarMedicaoComStatus(equipamento.ip_placa, equipamento.ip_placa_status)],
-                ["Potência Medida (CV):", formatarMedicaoComStatus(equipamento.potencia_medida, equipamento.potencia_medida_status)],
-                ["Tensão Medida (F1/F2/F3) V:", `${formatarMedicaoComStatus(equipamento.tensao_f1_medida, equipamento.tensao_f1_medida_status)} / ${formatarMedicaoComStatus(equipamento.tensao_f2_medida, equipamento.tensao_f2_medida_status)} / ${formatarMedicaoComStatus(equipamento.tensao_f3_medida, equipamento.tensao_f3_medida_status)}`],
-                ["Corrente Medida (F1/F2/F3) A:", `${formatarMedicaoComStatus(equipamento.corrente_f1_medida, equipamento.corrente_f1_medida_status)} / ${formatarMedicaoComStatus(equipamento.corrente_f2_medida, equipamento.corrente_f2_medida_status)} / ${formatarMedicaoComStatus(equipamento.corrente_f3_medida, equipamento.corrente_f3_medida_status)}`],
-                ["Temperatura Medida (°C):", formatarMedicaoComStatus(equipamento.temperatura_medida, equipamento.temperatura_medida_status)],
-                ["Rotação Medida (RPM):", formatarMedicaoComStatus(equipamento.rotacao_medida, equipamento.rotacao_medida_status)],
-                ["Regulagem Disjuntor (A):", formatarMedicaoComStatus(equipamento.regulagem_corrente_medida, equipamento.regulagem_corrente_medida_status)],
-            ];
-            doc.autoTable({ 
-                ...tableOptionsComumBase, 
-                startY: posY,
-                head: [['Dados Medidos / Placa', 'Valor']], 
-                body: medidosPlacaBody,
-                columnStyles: { 0: { fontStyle: 'bold', cellWidth: 45 }, 1: { cellWidth: larguraConteudo - 45 } }
-            });
-            posY = doc.autoTable.previous.finalY + 4;
-
-            addPageIfNeeded(40); 
-            const pareceresArray = [];
-            if (equipamento.pareceres) {
-                const chavesExcluirParecer = ['necessita_atualizacao_json', 'detalhes_atualizacao_json', 'potencia_placa', 'rolamento_dianteiro', 'rolamento_traseiro'];
-                for (const [chave, valor] of Object.entries(equipamento.pareceres)) {
-                    if (!chavesExcluirParecer.includes(chave)) {
-                        pareceresArray.push([`${formatarChaveParecer(chave)}:`, valor]);
-                    }
-                }
-                if (equipamento.pareceres.potencia_placa) pareceresArray.push(["Potência (Placa vs Nominal):", equipamento.pareceres.potencia_placa]);
-                if (equipamento.pareceres.rolamento_dianteiro) pareceresArray.push(["Rolamento Dianteiro (Placa vs Nominal):", equipamento.pareceres.rolamento_dianteiro]);
-                if (equipamento.pareceres.rolamento_traseiro) pareceresArray.push(["Rolamento Traseiro (Placa vs Nominal):", equipamento.pareceres.rolamento_traseiro]);
-            }
-            if (pareceresArray.length > 0) {
-                doc.autoTable({ 
-                    ...tableOptionsComumBase, 
-                    startY: posY,
-                    head: [['Análise Técnica / Pareceres', 'Resultado']], 
-                    body: pareceresArray,
-                    columnStyles: { 0: { fontStyle: 'bold', cellWidth: 60 }, 1: { cellWidth: larguraConteudo - 60 } } 
-                });
-                posY = doc.autoTable.previous.finalY + 4;
-            }
-
-            addPageIfNeeded(60); 
-            if (equipamento.foto_equipamento_previewDataUrl) { 
-                doc.setFontSize(9).setFont(undefined, 'bold'); 
-                doc.text("Foto do Equipamento:", margemEsquerda, posY); 
-                posY += 4; 
-                try { 
-                    const larguraFoto = 70, alturaMaxFoto = 50; 
-                    doc.addImage(equipamento.foto_equipamento_previewDataUrl, 'JPEG', margemEsquerda, posY, larguraFoto, alturaMaxFoto, undefined, 'FAST'); // Tente especificar formato como JPEG
-                    posY += alturaMaxFoto + 4; 
-                } catch (e) { 
-                    console.warn("[PDF_DEBUG] Erro ao adicionar imagem ao PDF:", e); 
-                    doc.setFont(undefined, 'normal').setTextColor(255, 0, 0); 
-                    doc.text("Erro ao carregar imagem.", margemEsquerda, posY); 
-                    posY += 5; 
-                    doc.setTextColor(0); 
-                } 
-            }
-            
-            addPageIfNeeded(20); 
-            if (equipamento.observacao) { 
-                doc.setFontSize(9).setFont(undefined, 'bold'); 
-                doc.text("Observações:", margemEsquerda, posY); 
-                posY += 4; 
-                doc.setFont(undefined, 'normal').setFontSize(8); 
-                const obsLines = doc.splitTextToSize(equipamento.observacao, larguraConteudo); 
-                doc.text(obsLines, margemEsquerda, posY); 
-                posY += (obsLines.length * 3.5) + 4; 
-            }
-
-            if (index < dadosDaInspecao.length - 1) { 
-                addPageIfNeeded(5); 
-                doc.setLineWidth(0.1).line(margemEsquerda, posY, margemDireita, posY); 
-                posY += 4; 
-            }
-        } 
-
-        addPageIfNeeded(30); 
-        const itensParaAtualizar = dadosDaInspecao.filter(eq => eq.pareceres && eq.pareceres.necessita_atualizacao_json && eq.pareceres.detalhes_atualizacao_json);
+            addPageIfNeeded(60);
+            doc.setFontSize(12).setFont(undefined, 'bold'); doc.text(`Equipamento: ${equipamento.tag_motor || 'N/A'} (${equipamento.nome_componente || 'N/A'})`, margemEsquerda, posY); posY += 6;
+            doc.setFont(undefined, 'normal').setFontSize(9); doc.text(`Local: ${equipamento.setor_principal || ''} > ${equipamento.subsetor_nivel1 || ''} > ${equipamento.subsetor_nivel2 || ''}`, margemEsquerda, posY); posY += 7;
+            const tableOptionsComum = { startY: posY, theme: 'striped', styles: { fontSize: 7, cellPadding: 1, overflow: 'linebreak' }, headStyles: { fillColor: [52, 73, 94], textColor: 255, fontStyle: 'bold', halign: 'center', fontSize: 8 }, columnStyles: { 0: { fontStyle: 'bold', cellWidth: 45 }, 1: { cellWidth: larguraConteudo - 45 } }, margin: { left: margemEsquerda, right: margemEsquerda },
+                didDrawPage: function (data) { posY = data.cursor.y; if (data.pageNumber > doc.internal.getNumberOfPages() - (data.pageNumber - data.pageCount)) { posY = 15; doc.setFontSize(8).setTextColor(100); doc.text(`Relatório de Inspeção - Setor: ${setorInspecionado} (Pág. ${doc.internal.getNumberOfPages()})`, doc.internal.pageSize.getWidth() / 2, 10, { align: 'center' }); doc.setTextColor(0); } } };
+            addPageIfNeeded(30); const nominais = [["Potência Nominal (CV/kW):", `${equipamento.potencia_CV_nominal || 'S/INF'} / ${equipamento.potencia_kw_nominal || 'S/INF'}`], ["Tensão Nominal (V):", equipamento.tensao_v_nominal || 'S/INF'], ["Corrente Nominal (A):", equipamento.corrente_a_nominal || 'S/INF'], ["Rotação Nominal (RPM):", equipamento.rotacao_rpm_nominal || 'S/INF'], ["Rol. Dianteiro Nominal:", equipamento.rolamento_d_nominal || 'S/INF'], ["Rol. Traseiro Nominal:", equipamento.rolamento_t_nominal || 'S/INF'], ["Carcaça Nominal:", equipamento.carcaca_nominal || 'S/INF'], ["IP Nominal:", equipamento.ip_nominal || 'S/INF']];
+            doc.autoTable({ ...tableOptionsComum, head: [['Dados Nominais', 'Valor']], body: nominais }); posY = doc.autoTable.previous.finalY + 4;
+            addPageIfNeeded(50); const medidosPlaca = [["Marca (Placa/Medido):", formatarMedicaoComStatus(equipamento.marca_medida, equipamento.marca_medida_status)], ["Modelo (Placa/Medido):", formatarMedicaoComStatus(equipamento.modelo_medido, equipamento.modelo_medido_status)], ["Potência (Placa CV/kW):", `${formatarMedicaoComStatus(equipamento.potencia_placa_cv, equipamento.potencia_placa_cv_status)} / ${formatarMedicaoComStatus(equipamento.potencia_placa_kw, equipamento.potencia_placa_kw_status)}`], ["Rol. Diant. (Placa):", formatarMedicaoComStatus(equipamento.rolamento_d_placa || equipamento.rolamento_d_medido, equipamento.rolamento_d_medido_status)], ["Rol. Tras. (Placa):", formatarMedicaoComStatus(equipamento.rolamento_t_placa || equipamento.rolamento_t_medido, equipamento.rolamento_t_medido_status)], ["Carcaça (Placa):", formatarMedicaoComStatus(equipamento.carcaca_placa, equipamento.carcaca_placa_status)], ["IP (Placa):", formatarMedicaoComStatus(equipamento.ip_placa, equipamento.ip_placa_status)], ["Potência Medida (CV):", formatarMedicaoComStatus(equipamento.potencia_medida, equipamento.potencia_medida_status)], ["Tensão Medida (F1/F2/F3) V:", `${formatarMedicaoComStatus(equipamento.tensao_f1_medida, equipamento.tensao_f1_medida_status)} / ${formatarMedicaoComStatus(equipamento.tensao_f2_medida, equipamento.tensao_f2_medida_status)} / ${formatarMedicaoComStatus(equipamento.tensao_f3_medida, equipamento.tensao_f3_medida_status)}`], ["Corrente Medida (F1/F2/F3) A:", `${formatarMedicaoComStatus(equipamento.corrente_f1_medida, equipamento.corrente_f1_medida_status)} / ${formatarMedicaoComStatus(equipamento.corrente_f2_medida, equipamento.corrente_f2_medida_status)} / ${formatarMedicaoComStatus(equipamento.corrente_f3_medida, equipamento.corrente_f3_medida_status)}`], ["Temperatura Medida (°C):", formatarMedicaoComStatus(equipamento.temperatura_medida, equipamento.temperatura_medida_status)], ["Rotação Medida (RPM):", formatarMedicaoComStatus(equipamento.rotacao_medida, equipamento.rotacao_medida_status)], ["Regulagem Disjuntor (A):", formatarMedicaoComStatus(equipamento.regulagem_corrente_medida, equipamento.regulagem_corrente_medida_status)]];
+            doc.autoTable({ ...tableOptionsComum, head: [['Dados Medidos / Placa', 'Valor']], body: medidosPlaca, startY: posY }); posY = doc.autoTable.previous.finalY + 4;
+            addPageIfNeeded(40); const pareceresArray = []; if (equipamento.pareceres) { const chavesExcluirParecer = ['necessita_atualizacao_json', 'detalhes_atualizacao_json', 'potencia_placa', 'rolamento_dianteiro', 'rolamento_traseiro']; for (const [chave, valor] of Object.entries(equipamento.pareceres)) { if (!chavesExcluirParecer.includes(chave)) pareceresArray.push([`${formatarChaveParecer(chave)}:`, valor]); } if (equipamento.pareceres.potencia_placa) pareceresArray.push(["Potência (Placa vs Nominal):", equipamento.pareceres.potencia_placa]); if (equipamento.pareceres.rolamento_dianteiro) pareceresArray.push(["Rolamento Dianteiro (Placa vs Nominal):", equipamento.pareceres.rolamento_dianteiro]); if (equipamento.pareceres.rolamento_traseiro) pareceresArray.push(["Rolamento Traseiro (Placa vs Nominal):", equipamento.pareceres.rolamento_traseiro]); }
+            if (pareceresArray.length > 0) { doc.autoTable({ ...tableOptionsComum, head: [['Análise Técnica / Pareceres', 'Resultado']], body: pareceresArray, startY: posY }); posY = doc.autoTable.previous.finalY + 4; }
+            addPageIfNeeded(60); if (equipamento.foto_equipamento_previewDataUrl) { doc.setFontSize(9).setFont(undefined, 'bold'); doc.text("Foto do Equipamento:", margemEsquerda, posY); posY += 4; try { const larguraFoto = 70, alturaMaxFoto = 50; doc.addImage(equipamento.foto_equipamento_previewDataUrl, margemEsquerda, posY, larguraFoto, alturaMaxFoto, undefined, 'FAST'); posY += alturaMaxFoto + 4; } catch (e) { console.warn("[PDF_DEBUG] Erro ao adicionar imagem ao PDF:", e); doc.setFont(undefined, 'normal').setTextColor(255, 0, 0); doc.text("Erro ao carregar imagem.", margemEsquerda, posY); posY += 5; doc.setTextColor(0); } }
+            addPageIfNeeded(20); if (equipamento.observacao) { doc.setFontSize(9).setFont(undefined, 'bold'); doc.text("Observações:", margemEsquerda, posY); posY += 4; doc.setFont(undefined, 'normal').setFontSize(8); const obsLines = doc.splitTextToSize(equipamento.observacao, larguraConteudo); doc.text(obsLines, margemEsquerda, posY); posY += (obsLines.length * 3.5) + 4; }
+            if (index < dadosDaInspecao.length - 1) { addPageIfNeeded(5); doc.setLineWidth(0.1).line(margemEsquerda, posY, margemDireita, posY); posY += 4; }
+        }
+        addPageIfNeeded(30); const itensParaAtualizar = dadosDaInspecao.filter(eq => eq.pareceres && eq.pareceres.necessita_atualizacao_json && eq.pareceres.detalhes_atualizacao_json);
         if (itensParaAtualizar.length > 0) {
-            doc.setFontSize(11).setFont(undefined, 'bold');
-            doc.text("Itens para Atualização no Cadastro (JSON):", margemEsquerda, posY);
-            posY += 6;
-            const atualizacoesBody = [];
-            itensParaAtualizar.forEach(eq => { 
-                const tag = eq.tag_motor || 'N/A'; 
-                if (Array.isArray(eq.pareceres.detalhes_atualizacao_json)) { 
-                    eq.pareceres.detalhes_atualizacao_json.forEach(detalheStr => { atualizacoesBody.push([tag, detalheStr]); }); 
-                } else if (typeof eq.pareceres.detalhes_atualizacao_json === 'object') { 
-                    for (const [campo, valor] of Object.entries(eq.pareceres.detalhes_atualizacao_json)) atualizacoesBody.push([tag, `Campo '${campo}' para '${valor}'`]); 
-                } 
-            });
-            doc.autoTable({
-                ...tableOptionsComumBase,
-                startY: posY,
-                head: [['Equipamento', 'Detalhe da Atualização Sugerida']],
-                body: atualizacoesBody,
-                headStyles: { ...tableOptionsComumBase.headStyles, fillColor: [230, 126, 34] },
-                columnStyles: { 0: { fontStyle: 'bold', cellWidth: 40 }, 1: { cellWidth: larguraConteudo - 40 } },
-            });
-            posY = doc.autoTable.previous.finalY + 4;
-        } else {
-            doc.setFontSize(9).setFont(undefined, 'italic');
-            doc.text("Nenhum item identificado para atualização no cadastro.", margemEsquerda, posY);
-            posY += 6;
-        }
-
-        const pageCount = doc.internal.getNumberOfPages();
-        for (let i = 1; i <= pageCount; i++) {
-            doc.setPage(i);
-            doc.setFontSize(8).setTextColor(150);
-            doc.text('Página ' + String(i) + ' de ' + String(pageCount), doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() - 7, { align: 'center' });
-        }
-        doc.setTextColor(0);
-
+            doc.setFontSize(11).setFont(undefined, 'bold'); doc.text("Itens para Atualização no Cadastro (JSON):", margemEsquerda, posY); posY += 6; const atualizacoesBody = [];
+            itensParaAtualizar.forEach(eq => { const tag = eq.tag_motor || 'N/A'; if (Array.isArray(eq.pareceres.detalhes_atualizacao_json)) { eq.pareceres.detalhes_atualizacao_json.forEach(detalheStr => { atualizacoesBody.push([tag, detalheStr]); }); } else if (typeof eq.pareceres.detalhes_atualizacao_json === 'object') { for (const [campo, valor] of Object.entries(eq.pareceres.detalhes_atualizacao_json)) atualizacoesBody.push([tag, `Campo '${campo}' para '${valor}'`]); } });
+            doc.autoTable({ ...tableOptionsComum, head: [['Equipamento', 'Detalhe da Atualização Sugerida']], body: atualizacoesBody, startY: posY, headStyles: { ...tableOptionsComum.headStyles, fillColor: [230, 126, 34] }, columnStyles: { 0: { fontStyle: 'bold', cellWidth: 40 }, 1: { cellWidth: larguraConteudo - 40 } } }); posY = doc.autoTable.previous.finalY + 4;
+        } else { doc.setFontSize(9).setFont(undefined, 'italic'); doc.text("Nenhum item identificado para atualização no cadastro.", margemEsquerda, posY); posY += 6; }
+        const pageCount = doc.internal.getNumberOfPages(); for (let i = 1; i <= pageCount; i++) { doc.setPage(i); doc.setFontSize(8).setTextColor(150); doc.text('Página ' + String(i) + ' de ' + String(pageCount), doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() - 7, { align: 'center' }); } doc.setTextColor(0);
         const nomeArquivo = `Relatorio_Inspecao_${setorInspecionado.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10).replace(/-/g, '')}.pdf`;
-        doc.save(nomeArquivo);
-        console.log(`[PDF_DEBUG] PDF "${nomeArquivo}" gerado e download iniciado.`);
+        doc.save(nomeArquivo); console.log(`[PDF_DEBUG] PDF "${nomeArquivo}" gerado e download iniciado.`);
         console.log("%c[PDF_DEBUG] criarPDF: FIM", "color: purple; font-weight: bold;");
     }
 
@@ -1149,7 +936,7 @@ document.addEventListener('DOMContentLoaded', function () {
         
         if (finalizarInspecaoBtn) {
             finalizarInspecaoBtn.addEventListener('click', handleFinalizarInspecao);
-            // console.log("[DEBUG] Listener anexado ao finalizarInspecaoBtn.");
+            console.log("[DEBUG] Listener anexado ao finalizarInspecaoBtn.");
         } else {
             console.warn("[DEBUG] Botão finalizarInspecaoBtn NÃO encontrado para anexar listener.");
         }
@@ -1157,7 +944,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const btnGerarPDF = document.getElementById('btnGerarRelatorioPDF');
         if (btnGerarPDF) {
             btnGerarPDF.addEventListener('click', gerarRelatorioPDFHandler);
-            // console.log("[DEBUG] Listener anexado ao btnGerarRelatorioPDF.");
+            console.log("[DEBUG] Listener anexado ao btnGerarRelatorioPDF.");
         } else {
             console.warn("[DEBUG] Botão btnGerarRelatorioPDF NÃO encontrado para anexar listener.");
         }
@@ -1166,6 +953,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const todosOsStatusCheckboxes = document.querySelectorAll('input.status_checkbox');
         if (todosOsStatusCheckboxes.length > 0) {
             todosOsStatusCheckboxes.forEach(checkbox => checkbox.addEventListener('change', handleStatusCheckboxChange));
+            // console.log(`[DEBUG] Listeners 'change' anexados a ${todosOsStatusCheckboxes.length} checkboxes de status.`);
         } else {
             console.warn("[DEBUG] Nenhum checkbox com a classe 'status_checkbox' encontrado.");
         }

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - PAMDE</title>
+    <!-- Se você for criar um dashboard.css específico -->
+    <link rel="stylesheet" href="assets/css/dashboard.css">
+    <!-- Ou pode usar o global.css se ele tiver estilos mais gerais -->
+    <link rel="stylesheet" href="assets/css/global.css">
+    <link rel="icon" type="image/png" href="assets/img/favicon.png">
+</head>
+
+<body>
+    <header class="dashboard-header">
+        <div class="user-info">
+            <p id="welcomeMessage">Carregando informações do usuário...</p>
+        </div>
+        <button id="logoutButton" class="btn-logout">Sair</button>
+    </header>
+
+    <main class="dashboard-main">
+        <h1>SELECIONE O SETOR</h1>
+        <div class="setores-container">
+            <button class="setor-btn" data-setor="TESTE">TESTE (Rápido)</button>            
+            <button class="setor-btn" data-setor="VEGETAIS">VEGETAIS</button>
+            <button class="setor-btn" data-setor="SAFRA">SAFRA</button>
+            <button class="setor-btn" data-setor="AUTOCLAVES">AUTOCLAVES</button>
+            <button class="setor-btn" data-setor="PREPARACAO">PREPARAÇÃO</button>
+            <button class="setor-btn" data-setor="TORRES">TORRES</button>
+            <!-- Adicione mais setores se necessário -->
+        </div>
+    </main>
+
+    <div id="footer-placeholder"></div> <!-- NOVO PLACEHOLDER -->
+
+
+    <script src="js/dashboard.js"></script>
+    <script src="js/common.js"></script>
+</body>
+
+</html>

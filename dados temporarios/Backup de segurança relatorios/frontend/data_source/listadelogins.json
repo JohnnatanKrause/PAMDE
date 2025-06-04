@@ -1,0 +1,10 @@
+[
+    { "usuario": "Teste", "cadastro": "0101", "senha": "010101" },
+    { "usuario": "Admin", "cadastro": "0001", "senha": "000001" },
+    { "usuario": "Johnnatan Krause Ribeiro Moreno", "cadastro": "1218", "senha": "964723" },
+    { "usuario": "Antônio", "cadastro": "6189", "senha": "123456"},
+    { "usuario": "Rodrigo", "cadastro": "5956", "senha": "123456" },
+    {"usuario": "Jolsimar Maia", "cadastro": "6182", "senha": "225588" },
+    { "usuario": "Juliano Paiva Teixeira", "cadastro": "5941", "senha": "521489" },
+    { "usuario": "Luciano", "cadastro": "6044", "senha": "123456" }
+]

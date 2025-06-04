@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checklist de Inspeção - PAMDE</title>
-    <link rel="stylesheet" href="assets/css/global.css"> <!-- Estilos globais -->
-    <link rel="stylesheet" href="assets/css/checklist.css"> <!-- Estilos específicos do checklist -->
+    <link rel="stylesheet" href="assets/css/global.css">
+    <link rel="stylesheet" href="assets/css/checklist.css">
     <link rel="icon" type="image/png" href="assets/img/favicon.png">
 </head>
 
@@ -36,7 +36,6 @@
                 <section class="dados-nominais">
                     <h3>Dados Nominais</h3>
                     <div id="nominaisContainer">
-                        <!-- Dados nominais serão preenchidos pelo JS -->
                         <p><strong>Setor Principal:</strong> <span data-nominal="setor_principal">-</span></p>
                         <p><strong>Subsetor:</strong> <span data-nominal="subsetor_nivel1">-</span></p>
                         <p><strong>Area:</strong> <span data-nominal="subsetor_nivel2">-</span></p>
@@ -55,204 +54,133 @@
                 </section>
 
                 <section class="dados-medidos">
-    <h3>Dados Medidos e Inspeção</h3>
-    <form id="inspecaoForm">
-        <h4>Dados na Placa do Motor</h4>
-        <div class="form-grid">
-            <div class="form-group">
-                <label for="marca_medida">Marca:</label>
-                <input type="text" id="marca_medida" name="marca_medida">
-            </div>
-            <div class="form-group">
-                <label for="modelo_medido">Modelo:</label>
-                <input type="text" id="modelo_medido" name="modelo_medido">
-            </div>
-            <div class="form-group">
-                <!-- Potência de Placa -->
-                <label for="potencia_placa_cv">Potência de Placa (CV):</label>
-                <input type="number" id="potencia_placa_cv" name="potencia_placa_cv" min="0">
-                <!-- Este campo NÃO terá checkboxes N/A, N/M, conforme sua definição anterior -->
-            </div>
-        </div>
-
-        <h4>Dados Elétricos Medidos</h4>
-
-        <div class="form-group">
-            <!-- Potência Medida -->
-            <label for="potencia_medida">Potência medida (CV):</label>
-            <input type="number" id="potencia_medida" name="potencia_medida" step="any" min="0">
-            <div class="status-options">
-                <label class="na-checkbox-label">
-                    <input type="checkbox" class="status_checkbox" name="potencia_medida_status" value="NA" data-target-input="potencia_medida"> N/A
-                </label>
-                <label class="na-checkbox-label">
-                    <input type="checkbox" class="status_checkbox" name="potencia_medida_status" value="NM" data-target-input="potencia_medida"> N/M
-                </label>
-                <span class="status-tooltip" id="tooltip_potencia_medida_status"></span>
-            </div>
-        </div>
-
+                    <h3>Dados Medidos e Inspeção</h3>
+                    <form id="inspecaoForm">
+                        <h4>Dados na Placa do Motor</h4>
+                        <div class="form-grid">
                             <div class="form-group">
-                                <label for="rotacao_medida">Rotação (RPM):</label>
-                                <input type="number" id="rotacao_medida" name="rotacao_medida" step="any">
-                                <div class="status-options">
-                                    <label class="na-checkbox-label">
-                                        <input type="checkbox" class="status_checkbox" name="rotacao_medida_status"
-                                            value="NA" data-target-input="rotacao_medida"> N/A
-                                    </label>
-                                    <label class="na-checkbox-label">
-                                        <input type="checkbox" class="status_checkbox" name="rotacao_medida_status"
-                                            value="NM" data-target-input="rotacao_medida"> N/M                                       
-                                    </label>
-                                    <span class="status-tooltip" id="tooltip_rotacao_medida_status"></span>
-                                </div>
+                                <label for="marca_medida">Marca:</label>
+                                <input type="text" id="marca_medida" name="marca_medida">
                             </div>
-                            <div class="form-grid fases-grid">
-                                <div class="form-group">
-                                    <label for="tensao_f1_medida">Tensão F1 (V):</label>
-                                    <input type="number" id="tensao_f1_medida" name="tensao_f1_medida" min="0" step="any">
-                                    <div class="status-options">
-                                    <label class="na-checkbox-label">
-                                        <input type="checkbox" class="status_checkbox" name="tensao_f1_medida_status"
-                                            value="NA" data-target-input="tensao_f1_medida"> N/A
-                                    </label>
-                                    <label class="na-checkbox-label">
-                                        <input type="checkbox" class="status_checkbox" name="tensao_f1_medida_status"
-                                            value="NM" data-target-input="tensao_f1_medida"> N/M                                       
-                                    </label>
+                            <div class="form-group">
+                                <label for="modelo_medido">Modelo:</label>
+                                <input type="text" id="modelo_medido" name="modelo_medido">
+                            </div>
+                            <div class="form-group">
+                                <label for="potencia_placa_cv">Potência de Placa (CV):</label>
+                                <input type="number" id="potencia_placa_cv" name="potencia_placa_cv" min="0">
+                            </div>
+                        </div>
+
+                        <h4>Dados Elétricos Medidos</h4>
+                        <div class="form-group">
+                            <label for="potencia_medida">Potência medida (CV):</label>
+                            <input type="number" id="potencia_medida" name="potencia_medida" step="any" min="0">
+                            <div class="status-options">
+                                <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="potencia_medida_status" value="NA" data-target-input="potencia_medida"> N/A</label>
+                                <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="potencia_medida_status" value="NM" data-target-input="potencia_medida"> N/M</label>
+                                <span class="status-tooltip" id="tooltip_potencia_medida_status"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="rotacao_medida">Rotação (RPM):</label>
+                            <input type="number" id="rotacao_medida" name="rotacao_medida" step="any">
+                            <div class="status-options">
+                                <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="rotacao_medida_status" value="NA" data-target-input="rotacao_medida"> N/A</label>
+                                <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="rotacao_medida_status" value="NM" data-target-input="rotacao_medida"> N/M</label>
+                                <span class="status-tooltip" id="tooltip_rotacao_medida_status"></span>
+                            </div>
+                        </div>
+                        <div class="form-grid fases-grid">
+                            <div class="form-group">
+                                <label for="tensao_f1_medida">Tensão F1 (V):</label>
+                                <input type="number" id="tensao_f1_medida" name="tensao_f1_medida" min="0" step="any">
+                                <div class="status-options">
+                                    <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="tensao_f1_medida_status" value="NA" data-target-input="tensao_f1_medida"> N/A</label>
+                                    <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="tensao_f1_medida_status" value="NM" data-target-input="tensao_f1_medida"> N/M</label>
                                     <span class="status-tooltip" id="tooltip_tensao_f1_medida_status"></span>
                                 </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="tensao_f2_medida">Tensão F2 (V):</label>
-                                    <input type="number" id="tensao_f2_medida" name="tensao_f2_medida" min="0" step="any">
-                                    <div class="status-options">
-                                    <label class="na-checkbox-label">
-                                        <input type="checkbox" class="status_checkbox" name="tensao_f2_medida_status"
-                                            value="NA" data-target-input="tensao_f2_medida"> N/A
-                                    </label>
-                                    <label class="na-checkbox-label">
-                                        <input type="checkbox" class="status_checkbox" name="tensao_f2_medida_status"
-                                            value="NM" data-target-input="tensao_f2_medida"> N/M                                       
-                                    </label>
+                            </div>
+                            <div class="form-group">
+                                <label for="tensao_f2_medida">Tensão F2 (V):</label>
+                                <input type="number" id="tensao_f2_medida" name="tensao_f2_medida" min="0" step="any">
+                                <div class="status-options">
+                                    <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="tensao_f2_medida_status" value="NA" data-target-input="tensao_f2_medida"> N/A</label>
+                                    <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="tensao_f2_medida_status" value="NM" data-target-input="tensao_f2_medida"> N/M</label>
                                     <span class="status-tooltip" id="tooltip_tensao_f2_medida_status"></span>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="tensao_f3_medida">Tensão F3 (V):</label>
-                                    <input type="number" id="tensao_f3_medida" name="tensao_f3_medida" min="0" step="any">
-                                    <div class="status-options">
-                                    <label class="na-checkbox-label">
-                                        <input type="checkbox" class="status_checkbox" name="tensao_f3_medida_status"
-                                            value="NA" data-target-input="tensao_f3_medida"> N/A
-                                    </label>
-                                    <label class="na-checkbox-label">
-                                        <input type="checkbox" class="status_checkbox" name="tensao_f3_medida_status"
-                                            value="NM" data-target-input="tensao_f3_medida"> N/M                                       
-                                    </label>
-                                    <span class="status-tooltip" id="tooltip_tensao_f3_medida_status"></span>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="corrente_f1_medida">Corrente F1 (A):</label>
-                                    <input type="number" id="corrente_f1_medida" name="corrente_f1_medida" min="0" step="any">
-                                    <div class="status-options">
-                                    <label class="na-checkbox-label">
-                                        <input type="checkbox" class="status_checkbox" name="corrente_f1_medida_status"
-                                            value="NA" data-target-input="corrente_f1_medida"> N/A
-                                    </label>
-                                    <label class="na-checkbox-label">
-                                        <input type="checkbox" class="status_checkbox" name="corrente_f1_medida_status"
-                                            value="NM" data-target-input="corrente_f1_medida"> N/M                                       
-                                    </label>
-                                    <span class="status-tooltip" id="tooltip_corrente_f1_medida_status"></span>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="corrente_f2_medida">Corrente F2 (A):</label>
-                                    <input type="number" id="corrente_f2_medida" name="corrente_f2_medida" min="0" step="any">
-                                    <div class="status-options">
-                                    <label class="na-checkbox-label">
-                                        <input type="checkbox" class="status_checkbox" name="corrente_f2_medida_status"
-                                            value="NA" data-target-input="corrente_f2_medida"> N/A
-                                    </label>
-                                    <label class="na-checkbox-label">
-                                        <input type="checkbox" class="status_checkbox" name="corrente_f2_medida_status"
-                                            value="NM" data-target-input="corrente_f2_medida"> N/M                                       
-                                    </label>
-                                    <span class="status-tooltip" id="tooltip_corrente_f2_medida_status"></span>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="corrente_f3_medida">Corrente F3 (A):</label>
-                                    <input type="number" id="corrente_f3_medida" name="corrente_f3_medida" min="0" step="any">
-                                    <div class="status-options">
-                                    <label class="na-checkbox-label">
-                                        <input type="checkbox" class="status_checkbox" name="corrente_f3_medida_status"
-                                            value="NA" data-target-input="corrente_f3_medida"> N/A
-                                    </label>
-                                    <label class="na-checkbox-label">
-                                        <input type="checkbox" class="status_checkbox" name="corrente_f3_medida_status"
-                                            value="NM" data-target-input="corrente_f3_medida"> N/M                                       
-                                    </label>
-                                    <span class="status-tooltip" id="tooltip_corrente_f3_medida_status"></span>
-                                    </div>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="regulagem_corrente_medida">Regulagem de Corrente (Relé):</label>
-                                <input type="number" id="regulagem_corrente_medida" name="regulagem_corrente_medida" min="0">
+                                <label for="tensao_f3_medida">Tensão F3 (V):</label>
+                                <input type="number" id="tensao_f3_medida" name="tensao_f3_medida" min="0" step="any">
                                 <div class="status-options">
-                                    <label class="na-checkbox-label">
-                                        <input type="checkbox" class="status_checkbox" name="regulagem_corrente_medida_status"
-                                            value="NA" data-target-input="regulagem_corrente_medida"> N/A
-                                    </label>
-                                    <label class="na-checkbox-label">
-                                        <input type="checkbox" class="status_checkbox" name="regulagem_corrente_medida_status"
-                                            value="NM" data-target-input="regulagem_corrente_medida"> N/M                                       
-                                    </label>
-                                    <span class="status-tooltip" id="tooltip_regulagem_corrente_medida_status"></span>
+                                    <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="tensao_f3_medida_status" value="NA" data-target-input="tensao_f3_medida"> N/A</label>
+                                    <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="tensao_f3_medida_status" value="NM" data-target-input="tensao_f3_medida"> N/M</label>
+                                    <span class="status-tooltip" id="tooltip_tensao_f3_medida_status"></span>
                                 </div>
                             </div>
-
-
-                            <h4>Dados Mecânicos Medidos</h4>
-
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label for="rolamento_d_medido">Modelo Rolamento Dianteiro:</label>
-                                    <input type="text" id="rolamento_d_medido" name="rolamento_d_medido">
-                            <div class="status-options">
-                                <label class="na-checkbox-label">
-                                    <input type="checkbox" class="status_checkbox" name="rolamento_d_medido_status" value="NA"
-                                        data-target-input="rolamento_d_medido"> N/A
-                                </label>
-                                <label class="na-checkbox-label">
-                                    <input type="checkbox" class="status_checkbox" name="rolamento_d_medido_status"
-                                        value="NM" data-target-input="rolamento_d_medido"> N/M 
-                                </label>
-                                <span class="status-tooltip" id="tooltip_rolamento_d_medido_status"></span>
-                                </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="rolamento_t_medido">Modelo Rolamento Traseiro:</label>
-                                    <input type="text" id="rolamento_t_medido" name="rolamento_t_medido">
-                            <div class="status-options">
-                                <label class="na-checkbox-label">
-                                    <input type="checkbox" class="status_checkbox" name="rolamento_t_medido_status" value="NA"
-                                        data-target-input="rolamento_t_medido"> N/A
-                                </label>
-                                <label class="na-checkbox-label">
-                                    <input type="checkbox" class="status_checkbox" name="rolamento_t_medido_status"
-                                        value="NM" data-target-input="rolamento_t_medido"> N/M 
-                                </label>
-                                <span class="status-tooltip" id="tooltip_rolamento_t_medido_status"></span>
-                                </div>
+                            <div class="form-group">
+                                <label for="corrente_f1_medida">Corrente F1 (A):</label>
+                                <input type="number" id="corrente_f1_medida" name="corrente_f1_medida" min="0" step="any">
+                                <div class="status-options">
+                                    <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="corrente_f1_medida_status" value="NA" data-target-input="corrente_f1_medida"> N/A</label>
+                                    <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="corrente_f1_medida_status" value="NM" data-target-input="corrente_f1_medida"> N/M</label>
+                                    <span class="status-tooltip" id="tooltip_corrente_f1_medida_status"></span>
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <label for="corrente_f2_medida">Corrente F2 (A):</label>
+                                <input type="number" id="corrente_f2_medida" name="corrente_f2_medida" min="0" step="any">
+                                <div class="status-options">
+                                    <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="corrente_f2_medida_status" value="NA" data-target-input="corrente_f2_medida"> N/A</label>
+                                    <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="corrente_f2_medida_status" value="NM" data-target-input="corrente_f2_medida"> N/M</label>
+                                    <span class="status-tooltip" id="tooltip_corrente_f2_medida_status"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="corrente_f3_medida">Corrente F3 (A):</label>
+                                <input type="number" id="corrente_f3_medida" name="corrente_f3_medida" min="0" step="any">
+                                <div class="status-options">
+                                    <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="corrente_f3_medida_status" value="NA" data-target-input="corrente_f3_medida"> N/A</label>
+                                    <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="corrente_f3_medida_status" value="NM" data-target-input="corrente_f3_medida"> N/M</label>
+                                    <span class="status-tooltip" id="tooltip_corrente_f3_medida_status"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="regulagem_corrente_medida">Regulagem de Corrente (Relé):</label>
+                            <input type="number" id="regulagem_corrente_medida" name="regulagem_corrente_medida" min="0">
+                            <div class="status-options">
+                                <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="regulagem_corrente_medida_status" value="NA" data-target-input="regulagem_corrente_medida"> N/A</label>
+                                <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="regulagem_corrente_medida_status" value="NM" data-target-input="regulagem_corrente_medida"> N/M</label>
+                                <span class="status-tooltip" id="tooltip_regulagem_corrente_medida_status"></span>
+                            </div>
+                        </div>
 
-                            <h4>Inspeção Qualitativa</h4>
-                            <div class="form-grid">
+                        <h4>Dados Mecânicos Medidos</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="rolamento_d_medido">Modelo Rolamento Dianteiro:</label>
+                                <input type="text" id="rolamento_d_medido" name="rolamento_d_medido">
+                                <div class="status-options">
+                                    <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="rolamento_d_medido_status" value="NA" data-target-input="rolamento_d_medido"> N/A</label>
+                                    <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="rolamento_d_medido_status" value="NM" data-target-input="rolamento_d_medido"> N/M</label>
+                                    <span class="status-tooltip" id="tooltip_rolamento_d_medido_status"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="rolamento_t_medido">Modelo Rolamento Traseiro:</label>
+                                <input type="text" id="rolamento_t_medido" name="rolamento_t_medido">
+                                <div class="status-options">
+                                    <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="rolamento_t_medido_status" value="NA" data-target-input="rolamento_t_medido"> N/A</label>
+                                    <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="rolamento_t_medido_status" value="NM" data-target-input="rolamento_t_medido"> N/M</label>
+                                    <span class="status-tooltip" id="tooltip_rolamento_t_medido_status"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4>Inspeção Qualitativa</h4>
+                        <div class="form-grid">
                             <div class="form-group">
                                 <label for="vibracao">Vibração Excessiva:</label>
                                 <select id="vibracao" name="vibracao">
@@ -261,34 +189,17 @@
                                     <option value="nao">Não</option>
                                 </select>
                                 <div class="status-options">
-                                    <label class="na-checkbox-label">
-                                        <input type="checkbox" class="status_checkbox" name="vibracao_status" value="NA"
-                                            data-target-input="vibracao"> N/A
-                                    </label>
-                                    <label class="na-checkbox-label">
-                                        <input type="checkbox" class="status_checkbox" name="vibracao_status" value="NM"
-                                            data-target-input="vibracao"
-                                            title="Marque se não foi possível medir este item (ex: falta de ferramenta, equipamento desligado).">
-                                        N/M
-                                    </label>
+                                    <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="vibracao_status" value="NA" data-target-input="vibracao"> N/A</label>
+                                    <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="vibracao_status" value="NM" data-target-input="vibracao" title="Marque se não foi possível medir este item (ex: falta de ferramenta, equipamento desligado)."> N/M</label>
                                     <span class="status-tooltip" id="tooltip_vibracao_status"></span>
                                 </div>
                             </div>
-                            <!-- Validação de "Inspeção Qualitativa" da temperatura -->
                             <div class="form-group">
                                 <label for="temperatura_medida">Temperatura (°C):</label>
                                 <input type="number" id="temperatura_medida" name="temperatura_medida" step="any">
                                 <div class="status-options">
-                                    <label class="na-checkbox-label">
-                                        <input type="checkbox" class="status_checkbox" name="temperatura_medida_status"
-                                            value="NA" data-target-input="temperatura_medida"> N/A
-                                    </label>
-                                    <label class="na-checkbox-label">
-                                        <input type="checkbox" class="status_checkbox" name="temperatura_medida_status"
-                                            value="NM" data-target-input="temperatura_medida"
-                                            title="Marque se não foi possível medir este item (ex: falta de ferramenta, equipamento desligado).">
-                                        N/M
-                                    </label>
+                                    <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="temperatura_medida_status" value="NA" data-target-input="temperatura_medida"> N/A</label>
+                                    <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="temperatura_medida_status" value="NM" data-target-input="temperatura_medida" title="Marque se não foi possível medir este item (ex: falta de ferramenta, equipamento desligado)."> N/M</label>
                                     <span class="status-tooltip" id="tooltip_temperatura_medida_status"></span>
                                 </div>
                             </div>
@@ -298,17 +209,11 @@
                                     <option value="">Selecione</option>
                                     <option value="sim">Sim</option>
                                     <option value="nao">Não</option>
-                                </select>                                
-                            <div class="status-options">
-                                <label class="na-checkbox-label">
-                                    <input type="checkbox" class="status_checkbox" name="ruido_rol_d_status" value="NA"
-                                        data-target-input="ruido_rol_d"> N/A
-                                </label>
-                                <label class="na-checkbox-label">
-                                    <input type="checkbox" class="status_checkbox" name="ruido_rol_d_status"
-                                        value="NM" data-target-input="ruido_rol_d"> N/M 
-                                </label>
-                                <span class="status-tooltip" id="tooltip_ruido_rol_d_status"></span>
+                                </select>
+                                <div class="status-options">
+                                    <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="ruido_rol_d_status" value="NA" data-target-input="ruido_rol_d"> N/A</label>
+                                    <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="ruido_rol_d_status" value="NM" data-target-input="ruido_rol_d"> N/M</label>
+                                    <span class="status-tooltip" id="tooltip_ruido_rol_d_status"></span>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -317,17 +222,11 @@
                                     <option value="">Selecione</option>
                                     <option value="sim">Sim</option>
                                     <option value="nao">Não</option>
-                                </select>                                
-                            <div class="status-options">
-                                <label class="na-checkbox-label">
-                                    <input type="checkbox" class="status_checkbox" name="ruido_rol_t_status" value="NA"
-                                        data-target-input="ruido_rol_t"> N/A
-                                </label>
-                                <label class="na-checkbox-label">
-                                    <input type="checkbox" class="status_checkbox" name="ruido_rol_t_status"
-                                        value="NM" data-target-input="ruido_rol_t"> N/M 
-                                </label>                                
-                                <span class="status-tooltip" id="tooltip_ruido_rol_t_status"></span>
+                                </select>
+                                <div class="status-options">
+                                    <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="ruido_rol_t_status" value="NA" data-target-input="ruido_rol_t"> N/A</label>
+                                    <label class="na-checkbox-label"><input type="checkbox" class="status_checkbox" name="ruido_rol_t_status" value="NM" data-target-input="ruido_rol_t"> N/M</label>
+                                    <span class="status-tooltip" id="tooltip_ruido_rol_t_status"></span>
                                 </div>
                             </div>
                         </div>
@@ -335,34 +234,44 @@
                         <div class="form-group">
                             <label for="foto_equipamento">Foto do Equipamento (Obrigatório):</label>
                             <input type="file" id="foto_equipamento" name="foto_equipamento" accept="image/*" required>
-                            <img id="preview_foto" src="#" alt="Preview da foto"
-                                style="max-width: 200px; max-height: 200px; margin-top: 10px; display: none;" />
+                            <img id="preview_foto" src="#" alt="Preview da foto" style="max-width: 200px; max-height: 200px; margin-top: 10px; display: none;" />
                         </div>
                         <div class="form-group">
                             <label for="observacao">Observações:</label>
                             <textarea id="observacao" name="observacao" rows="4"></textarea>
                         </div>
-
-                        <!-- Campos ocultos para não conformidades (serão preenchidos pelo JS) -->
                         <input type="hidden" id="parecer_tensao" name="parecer_tensao">
                         <input type="hidden" id="parecer_corrente" name="parecer_corrente">
                         <input type="hidden" id="parecer_temperatura" name="parecer_temperatura">
-                        <!-- Adicionar mais se necessário -->
                     </form>
                 </section>
             </div>
             <section class="checklist-actions">
                 <button id="anteriorEquipamentoBtn" disabled>Anterior</button>
                 <button id="proximoEquipamentoBtn">Próximo Equipamento</button>
-                <button id="finalizarInspecaoBtn" style="display: none;">Finalizar Inspeção do Setor</button>
+                <button type="button" id="finalizarInspecaoBtn" class="btn btn-finish" style="display: none;">Finalizar Inspeção do Setor</button>
+                <!-- ^^^^ Movido o display: none para aqui e garantido o type="button" ^^^^ -->
             </section>
-        </div>
+        </div> <!-- Fim do equipamento-info-wrapper -->
+
+        <!-- Seção para o botão de Gerar PDF e outras ações globais -->
+        <section class="global-actions" style="border: 2px solid red; padding: 10px;">
+            <!-- ^^^ Mantida a borda para debug ^^^ -->
+            <p style="color: blue; font-size: 0.9em; margin-bottom: 5px;">(Debug: Seção global-actions. Botão PDF deve aparecer abaixo)</p>
+            <button id="btnGerarRelatorioPDF" style="display: none;" class="btn-confirm">
+                Gerar Relatório PDF
+            </button>
+             <!-- ^^^ Estilos inline agressivos removidos, apenas display:none inicial ^^^ -->
+        </section>
+
     </main>
 
     <div id="footer-placeholder"></div>
 
+    <!-- Mantenha os scripts de biblioteca e os seus -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
     <script src="js/common.js"></script>
-    <script src="js/checklist.js"></script>
+    <script src="js/checklist.js"></script> <!-- Seu JS com os logs -->
 </body>
-
 </html>
