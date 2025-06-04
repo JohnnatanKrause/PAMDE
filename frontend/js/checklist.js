@@ -4,7 +4,7 @@ console.log("[DEBUG] checklist.js: ARQUIVO SENDO LIDO E PARSEADO PELO NAVEGADOR"
 document.addEventListener('DOMContentLoaded', function () {
     console.log("[DEBUG] checklist.js: DOMContentLoaded - INÍCIO");
 
-    // --- SELETORES DE ELEMENTOS DO DOM ---
+    
     const checklistUserInfo = document.getElementById('checklistUserInfo');
     const setorAtualTitulo = document.getElementById('setorAtualTitulo');
     const equipamentoTagElement = document.getElementById('equipamentoTag');
@@ -41,8 +41,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const ruidoRolDSelect = document.getElementById('ruido_rol_d');
     const ruidoRolTSelect = document.getElementById('ruido_rol_t');
 
-    // --- ESTADO DA APLICAÇÃO ---
-    let listaDeEquipamentos = []; // Será populada por fetchEquipamentosDoSetor
+    
+    let listaDeEquipamentos = []; 
     let indiceEquipamentoAtual = 0;
     let dadosColetadosInspecao = [];
 
@@ -262,7 +262,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 const element = inspecaoForm.elements[key];
                 if (element) {
-                    if (element.type === 'file') { /* No-op */ }
+                    if (element.type === 'file') {  }
                     else if (element.type === 'checkbox') { element.checked = dadosSalvos[key]; }
                     else if (element.type === 'radio' || (element.length && element[0] && element[0].type === 'radio')) {
                         document.querySelectorAll(`input[name="${key}"]`).forEach(radio => {
@@ -278,15 +278,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function exibirEquipamentoAtual() {
-        // console.log(`%c[DEBUG] exibirEquipamentoAtual: INÍCIO - Índice Atual: ${indiceEquipamentoAtual}, Total Equipamentos: ${listaDeEquipamentos.length}`, "color:dodgerblue;");
+    function exibirEquipamentoAtual() {        
         limparFormularioInspecao();
 
         if (equipamentoInfoWrapper) equipamentoInfoWrapper.style.display = 'block';
         if (noEquipmentsMessage) noEquipmentsMessage.style.display = 'none';
 
         if (listaDeEquipamentos.length === 0) {
-            // console.log("[DEBUG] exibirEquipamentoAtual: Lista de equipamentos VAZIA.");
+            
             if (equipamentoInfoWrapper) equipamentoInfoWrapper.style.display = 'none';
             if (noEquipmentsMessage) {
                 noEquipmentsMessage.textContent = "Nenhum equipamento para exibir neste setor.";
@@ -303,12 +302,12 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             const btnGerarPDFInicial = document.getElementById('btnGerarRelatorioPDF');
             if (btnGerarPDFInicial) btnGerarPDFInicial.style.display = 'none';
-            // console.log("[DEBUG] exibirEquipamentoAtual: FIM (lista vazia).");
+            
             return;
         }
 
         if (indiceEquipamentoAtual < listaDeEquipamentos.length) {
-            // console.log(`[DEBUG] exibirEquipamentoAtual: Exibindo equipamento no índice ${indiceEquipamentoAtual}.`);
+            
             const equipamento = listaDeEquipamentos[indiceEquipamentoAtual];
             if (!equipamento) {
                 console.error("Equipamento não encontrado no índice:", indiceEquipamentoAtual);
@@ -317,7 +316,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     noEquipmentsMessage.textContent = "Erro: Equipamento não encontrado.";
                     noEquipmentsMessage.style.display = 'block';
                 }
-                // console.log("[DEBUG] exibirEquipamentoAtual: FIM (erro, equipamento não encontrado).");
+                
                 return;
             }
 
@@ -437,7 +436,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    async function validarCamposObrigatorios() { // TORNADA ASYNC
+    async function validarCamposObrigatorios() { 
         const camposParaValidar = [
             { input: marcaMedidaInput, nome: "Marca (Placa)" }, { input: modeloMedidoInput, nome: "Modelo (Placa)" },
             { input: document.getElementById('potencia_placa_cv'), nome: "Potência de Placa (CV)" }, { input: rotacaoMedidaInput, nome: "Rotação Medida (RPM)" },
@@ -450,7 +449,7 @@ document.addEventListener('DOMContentLoaded', function () {
         for (const campo of camposParaValidar) {
             if (!campo.input) { console.warn(`[Validação] Input para '${campo.nome}' não encontrado no DOM. Pulando validação.`); continue; }
             if (!campo.input.disabled && campo.input.value.trim() === "") {
-                // SUBSTITUIÇÃO DO ALERT
+                
                 await showCustomModal({
                     title: 'Campo Obrigatório',
                     message: `Por favor, preencha o campo '${campo.nome}' ou marque 'N/A' ou 'N/M' (se aplicável).`
@@ -461,7 +460,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (temperaturaMedidaInput && !temperaturaMedidaInput.disabled) {
             const tempStatusMarcado = Array.from(temperaturaStatusCheckboxes).some(cb => cb.checked);
             if (!tempStatusMarcado && temperaturaMedidaInput.value.trim() === "") {
-                // SUBSTITUIÇÃO DO ALERT
+                
                 await showCustomModal({
                     title: 'Campo Obrigatório',
                     message: "Por favor, preencha o campo 'Temperatura (°C)' ou marque 'N/A' ou 'N/M'."
@@ -474,7 +473,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (potenciaMedidaInput && !potenciaMedidaInput.disabled) {
             const potenciaStatusMarcado = Array.from(potenciaMedidaStatusCheckboxes).some(cb => cb.checked);
             if (!potenciaStatusMarcado && potenciaMedidaInput.value.trim() === "") {
-                // SUBSTITUIÇÃO DO ALERT
+                
                 await showCustomModal({
                     title: 'Campo Obrigatório',
                     message: "Por favor, preencha o campo 'Potência Medida (CV)' ou marque 'N/A' ou 'N/M'."
@@ -482,10 +481,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 potenciaMedidaInput.focus(); return false;
             }
         }
-        const dadosSalvosParaEsteItem = dadosColetadosInspecao[indiceEquipamentoAtual]; // Garante que indiceEquipamentoAtual é válido aqui
+        const dadosSalvosParaEsteItem = dadosColetadosInspecao[indiceEquipamentoAtual]; 
         const fotoJaSalva = dadosSalvosParaEsteItem && dadosSalvosParaEsteItem.foto_equipamento_previewDataUrl;
         if (!fotoJaSalva && (!fotoEquipamentoInput || !fotoEquipamentoInput.files || fotoEquipamentoInput.files.length === 0)) {
-            // SUBSTITUIÇÃO DO ALERT
+            
             await showCustomModal({
                 title: 'Foto Obrigatória',
                 message: "Por favor, adicione uma foto do equipamento."
@@ -521,14 +520,14 @@ document.addEventListener('DOMContentLoaded', function () {
         return dados;
     }
 
-    async function handleProximoEquipamento() { // TORNADA ASYNC
+    async function handleProximoEquipamento() { 
         if (indiceEquipamentoAtual < 0 || indiceEquipamentoAtual >= listaDeEquipamentos.length) {
             console.warn("Índice de equipamento atual inválido para validação/coleta.");
             exibirEquipamentoAtual();
             return;
         }
 
-        const camposValidos = await validarCamposObrigatorios(); // ADICIONADO AWAIT
+        const camposValidos = await validarCamposObrigatorios(); 
         if (!camposValidos) {
             return;
         }
@@ -561,7 +560,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 finalizarInspecaoBtn.disabled = false;
                 finalizarInspecaoBtn.focus();
             }
-            // SUBSTITUIÇÃO DO ALERT
+            
             await showCustomModal({
                 title: "Último Equipamento",
                 message: "Você preencheu o último equipamento.\nRevise os dados se necessário e clique em 'Finalizar Inspeção do Setor'."
@@ -572,7 +571,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function handleAnteriorEquipamento() { if (indiceEquipamentoAtual > 0) { indiceEquipamentoAtual--; exibirEquipamentoAtual(); } }
 
-    async function handleFinalizarInspecao() { // TORNADA ASYNC
+    async function handleFinalizarInspecao() { 
         console.log("%c[DEBUG] handleFinalizarInspecao: INÍCIO DA FUNÇÃO", "color: blue; font-weight: bold;");
         const estaEmItemValidoParaSalvar = listaDeEquipamentos.length > 0 && indiceEquipamentoAtual >= 0 && indiceEquipamentoAtual < listaDeEquipamentos.length && listaDeEquipamentos[indiceEquipamentoAtual];
 
@@ -647,7 +646,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (inspecoesValidasParaRelatorio.length === 0) {
             console.log("%c[DEBUG] handleFinalizarInspecao: Nenhuma inspeção válida encontrada. PDF não será gerado.", "color: red; font-weight: bold;");
-            // SUBSTITUIÇÃO DO ALERT
+            
             await showCustomModal({
                 title: "Nenhuma Inspeção Válida",
                 message: "Nenhuma inspeção foi realizada ou salva com dados válidos para ser finalizada.\nPor favor, inspecione ao menos um equipamento."
@@ -662,7 +661,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         console.log(`%c[DEBUG] handleFinalizarInspecao: Inspeção será finalizada com ${inspecoesValidasParaRelatorio.length} equipamento(s).`, "color: green;");
-        // SUBSTITUIÇÃO DO ALERT
+        
         await showCustomModal({
             title: "Inspeção Finalizada",
             message: `Inspeção do setor finalizada com ${inspecoesValidasParaRelatorio.length} equipamento(s) inspecionado(s)!\nClique em 'Gerar Relatório PDF' para criar o documento.`
@@ -698,12 +697,12 @@ document.addEventListener('DOMContentLoaded', function () {
         return pareceres;
     }
 
-    async function gerarRelatorioPDFHandler() { // Já era async, o que é bom
+    async function gerarRelatorioPDFHandler() { 
         console.log("%c[PDF_DEBUG] gerarRelatorioPDFHandler: INÍCIO", "color: purple; font-weight: bold;");
         const inspecoesParaRelatorio = dadosColetadosInspecao.filter(dado => dado && typeof dado === 'object' && Object.keys(dado).length > 0);
 
         if (!inspecoesParaRelatorio || inspecoesParaRelatorio.length === 0) {
-            // SUBSTITUIÇÃO DO ALERT
+            
             await showCustomModal({
                 title: 'Sem Dados para Relatório',
                 message: 'Nenhum dado de inspeção válido para gerar o relatório.'
@@ -721,8 +720,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const btnPDF = document.getElementById('btnGerarRelatorioPDF');
         if (!btnPDF) {
             console.error("[PDF_DEBUG] Botão 'btnGerarRelatorioPDF' não encontrado no DOM.");
-            // Opcional: mostrar modal de erro aqui também
-            // await showCustomModal({ title: 'Erro Interno', message: 'Botão de gerar PDF não encontrado.' });
+            
             return;
         }
 
@@ -730,9 +728,7 @@ document.addEventListener('DOMContentLoaded', function () {
         btnPDF.textContent = "Gerando...";
 
         try {
-            await criarPDF(inspecoesParaRelatorio); // criarPDF é async e pode lançar erros
-
-            // SUBSTITUIÇÃO DO CONFIRM
+            await criarPDF(inspecoesParaRelatorio); 
             const userChoice = await showCustomModal({
                 title: 'Sucesso!',
                 message: "Relatório PDF gerado com sucesso!\nDeseja realizar a inspeção de outro setor?",
@@ -750,7 +746,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const btnProximo = document.getElementById('btnProximoEquipamento');
                 const btnAnterior = document.getElementById('btnAnteriorEquipamento');
                 const btnFinalizar = document.getElementById('btnFinalizarInspecao');
-                if (btnProximo) btnProximo.disabled = true; // Desabilitar até carregar novos equipamentos
+                if (btnProximo) btnProximo.disabled = true; 
                 if (btnAnterior) btnAnterior.disabled = true;
                 if (btnFinalizar) { btnFinalizar.disabled = true; btnFinalizar.style.display = 'none'; }
 
@@ -778,7 +774,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         } catch (error) {
             console.error("[PDF_DEBUG] Erro ao gerar PDF:", error);
-            // SUBSTITUIÇÃO DO ALERT
+            
             await showCustomModal({
                 title: 'Erro no PDF',
                 message: 'Ocorreu um erro ao gerar o relatório PDF.\nVerifique o console para detalhes.'
@@ -797,7 +793,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const doc = new jsPDF();
 
         const nomeUsuario = localStorage.getItem('usuarioLogado') || 'N/A (Nome não encontrado)';
-        const cadastroUsuario = localStorage.getItem('cadastroLogado') || 'N/A (Cadastro não encontrado)'; // Pega o cadastro
+        const cadastroUsuario = localStorage.getItem('cadastroLogado') || 'N/A (Cadastro não encontrado)'; 
 
         const dataHora = new Date().toLocaleString('pt-BR');
         const setorInspecionado = sessionStorage.getItem('setorSelecionado') ? sessionStorage.getItem('setorSelecionado').toUpperCase() : 'N/A';
@@ -819,7 +815,7 @@ document.addEventListener('DOMContentLoaded', function () {
         posY += 8;
         doc.setFont(undefined, 'normal');
         doc.setFontSize(10);
-        doc.text(`Inspetor: ${nomeUsuario} (Cad: ${cadastroUsuario})`, margemEsquerda, posY); // MODIFICADO AQUI
+        doc.text(`Inspetor: ${nomeUsuario} (Cad: ${cadastroUsuario})`, margemEsquerda, posY); 
         doc.text(`Data e Hora: ${dataHora}`, margemDireita, posY, { align: 'right' });
         posY += 6;
         doc.setLineWidth(0.2).line(margemEsquerda, posY, margemDireita, posY);
@@ -878,7 +874,6 @@ document.addEventListener('DOMContentLoaded', function () {
             posY = doc.autoTable.previous.finalY + 4;
         } else { doc.setFontSize(9).setFont(undefined, 'italic'); doc.text("Nenhum item identificado para atualização no cadastro.", margemEsquerda, posY); posY += 6; }
 
-        // --- INÍCIO DO RESUMO DA INSPEÇÃO ---
         addPageIfNeeded(25);
         doc.setFontSize(11).setFont(undefined, 'bold');
         doc.text("Resumo da Inspeção do Setor", margemEsquerda, posY);
@@ -895,17 +890,17 @@ document.addEventListener('DOMContentLoaded', function () {
             doc.text(`Atenção: ${totalNoSetor - totalInspecionados} equipamento(s) do setor não foram incluídos nesta inspeção.`, margemEsquerda, posY);
             doc.setTextColor(0); doc.setFont(undefined, 'normal');
             posY += 7;
-        } else if (totalInspecionados === totalNoSetor && totalNoSetor > 0) { // Adicionado totalNoSetor > 0 para evitar mensagem se o setor estiver vazio
+        } else if (totalInspecionados === totalNoSetor && totalNoSetor > 0) { 
             doc.setTextColor(0, 128, 0); doc.setFont(undefined, 'bold');
             doc.text(`Todos os ${totalNoSetor} equipamentos cadastrados no setor foram inspecionados.`, margemEsquerda, posY);
             doc.setTextColor(0); doc.setFont(undefined, 'normal');
             posY += 7;
-        } else if (totalNoSetor === 0) { // Caso o setor não tenha equipamentos cadastrados
+        } else if (totalNoSetor === 0) { 
             doc.setFont(undefined, 'italic');
             doc.text(`Nenhum equipamento cadastrado para este setor.`, margemEsquerda, posY);
             posY += 7;
         }
-        // --- FIM DO RESUMO DA INSPEÇÃO ---
+       
 
         const pageCount = doc.internal.getNumberOfPages();
         for (let i = 1; i <= pageCount; i++) { doc.setPage(i); doc.setFontSize(8).setTextColor(150); doc.text('Página ' + String(i) + ' de ' + String(pageCount), doc.internal.pageSize.getWidth() / 2, doc.internal.pageSize.getHeight() - 7, { align: 'center' }); }
@@ -984,9 +979,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    async function initChecklist() { // TORNADA ASYNC
+    async function initChecklist() { 
         console.log("[DEBUG] checklist.js - initChecklist() chamada");
-        await carregarLogosBase64(); // ADICIONADO AWAIT (carregarLogosBase64 é async)
+        await carregarLogosBase64(); 
 
         const usuarioLogado = localStorage.getItem('usuarioLogado');
         const cadastroLogado = localStorage.getItem('cadastroLogado');
@@ -994,15 +989,13 @@ document.addEventListener('DOMContentLoaded', function () {
         if (usuarioLogado && cadastroLogado) {
             if (checklistUserInfo) checklistUserInfo.textContent = `Usuário: ${usuarioLogado} (Cad: ${cadastroLogado})`;
         } else {
-            // SUBSTITUIÇÃO DO ALERT
             if (typeof showCustomModal === "function") {
                 await showCustomModal({
                     title: "Sessão Inválida",
                     message: "Sua sessão é inválida ou expirou.\nPor favor, faça login novamente."
-                    // Botão OK padrão será usado, e o await garante que o modal seja fechado antes do redirect
                 });
             } else {
-                alert("Sessão inválida. Por favor, faça login novamente."); // Fallback
+                alert("Sessão inválida. Por favor, faça login novamente."); 
             }
             window.location.href = 'index.html';
             return;
@@ -1011,7 +1004,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const setorSelecionado = sessionStorage.getItem('setorSelecionado');
         if (setorSelecionado) {
             if (setorAtualTitulo) setorAtualTitulo.textContent = setorSelecionado.toUpperCase();
-            await fetchEquipamentosDoSetor(setorSelecionado); // ADICIONADO AWAIT (fetchEquipamentosDoSetor é async)
+            await fetchEquipamentosDoSetor(setorSelecionado); 
         } else {
             console.error("Nenhum setor selecionado.");
             const msg = "Nenhum setor foi selecionado.\nPor favor, volte ao dashboard e selecione um setor.";
@@ -1022,21 +1015,19 @@ document.addEventListener('DOMContentLoaded', function () {
                     message: msg
                 });
             } else {
-                alert(msg.replace(/\n/g, ' ')); // Fallback
+                alert(msg.replace(/\n/g, ' ')); 
             }
 
             if (noEquipmentsMessage) {
-                noEquipmentsMessage.textContent = msg.replace(/\n/g, ' '); // Atualiza no DOM também
+                noEquipmentsMessage.textContent = msg.replace(/\n/g, ' '); 
                 noEquipmentsMessage.style.display = 'block';
             }
             if (equipamentoInfoWrapper) equipamentoInfoWrapper.style.display = 'none';
             if (proximoEquipamentoBtn) proximoEquipamentoBtn.disabled = true;
             if (anteriorEquipamentoBtn) anteriorEquipamentoBtn.disabled = true;
             if (finalizarInspecaoBtn) finalizarInspecaoBtn.disabled = true;
-            // Considerar redirecionar para o dashboard aqui também após o modal, se apropriado.
-            // Ex: window.location.href = 'dashboard.html';
         }
-        attachEventListeners(); // Não precisa ser async se attachEventListeners em si não retorna promessa que precisa ser esperada aqui
+        attachEventListeners(); 
         console.log("[DEBUG] initChecklist() finalizada.");
     }
 
