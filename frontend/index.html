@@ -1,53 +1,93 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - PAMDE</title>
-    <link rel="stylesheet" href="assets/css/global.css">
-    <link rel="stylesheet" href="assets/css/login.css">
-    <!-- Você pode adicionar um ícone (favicon) aqui se desejar -->
-    <link rel="icon" type="image/png" href="assets/img/favicon.png">
+    <title>Site em Manutenção</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .gears {
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .gear {
+            width: 50px;
+            height: 50px;
+            background: #333;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: rotate 3s linear infinite;
+        }
+
+        .gear::before, .gear::after {
+            content: "";
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #666;
+            border-radius: 50%;
+        }
+
+        .gear::before {
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .gear::after {
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .gear2 {
+            width: 40px;
+            height: 40px;
+            background: #555;
+            border-radius: 50%;
+            position: absolute;
+            top: 60%;
+            left: 30%;
+            transform: translate(-50%, -50%);
+            animation: rotate-reverse 3s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        @keyframes rotate-reverse {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(-360deg); }
+        }
+    </style>
 </head>
-
 <body>
-    <div class="login-container">
-        <header class="login-header">
-            <h1>Portal Analisador de Motores e Dispositivos Elétricos</h1>
-        </header>
-
-        <main class="login-main">
-            <div class="login-box">
-                <h2>Acesso ao Sistema</h2>
-                <form id="loginForm">
-                    <div class="input-group">
-                        <label for="usuario">Usuário:</label>
-                        <input type="text" id="usuario" name="usuario" required
-                            placeholder='Para testar o sistema, use "Teste"'>
-                    </div>
-                    <div class="input-group">
-                        <label for="cadastro">Cadastro (ID Operador):</label>
-                        <input type="text" id="cadastro" name="cadastro" required
-                            placeholder='Para testar o sistema, use "0101"'>
-                    </div>
-                    <div class="input-group">
-                        <label for="senha">Senha:</label>
-                        <input type="password" id="senha" name="senha" required
-                            placeholder='Para testar o sistema, use "010101"'>
-                    </div>
-                    <div id="loginErrorMessage" class="error-message" style="display: none;"></div>
-                    <button type="submit" class="btn-login">Entrar</button>
-                </form>
-            </div>
-        </main>
-
-        <div id="footer-placeholder"></div> <!-- NOVO PLACEHOLDER -->
-
+    <h1>🔧 Site em Manutenção 🔧</h1>
+    <div class="gears">
+        <div class="gear"></div>
+        <div class="gear2"></div>
     </div>
-    <script src="js/common.js"></script>
-    <script src="js/login.js"></script>
-
+    <p>Estamos trabalhando para voltar em breve! 🚀</p>
 </body>
-
 </html>
