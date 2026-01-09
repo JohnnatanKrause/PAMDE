@@ -1,72 +1,106 @@
-// frontend/js/login.js
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function () {
     const loginForm = document.getElementById('loginForm');
-    // O div 'loginErrorMessage' no HTML não será mais usado para exibir estas mensagens,
-    // mas pode ser mantido no HTML se você tiver outros usos para ele.
-    // Para esta lógica de modal, ele não é mais diretamente manipulado aqui.
+    const usuarioSelect = document.getElementById('usuarioSelect');
+    const usuarioManual = document.getElementById('usuarioManual');
 
-    if (loginForm) {
-        loginForm.addEventListener('submit', async function(event) { // Tornamos a função async para usar await
-            event.preventDefault();
+    // Função de modal segura (fallback para alert)
+    async function safeModal({ title, message }) {
+        if (typeof showCustomModal === 'function') {
+            return await showCustomModal({
+                title,
+                message,
+                buttons: [{ text: 'OK', value: true, class: 'modal-btn-neutral' }]
+            });
+        } else {
+            alert(`${title}\n\n${message}`);
+        }
+    }
 
-            const usuarioInput = document.getElementById('usuario').value;
-            const cadastroInput = document.getElementById('cadastro').value;
-            const senhaInput = document.getElementById('senha').value;
+    try {
+        // Caminho correto para o JSON dentro da pasta frontend
+        const response = await fetch('frontend/data_source/listadelogins.json');
+        if (!response.ok) throw new Error('Falha ao carregar lista de usuários.');
+        const validUsers = await response.json();
 
-            // Se você ainda tem o div 'loginErrorMessage' no HTML e quer limpá-lo:
-            const loginErrorMessageDiv = document.getElementById('loginErrorMessage');
-            if (loginErrorMessageDiv) {
-                loginErrorMessageDiv.style.display = 'none';
-                loginErrorMessageDiv.textContent = '';
+        // Lista de usuários que não devem aparecer no select
+        const ocultarUsuarios = ["admin", "johnnatan krause ribeiro moreno"];
+
+        const manualOpt = usuarioSelect.querySelector('option[value="manual"]');
+        validUsers.forEach(user => {
+            if (!ocultarUsuarios.includes(user.usuario.toLowerCase())) {
+                const option = document.createElement('option');
+                option.value = user.usuario;
+                option.textContent = user.usuario;
+                usuarioSelect.insertBefore(option, manualOpt);
             }
+        });
 
-            try {
-                // Carregar usuários do JSON local
-                const response = await fetch('data_source/listadelogins.json'); // Caminho para seu JSON
-                if (!response.ok) {
-                    // Se a lista de logins não puder ser carregada, isso é um erro mais sério
-                    throw new Error('Falha ao carregar dados de autenticação. O sistema pode estar indisponível.');
-                }
-                const validUsers = await response.json();
 
-                let isAuthenticated = false;
-                let authenticatedUser = null;
+        // Alternar campo manual
+        usuarioSelect.addEventListener('change', function () {
+            const isManual = usuarioSelect.value === 'manual';
+            usuarioManual.style.display = isManual ? 'block' : 'none';
+            if (!isManual) usuarioManual.value = '';
+            if (isManual) usuarioManual.focus();
+        });
 
-                for (const user of validUsers) {
-                    if (user.usuario === usuarioInput && user.cadastro === cadastroInput && user.senha === senhaInput) {
-                        isAuthenticated = true;
-                        authenticatedUser = user;
-                        break;
-                    }
-                }
+        // Lógica de login
+        if (loginForm) {
+            loginForm.addEventListener('submit', async function (event) {
+                event.preventDefault();
 
-                if (isAuthenticated) {
-                    console.log("Login local bem-sucedido para:", authenticatedUser.usuario);
-                    localStorage.setItem('usuarioLogado', authenticatedUser.usuario);
-                    localStorage.setItem('cadastroLogado', authenticatedUser.cadastro);
-                    window.location.href = 'dashboard.html';
-                } else {
-                    console.log("Falha no login local: credenciais inválidas.");
-                    // Substitui o antigo errorMessageDiv.textContent por showCustomModal
-                    await showCustomModal({
-                        title: 'Falha no Login',
-                        message: 'Usuário, cadastro ou senha inválidos.',
-                        buttons: [{ text: 'Tentar Novamente', value: true, class: 'modal-btn-neutral' }]
-                        // O valor 'true' não é usado aqui, mas a promessa esperará o clique.
+                const usuarioInput = (usuarioSelect.value === 'manual')
+                    ? usuarioManual.value.trim()
+                    : usuarioSelect.value;
+                const cadastroInput = document.getElementById('cadastro').value.trim();
+                const senhaInput = document.getElementById('senha').value.trim();
+
+                if (!usuarioInput || !cadastroInput || !senhaInput) {
+                    return safeModal({
+                        title: 'Campos obrigatórios',
+                        message: 'Preencha usuário, cadastro e senha.'
                     });
                 }
 
-            } catch (error) {
-                console.error("Erro ao processar login:", error);
-                // Substitui o antigo errorMessageDiv.textContent por showCustomModal
-                await showCustomModal({
-                    title: 'Erro no Sistema',
-                    message: `Ocorreu um erro ao tentar fazer login: ${error.message}\nPor favor, tente mais tarde. Se o problema persistir, contate o suporte.`,
-                    buttons: [{ text: 'OK', value: true, class: 'modal-btn-neutral' }]
-                });
+                let authenticatedUser = validUsers.find(u =>
+                    u.usuario === usuarioInput &&
+                    u.cadastro === cadastroInput &&
+                    u.senha === senhaInput
+                );
+
+                if (authenticatedUser) {
+                    localStorage.setItem('usuarioLogado', authenticatedUser.usuario);
+                    localStorage.setItem('cadastroLogado', authenticatedUser.cadastro);
+                    window.location.href = 'frontend/dashboard.html';
+                } else {
+                    safeModal({
+                        title: 'Falha no Login',
+                        message: 'Usuário, cadastro ou senha inválidos.'
+                    });
+                }
+            });
+        } else {
+            console.error('Elemento #loginForm não encontrado.');
+        }
+
+        // Carregar footer comum
+        const footerPlaceholder = document.getElementById('footer-placeholder');
+        if (footerPlaceholder) {
+            try {
+                const footerResp = await fetch('frontend/footer.html');
+                if (footerResp.ok) {
+                    const footerHtml = await footerResp.text();
+                    footerPlaceholder.innerHTML = footerHtml;
+                }
+            } catch (e) {
+                console.warn('Rodapé não pôde ser carregado:', e.message);
             }
+        }
+    } catch (error) {
+        console.error('Erro ao carregar usuários:', error);
+        safeModal({
+            title: 'Erro no Sistema',
+            message: `Não foi possível carregar a lista de usuários: ${error.message}`
         });
-    } else {
-        console.error("Elemento #loginForm não encontrado no DOM.");
     }
 });
