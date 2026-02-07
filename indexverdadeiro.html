@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - PAMDE</title>
+    <!-- CSS da pasta frontend -->
+    <link rel="stylesheet" href="frontend/assets/css/global.css">
+    <link rel="stylesheet" href="frontend/assets/css/login.css">
+    <link rel="icon" type="image/png" href="frontend/assets/img/favicon.png">
+</head>
+
+<body>
+    <div class="login-container">
+        <header class="login-header">
+            <h1>Portal Analisador de Motores e Dispositivos Elétricos</h1>
+        </header>
+
+        <main class="login-main">
+            <div class="login-box">
+                <h2>Acesso ao Sistema</h2>
+
+                <form id="loginForm">
+                    <!-- Usuário: select + opção manual -->
+                    <div class="input-group">
+                        <label for="usuarioSelect">Usuário:</label>
+                        <select id="usuarioSelect" name="usuarioSelect" required>
+                            <option value="">Selecione um usuário</option>
+                            <!-- opções do JSON serão inseridas aqui via JS -->
+                            <option value="manual">Outro (digitar manualmente)</option>
+                        </select>
+                        <input type="text" id="usuarioManual" name="usuarioManual"
+                placeholder="Digite o usuário" style="display:none;">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="cadastro">Cadastro (ID Operador):</label>
+                        <input type="text" id="cadastro" name="cadastro" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="senha">Senha:</label>
+                        <input type="password" id="senha" name="senha" required>
+                    </div>
+
+                    <div id="loginErrorMessage" class="error-message" style="display:none;"></div>
+                    <button type="submit" class="btn-login">Entrar</button>
+                </form>
+            </div>
+        </main>
+
+        <!-- Rodapé será carregado dinamicamente -->
+        <div id="footer-placeholder"></div>
+    </div>
+
+    <!-- Scripts da pasta frontend -->
+    <script src="frontend/js/common.js"></script>
+    <script src="frontend/js/login.js"></script>
+</body>
+</html>
