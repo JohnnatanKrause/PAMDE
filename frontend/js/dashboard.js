@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 //     buttons: [{text: 'OK', value:true, class: 'modal-btn-neutral'}]
                 // });
                 
-                window.location.href = 'index.html';
+                window.location.href = '/index.html';
             }
             // Se userConfirmedLogout for false ou 'dismiss_esc'/'dismiss_overlay', não faz nada (usuário clicou em "Não, Ficar" ou fechou o modal)
         });

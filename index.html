@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< HEAD
     <title>Login - PAMDE</title>
     <link rel="stylesheet" href="assets/css/global.css">
     <link rel="stylesheet" href="assets/css/login.css">
@@ -48,6 +49,283 @@
     <script src="js/common.js"></script>
     <script src="js/login.js"></script>
 
+=======
+    <title>Sistema Desativado - PAMDE</title>
+    <style>
+        body {
+            background: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-size: 5em;
+            /* ainda maior */
+            color: #ff0000;
+            text-shadow: 0 0 40px #ff0000;
+            animation: blink 1.5s infinite;
+        }
+
+        h2 {
+            font-size: 2.5em;
+            color: #ffcc00;
+            margin-top: 20px;
+            animation: pulse 3s infinite;
+        }
+
+   
+
+        @keyframes blink {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.2;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.2);
+                color: #ff0000;
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+         /* Tela de vitória */
+    .victory {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.95);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 999;
+      text-align: center;
+    }
+
+    .victory h2 {
+      font-size: 4em;
+      color: #ffcc00;
+      text-shadow: 0 0 30px #ffcc00;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); color: #00ff00; }
+      100% { transform: scale(1); }
+    }
+
+    .clown {
+      font-size: 10em;
+      margin-top: 20px;
+      animation: clownBlink 1s infinite;
+    }
+
+    @keyframes clownBlink {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(1.2); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Confetes */
+    .confetti {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: red;
+      animation: fall 3s linear forwards;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(100vh); opacity: 0; }
+    }
+
+    /* Foguetes */
+    .rocket {
+      position: absolute;
+      width: 5px;
+      height: 20px;
+      background: white;
+      animation: launch 2s ease-out forwards;
+    }
+
+    @keyframes launch {
+      0% { bottom: 0; opacity: 1; }
+      80% { bottom: 80%; opacity: 1; }
+      100% { bottom: 80%; opacity: 0; }
+    }
+
+    .explosion {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: red;
+      animation: explode 1s ease-out forwards;
+    }
+
+    @keyframes explode {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(10); opacity: 0; }
+    }
+
+        .alert-icon {
+            font-size: 6em;
+            color: #ffcc00;
+            animation: spin 4s linear infinite;
+            margin: 30px 0;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .background-alerts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .triangle {
+            position: absolute;
+            font-size: 3em;
+            color: #ff0000;
+            animation: float 6s infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            50% {
+                transform: translateY(-50px);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Botão do WhatsApp solto */
+        .whatsapp-btn {
+            position: absolute;
+            font-size: 2.2em;
+            /* maior */
+            background: #25D366;
+            color: #fff;
+            padding: 20px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 0 25px #25D366;
+            animation: moveAround 6s infinite linear, blink 3s infinite;
+            /* movimento rápido, piscar lento */
+        }
+
+        @keyframes moveAround {
+            0% {
+                top: 15%;
+                left: 15%;
+            }
+
+            25% {
+                top: 25%;
+                left: 70%;
+            }
+
+            50% {
+                top: 65%;
+                left: 50%;
+            }
+
+            75% {
+                top: 80%;
+                left: 25%;
+            }
+
+            100% {
+                top: 15%;
+                left: 15%;
+            }
+        }
+
+        footer {
+            margin-top: 100px;
+            font-size: 4em;
+            color: #ff0000;
+            text-shadow: 0 0 30px #ff0000;
+            animation: blink 1.5s infinite;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🚨 ATENÇÃO - PAMDE DESATIVADO 🚨</h1>
+    <h2>Entre em contato com o ADMINISTRADOR URGENTE!</h2>
+    <div class="alert-icon">⚙️</div>
+    <div class="alert-icon">⚠️</div>
+
+    <!-- Fundo com vários ícones piscando -->
+    <div class="background-alerts">
+        <div class="triangle" style="top:90%; left:10%;">⚠️</div>
+        <div class="triangle" style="top:30%; left:90%;">⚠️</div>
+        <div class="triangle" style="top:50%; left:90%;">⚠️</div>
+        <div class="triangle" style="top:90%; left:50%;">⚠️</div>
+        <div class="triangle" style="top:30%; left:10%;">⚠️</div>
+        <div class="triangle" style="top:50%; left:10%;">⚠️</div>
+        <div class="triangle" style="top:90%; left:90%;">⚠️</div>
+    </div>
+
+    <!-- Botão flutuante -->
+    <div class="whatsapp-btn" onclick="showVictory()">💬 ADMINISTRADOR</div>
+    <!-- Tela de vitória -->
+    <div class="victory" id="victoryScreen">
+        <h2>💸🔥 FAZ O PIX KKKKKK 🔥💸</h2>
+        <div class="clown">🤡</div> <!-- Sons --> <audio id="fireworksSound" loop>
+            <source src="https://actions.google.com/sounds/v1/fireworks/fireworks_burst.ogg" type="audio/ogg">
+        </audio> <audio id="applauseSound" loop>
+            <source src="https://actions.google.com/sounds/v1/ambiences/applause.ogg" type="audio/ogg">
+        </audio>
+    </div>
+    <script> function showVictory() { document.getElementById("victoryScreen").style.display = "flex"; // Sons liberados pelo clique document.getElementById("fireworksSound").play(); document.getElementById("applauseSound").play(); // Confetes for (let i = 0; i < 80; i++) { let confetti = document.createElement("div"); confetti.className = "confetti"; confetti.style.left = Math.random() * window.innerWidth + "px"; confetti.style.top = "-20px"; confetti.style.background = ["red","yellow","blue","green","pink","orange"][Math.floor(Math.random()*6)]; confetti.style.animationDuration = (2 + Math.random()*3) + "s"; document.body.appendChild(confetti); } // Loop de foguetes explodindo setInterval(() => { let rocket = document.createElement("div"); rocket.className = "rocket"; rocket.style.left = Math.random() * window.innerWidth + "px"; rocket.style.bottom = "0px"; document.body.appendChild(rocket); setTimeout(() => { let explosion = document.createElement("div"); explosion.className = "explosion"; explosion.style.left = rocket.style.left; explosion.style.bottom = "80%"; explosion.style.background = ["red","yellow","blue","green","pink","orange"][Math.floor(Math.random()*6)]; document.body.appendChild(explosion); }, 2000); }, 1500); // foguete novo a cada 1,5s } </script>
+
+    <!-- Repetição do aviso no rodapé -->
+    <footer>🚨 SISTEMA DESATIVADO 🚨</footer>
+>>>>>>> 6afc7a19ef00ed64a71248c6f870e56ab1aca3e1
 </body>
 
 </html>
